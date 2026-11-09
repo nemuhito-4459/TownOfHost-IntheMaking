@@ -5,7 +5,7 @@ TOHKに問い合わせないで<br>
 
 # フォーク元のTownOfHost-Kの開発者様
 
-  **TownOfHost-K**<br>
+  **TownOfHost-K様**<br>
     [Github](https://github.com/KYMario/TownOfHost-K)<br>
     
   暇な人 KY/けーわい<br>
