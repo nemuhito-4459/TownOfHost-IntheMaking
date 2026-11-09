@@ -2,6 +2,11 @@
 絶対に配布しません<br>
 TOHKに問い合わせないで<br>
 
+# Discord
+問い合わせはディスコへ<br>
+[dm](https://discord.com/users/1473675883981307916)<br>
+[server?](https://discord.gg/thggPFRCPw)<br>
+
 
 # フォーク元のTownOfHost-Kの開発者様
 
