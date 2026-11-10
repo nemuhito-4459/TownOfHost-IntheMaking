@@ -19,7 +19,7 @@ using System.IO;
 [assembly: AssemblyInformationalVersionAttribute(TownOfHost.Main.PluginVersion)]
 namespace TownOfHost
 {
-    [BepInPlugin(PluginGuid, "Town Of Host-K", PluginVersion)]
+    [BepInPlugin(PluginGuid, "TownOfHost-IntheMaking", PluginVersion)]
     [BepInIncompatibility("jp.ykundesu.supernewrolesnext")]
     [BepInIncompatibility("jp.ykundesu.supernewroles")]
     [BepInIncompatibility("me.yukieiji.extremeroles")]
@@ -29,7 +29,7 @@ namespace TownOfHost
     {
         // == プログラム設定 / Program Config ==
         // modの名前 / Mod Name (Default: Town Of Host)
-        public static readonly string ModName = "Town Of Host-K";
+        public static readonly string ModName = "TownOfHost-IntheMaking";
         // modの色 / Mod Color (Default: #00bfff)
         public static readonly string ModColor = "#00c1ff";
         // 公開ルームを許可する / Allow Public Room (Default: true)
@@ -59,7 +59,7 @@ namespace TownOfHost
 
         // ==========
         //Sorry for many Japanese comments.
-        public const string PluginGuid = "com.kymario.townofhost-k";
+        public const string PluginGuid = "com.walf4459.townofhost-inthemaking";
         public const string PluginVersion = "51.14.33.1";//ほんとはx.y.z表記にしたかったけどx.y.z.km.ks表記だと警告だされる
         public const string PluginShowVersion = "51.14.33.1";
         public const string ModVersion = ".14.33.1";//リリースver用バージョン変更
@@ -180,7 +180,7 @@ namespace TownOfHost
             Instance = this;
 
             //Client Options
-            HideName = Config.Bind("Client Options", "Hide Game Code Name", "Town Of Host-K");
+            HideName = Config.Bind("Client Options", "Hide Game Code Name", "TownOfHost-IntheMaking");
             HideColor = Config.Bind("Client Options", "Hide Game Code Color", $"{ModColor}");
             ForceJapanese = Config.Bind("Client Options", "Force Japanese", false);
             JapaneseRoleName = Config.Bind("Client Options", "Japanese Role Name", true);
@@ -205,7 +205,7 @@ namespace TownOfHost
             DebugKeyInput = Config.Bind("Authentication", "Debug Key", "");
             ExplosionKeyInput = Config.Bind("Authentication", "Explosion Key", "");
 
-            Logger = BepInEx.Logging.Logger.CreateLogSource("TownOfHost-K");
+            Logger = BepInEx.Logging.Logger.CreateLogSource("TownOfHost-IntheMaking");
             TownOfHost.Logger.Enable();
             TownOfHost.Logger.Disable("NotifyRoles");
             TownOfHost.Logger.Disable("SendRPC");

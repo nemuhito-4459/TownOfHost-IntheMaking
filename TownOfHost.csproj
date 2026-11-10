@@ -6,7 +6,7 @@
     <Description>fork by Town Of Host</Description>
     <Authors>tukasa0001(EmptyBottle), integral0131</Authors>
     <langVersion>preview</langVersion>
-    <AssemblyName>TownOfHost-K</AssemblyName>
+    <AssemblyName>TownOfHost-IntheMaking</AssemblyName>
     <NoWarn>MSB3246</NoWarn>
   </PropertyGroup>
 
