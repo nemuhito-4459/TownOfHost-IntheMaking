@@ -213,7 +213,12 @@ namespace TownOfHost
             }
             hasTasks = true;
             AllTasksCount = player.Data.Tasks.Count;
-            if (player.GetRoleClass() is IRoomTasker roomTasker && (roomTasker?.GetMaxTaskCount() is not null))
+            //汎用の部屋タスク持ちは、部屋タスクの数だけにする(バニラのタスクはこなせないので数えない)
+            if (RoomTaskSettings.GetTotal(player.PlayerId) is int roomTotal)
+            {
+                AllTasksCount = roomTotal;
+            }
+            else if (player.GetRoleClass() is IRoomTasker roomTasker && (roomTasker?.GetMaxTaskCount() is not null))
             {
                 AllTasksCount += roomTasker.GetMaxTaskCount().Value;
             }

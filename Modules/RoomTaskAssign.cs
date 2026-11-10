@@ -19,6 +19,22 @@ public class RoomTaskAssign
     public PlainShipRoom TaskPSR;
     public Vector2 RoomArrow;
 
+    //── 汎用の部屋タスク(RoomTaskSettings。インポスター置き換えのクルー・ニュートラル用) ──
+    /// <summary>役職クラスではなく RoomTaskSettings から割り当てた部屋タスクか</summary>
+    public bool Generic;
+    public RoomTaskSettings.TargetType TargetType;
+    /// <summary>割り当てる部屋タスクの種類の並び(この数が総タスク数)</summary>
+    public List<RoomTaskKind> Queue = new();
+    /// <summary>今の部屋にいた合計秒数(部屋を出ても途中から再開)</summary>
+    public float stay;
+    RoomTaskKind NowKind => Queue.Count > 0 ? Queue[System.Math.Min(completeroom, Queue.Count - 1)] : RoomTaskKind.Short;
+    float NowWait => RoomTaskSettings.GetWait(TargetType, NowKind);
+
+    /// <summary>今、部屋タスクを割り当てるか</summary>
+    bool IsAssign()
+        => Generic ? completeroom < Queue.Count
+        : (playerid.GetPlayerControl()?.GetRoleClass() as IRoomTasker)?.IsAssignRoomTask() is true;
+
     public RoomTaskAssign(byte playerid)
     {
         this.playerid = playerid;
@@ -33,7 +49,7 @@ public class RoomTaskAssign
     public void fixupdate()
     {
         if (!AmongUsClient.Instance.AmHost) return;
-        if ((playerid.GetPlayerControl()?.GetRoleClass() as IRoomTasker)?.IsAssignRoomTask() is not true) return;
+        if (!IsAssign()) return;
 
         //TaskRoomがnullの場合、再設定する
         if (!TaskRoom.HasValue)
@@ -48,6 +64,16 @@ public class RoomTaskAssign
             var player = playerid.GetPlayerControl();
             var nowroom = player.GetPlainShipRoom(true);
             if (nowroom == null) return;
+
+            if (Generic)
+            {
+                //部屋にいる間だけ待ち時間を数え、設定秒数たまったら完了
+                if (TaskRoom != nowroom.RoomId) return;
+                if (Mystate.HasSpawned) stay += Time.fixedDeltaTime;
+                if (stay < NowWait) return;
+                CompleteGeneric(player);
+                return;
+            }
 
             if (TaskRoom == nowroom.RoomId)
             {
@@ -77,11 +103,37 @@ public class RoomTaskAssign
             }
         }
     }
+    void CompleteGeneric(PlayerControl player)
+    {
+        Logger.Info($"{TaskRoom}で{player.name}が{NowKind}タスク完了({stay:0.0}秒)", "RoomTaskAssign");
+        TaskRoom = null;
+        TaskPSR = null;
+        completeroom++;
+        timer = 0;
+        stay = 0;
+        RPC.PlaySoundRPC(playerid, Sounds.TaskComplete);
+
+        var taskstate = player.GetPlayerTaskState();
+        taskstate.Update(player);
+        if (taskstate.IsTaskFinished)
+            UtilsGameLog.AddGameLog("Task", string.Format(Translator.GetString("Taskfin"), UtilsName.GetPlayerColor(player, true)));
+
+        if (IsAssign()) ChengeRoom();
+        else
+        {
+            if (RoomArrow != Vector2.zero) GetArrow.Remove(playerid, RoomArrow);
+            RoomArrow = Vector2.zero;
+            UtilsNotifyRoles.NotifyRoles(OnlyMeName: true, SpecifySeer: player);
+        }
+    }
     void ChengeRoom()
     {
-        if ((playerid.GetPlayerControl()?.GetRoleClass() as IRoomTasker)?.IsAssignRoomTask() is not true) return;
+        if (!IsAssign()) return;
+        stay = 0;
+        //汎用の部屋タスクは、今いる部屋も行き先から外す(着いた瞬間に数え始めないように)
+        var nowRoomId = Generic ? playerid.GetPlayerControl()?.GetPlainShipRoom(true)?.RoomId : null;
         List<PlainShipRoom> rooms = new();
-        ShipStatus.Instance.AllRooms.Where(room => room?.RoomId is not null and not SystemTypes.Hallway && room?.RoomId != TaskRoom).Do(r => rooms.Add(r));
+        ShipStatus.Instance.AllRooms.Where(room => room?.RoomId is not null and not SystemTypes.Hallway && room?.RoomId != TaskRoom && room?.RoomId != nowRoomId).Do(r => rooms.Add(r));
 
         var rand = IRandom.Instance;
         TaskPSR = rooms[rand.Next(0, rooms.Count)];
@@ -137,14 +189,18 @@ public class RoomTaskAssign
 
     public string GetLowerText(PlayerControl seer, string colorcode = "#ffffff")
     {
-        if (TaskRoom == null || (playerid.GetPlayerControl()?.GetRoleClass() as IRoomTasker)?.IsAssignRoomTask() is not true) return "";
-        return $"<{colorcode}>{GetArrow.GetArrows(seer, [RoomArrow])}" +
+        if (TaskRoom == null || !IsAssign()) return "";
+        var text = $"<{colorcode}>{GetArrow.GetArrows(seer, [RoomArrow])}" +
             $"{string.Format(Translator.GetString("FoxRoomMission"), $"<color=#cccccc><b>{Translator.GetString($"{TaskRoom}")}<b></color>")}</color>";
+        //汎用の部屋タスクは種類と必要な秒数も出す
+        if (Generic) text += $" <size=80%>({Translator.GetString($"RoomTaskKind.{NowKind}")} {NowWait}{Translator.GetString("RoomTaskSeconds")})</size>";
+        return text;
     }
 
     public void OnStartMeeting()
     {
         timer = 0;
+        stay = 0;
         TaskRoom = null;
         TaskPSR = null;
         GetArrow.Remove(playerid, RoomArrow);

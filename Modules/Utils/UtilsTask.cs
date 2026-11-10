@@ -61,6 +61,12 @@ namespace TownOfHost
                             if (role.IsImpostor()) hasTasks = false;
                             break;
                     }
+                    //汎用の部屋タスク: クルーはタスク勝利にも数える、ニュートラルは自分の表示だけ
+                    switch (RoomTaskSettings.GetTargetType(role))
+                    {
+                        case RoomTaskSettings.TargetType.Crewmate: hasTasks = true; break;
+                        case RoomTaskSettings.TargetType.Neutral: hasTasks = !ForRecompute; break;
+                    }
 
                     foreach (var subRole in States.SubRoles)
                         switch (subRole)
