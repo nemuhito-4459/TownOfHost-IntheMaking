@@ -710,32 +710,6 @@ public sealed class JackalStealth : JackalImpostorBase
     protected override CustomRoles GetHaveRole() => CustomRoles.Stealth;
 }
 
-public sealed class JackalTairou : JackalImpostorBase
-{
-    public static readonly SimpleRoleInfo RoleInfo =
-        SimpleRoleInfo.Create(
-            typeof(JackalTairou),
-            player => new JackalTairou(player),
-            CustomRoles.JackalTairou,
-            () => CustomRoles.Tairou.GetRoleInfo()?.BaseRoleType?.Invoke() ?? RoleTypes.Impostor,
-            CustomRoleTypes.Neutral,
-            32700,
-            () => SetupJackalOptions(RoleInfo),
-            "jtairou",
-            "#00b4eb",
-            (1, 37),
-            true,
-            countType: CountTypes.Jackal,
-            assignInfo: new RoleAssignInfo(CustomRoles.JackalTairou, CustomRoleTypes.Neutral)
-            {
-                AssignCountRule = new(1, 1, 1)
-            },
-            AddHaveRole: () => CustomRoles.Tairou,
-            from: From.TownOfHost_IntheMaking);
-    public JackalTairou(PlayerControl player) : base(RoleInfo, player) { }
-    protected override CustomRoles GetHaveRole() => CustomRoles.Tairou;
-}
-
 public sealed class JackalTimeThief : JackalImpostorBase
 {
     public static readonly SimpleRoleInfo RoleInfo =

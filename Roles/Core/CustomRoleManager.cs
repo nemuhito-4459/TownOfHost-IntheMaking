@@ -833,7 +833,6 @@ public enum CustomRoles
     JackalSniper,
     JackalSpeedStar,
     JackalStealth,
-    JackalTairou,
     JackalTimeThief,
     JackalVampire,
     JackalWarlock,
