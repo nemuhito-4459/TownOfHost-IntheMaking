@@ -179,19 +179,6 @@ namespace TownOfHost
                     SpecialEventText.text = $"何とは言いませんが、特別な日ですね。\n<size=15%>\n\n末永く爆発しろ</size>";
                     SpecialEventText.color = UtilsRoleText.GetRoleColor(CustomRoles.Lovers);
                 }
-                MainMenuManagerPatch.Statistics_TMP = TMPTemplate.Create(
-                "Statistisc",
-                "",
-                Color.white,
-                3f,
-                TextAlignmentOptions.TopLeft,
-                false,
-                null
-                );
-                {
-                    MainMenuManagerPatch.Statistics_TMP.transform.localPosition = new Vector3(0.8f, 1.7f);
-                }
-                CreateStreameMenu.CreateText();
             }
         }
 

@@ -17,122 +17,13 @@ namespace TownOfHost
     [HarmonyPatch(typeof(MainMenuManager))]
     public class MainMenuManagerPatch
     {
-        private static SimpleButton discordButton;
-        private static SimpleButton StatisticsButton;
-        private static GameObject Statistics_ScrollStuff;
-        private static SimpleButton gitHubButton;
-        private static SimpleButton TwitterXButton;
-        private static SimpleButton TOHkBOTButton;
-        private static SimpleButton RoleInfoButton;
         //private static SimpleButton VersionChangeButton;
-        public static TextMeshPro Statistics_TMP;
         public static GameObject VersionMenu;
 
         [HarmonyPatch(nameof(MainMenuManager.Start)), HarmonyPostfix, HarmonyPriority(Priority.Normal)]
         public static void StartPostfix(MainMenuManager __instance)
         {
             SimpleButton.SetBase(__instance.quitButton);
-            if (SimpleButton.IsNullOrDestroyed(RoleInfoButton))
-            {
-                RoleInfoButton = CreateButton(
-                    "RoleInfoButton",
-                    new(2.4f, 1, 1f),
-                    new Color32(51, 156, 126, byte.MaxValue),
-                    new Color32(103, 224, 190, byte.MaxValue),
-                    () =>
-                    {
-                        RoleInfoShower.CreateMenu(__instance);
-                    },
-                    "Role/Achivement"
-                );
-            }
-            //Discordボタンを生成
-            if (SimpleButton.IsNullOrDestroyed(discordButton))
-            {
-                discordButton = CreateButton(
-                    "DiscordButton",
-                    new(-2.5f, -1f, 1f),
-                    new(88, 101, 242, byte.MaxValue),
-                    new(148, 161, byte.MaxValue, byte.MaxValue),
-                    () => Application.OpenURL(Main.DiscordInviteUrl),
-                    "Discord",
-                    isActive: Main.ShowDiscordButton);
-            }
-
-            // GitHubボタンを生成
-            if (SimpleButton.IsNullOrDestroyed(gitHubButton))
-            {
-                gitHubButton = CreateButton(
-                    "GitHubButton",
-                    new(-0.8f, -1f, 1f),//-1f
-                    new(153, 153, 153, byte.MaxValue),
-                    new(209, 209, 209, byte.MaxValue),
-                    () => Application.OpenURL("https://github.com/KYMario/TownOfHost-K"),
-                    "GitHub");
-            }
-
-            // TwitterXボタンを生成
-            if (SimpleButton.IsNullOrDestroyed(TwitterXButton))
-            {
-                TwitterXButton = CreateButton(
-                    "TwitterXButton",
-                    new(0.9f, -1f, 1f),
-                    new(0, 202, 255, byte.MaxValue),
-                    new(60, 255, 255, byte.MaxValue),
-                    () => Application.OpenURL("https://twitter.com/Tohkserver_k"),
-                    "Twitter(X)");
-            }
-            // TOHkBOTボタンを生成
-            if (SimpleButton.IsNullOrDestroyed(TOHkBOTButton))
-            {
-                TOHkBOTButton = CreateButton(
-                    "TOHkBOTButton",
-                    new(2.6f, -1f, 1f),
-                    new(0, 201, 87, byte.MaxValue),
-                    new(60, 201, 87, byte.MaxValue),
-                    () => Application.OpenURL("https://discord.com/api/oauth2/authorize?client_id=1198276538563567716&permissions=8&scope=bot"),
-                    "TOHkBOT");
-            }
-            if (SimpleButton.IsNullOrDestroyed(StatisticsButton))
-            {
-                StatisticsButton = CreateButton(
-                    "StatisticsButton",
-                    new Vector3(0, -2.6963f, -5f),
-                    new(255, 242, 104, byte.MaxValue),
-                    new(255, 248, 173, byte.MaxValue),
-                    () =>
-                    {
-                        CredentialsPatch.TohkLogo.gameObject.SetActive(false);
-                        __instance.screenTint.enabled = true;
-                        Statistics_TMP.gameObject.SetActive(true);
-                        Statistics_TMP.text = $"<size=60%>{SaveStatistics.ShowText()}";
-                        Statistics_ScrollStuff.gameObject.SetActive(true);
-                        var St_Scroller = Statistics_ScrollStuff.transform.GetChild(0);
-                        Statistics_TMP.transform.parent = St_Scroller.GetChild(3).transform;
-                        St_Scroller.GetChild(1).gameObject.SetActive(false);
-                        St_Scroller.GetChild(2).gameObject.SetActive(false);
-                        St_Scroller.localPosition = new(3.18f, -5.45f, 0.1473f);
-                        St_Scroller.GetChild(0).localPosition = new(2.1f, 2.6f, 2f);
-                        St_Scroller.GetChild(0).localScale = new Vector3(0.7f, 1, 0);
-                        St_Scroller.GetChild(3).SetLocalY(0);
-                        var ages = Statistics_TMP.text.Split("\n").Count();
-                        St_Scroller.GetComponentInParent<Scroller>().ContentYBounds.max = ages > 16 ? (ages - 16) * 0.25f : 0;
-                    },
-                    Translator.GetString("Statistics")
-                    );
-            }
-
-            if (Statistics_ScrollStuff == null || Statistics_ScrollStuff.gameObject == null)
-            {
-                var sc = GameObject.Find("StoreMenu/Background/Scroll Stuff");
-                Statistics_ScrollStuff = Object.Instantiate(sc, __instance.transform);
-                Statistics_ScrollStuff.gameObject.name = "stscroll";
-                var Scroller = Statistics_ScrollStuff.transform.GetChild(0);
-                Scroller.GetChild(3).DestroyChildren();//inner全削除
-                Statistics_ScrollStuff.gameObject.SetActive(false);
-            }
-
-            CreateStreameMenu.CreateMenu(__instance);
 
             // フリープレイの無効化
             var howToPlayButton = __instance.howToPlayButton;
@@ -244,10 +135,6 @@ namespace TownOfHost
             }
             if (VersionMenu != null)
                 VersionMenu.SetActive(false);
-            if (Statistics_TMP?.gameObject != null)
-                Statistics_TMP?.gameObject.SetActive(false);
-            if (Statistics_ScrollStuff?.gameObject != null)
-                Statistics_ScrollStuff?.gameObject.SetActive(false);
 
             {
                 var warning = GameObject.Find("MainMenuManager/MainUI/AspectScaler/RightPanel/MaskedBlackScreen/OnlineButtons/AspectSize/CrossplayWarning");
@@ -271,10 +158,6 @@ namespace TownOfHost
             }
             if (VersionMenu != null)
                 VersionMenu.SetActive(false);
-            if (Statistics_TMP != null)
-                Statistics_TMP?.gameObject.SetActive(false);
-            if (Statistics_ScrollStuff != null)
-                Statistics_ScrollStuff?.gameObject.SetActive(false);
             CreateStreameMenu.CloseMenu();
             _ = new LateTask(() =>
             {
