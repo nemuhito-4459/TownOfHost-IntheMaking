@@ -134,7 +134,7 @@ namespace TownOfHost
                 for (var i = 0; i < GetCount(type, kind); i++) queue.Add(kind);
             //種類の順番はランダム
             var rand = IRandom.Instance;
-            queue = queue.OrderBy(_ => rand.Next()).ToList();
+            queue = queue.OrderBy(_ => rand.Next(int.MaxValue)).ToList();
 
             RoomTaskAssign.AllRoomTasker[player.PlayerId] = new RoomTaskAssign(player.PlayerId)
             {

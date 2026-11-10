@@ -31,9 +31,6 @@ namespace TownOfHost
             { CustomRoles.MMArcher, "ほあんかん" },
             { CustomRoles.PonkotuTeller, "ぽんこつうらないし" },
             { CustomRoles.WolfBoy, "おおかみしょうねん" },
-            //翻訳ファイルに日本語名がない役職(仮の読み)
-            { CustomRoles.VentBeginner, "べんとびぎなー" },
-            { CustomRoles.Ventoman, "べんとまん" },
             //ニュートラル
             { CustomRoles.Fox, "ようこ" },
             { CustomRoles.PlagueDoctor, "ぺすといし" },
