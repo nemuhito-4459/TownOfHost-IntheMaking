@@ -33,7 +33,8 @@ namespace TownOfHost
         // modの色 / Mod Color (Default: #00bfff)
         public static readonly string ModColor = "#00c1ff";
         // 公開ルームを許可する / Allow Public Room (Default: true)
-        public static readonly bool AllowPublicRoom = true;
+        // プライベートフォークの規約により常にfalse(trueに戻さないこと)
+        public static readonly bool AllowPublicRoom = false;
         // フォークID / ForkId (Default: OriginalTOH)
         public static readonly string ForkId = "TOH-K";
         // Discordボタンを表示するか / Show Discord Button (Default: true)
@@ -320,17 +321,8 @@ namespace TownOfHost
                 return false;
             }
         }
-        public static bool IsPublicRoomAllowed(bool AllowCS = true)
-        {
-            if (!VersionChecker.IsSupported)
-                return false;
-            if (ModUpdater.BlockPublicRoom != null && ModUpdater.BlockPublicRoom.Value == true)
-                return false;
-            if (IsCs())
-                return AllowCS;
-
-            return !ModUpdater.hasUpdate && !ModUpdater.isBroken && AllowPublicRoom && IsPublicAvailableOnThisVersion;
-        }
+        /// <summary>プライベートフォークの規約により、公開ルームはどのサーバーでも常に不可</summary>
+        public static bool IsPublicRoomAllowed(bool AllowCS = true) => false;
         public static bool IsroleAssigned
             => !SetRoleOverride/* && Options.CurrentGameMode == CustomGameMode.Standard*/ || SelectRolesPatch.roleAssigned;
     }

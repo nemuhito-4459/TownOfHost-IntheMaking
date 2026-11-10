@@ -43,6 +43,17 @@ namespace TownOfHost
         }
     }
 
+    //プライベートフォークの規約により、どこから呼ばれても公開ルームにはしない
+    [HarmonyPatch(typeof(InnerNetClient), nameof(InnerNetClient.ChangeGamePublic))]
+    class ChangeGamePublicPatch
+    {
+        public static void Prefix([HarmonyArgument(0)] ref bool isPublic)
+        {
+            if (isPublic) Logger.Info("公開ルームへの変更をブロックしました", "ChangeGamePublicPatch");
+            isPublic = false;
+        }
+    }
+
     [HarmonyPatch(typeof(MMOnlineManager), nameof(MMOnlineManager.Start))]
     class MMOnlineManagerStartPatch
     {
