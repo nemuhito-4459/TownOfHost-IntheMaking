@@ -309,9 +309,6 @@ namespace TownOfHost
             if (CustomRolesHelper.CheckGuesser() || CustomRoles.Guesser.IsPresent()) text += $"\n/cmd bt - {GetString("Command.bt")}";
             if (Options.ImpostorHideChat.GetBool()) text += $"\n/cmd ic - {GetString("Command.impchat")}";
             if (Options.JackalHideChat.GetBool()) text += $"\n/cmd jc - {GetString("Command.jacchat")}";
-            if (Options.LoversHideChat.GetBool()) text += $"\n/cmd lc - {GetString("Command.LoverChat")}";
-            if (Options.ConnectingHideChat.GetBool()) text += $"\n/cmd cc - {GetString("Command.ConnectingChat")}";
-            if (Options.TwinsHideChat.GetBool()) text += $"\n/cmd tc - {GetString("Command.TwinsChat")}";
             if (GameStates.IsLobby)
             {
                 text += $"\n/cmd lastresult(l) - {GetString("Command.lastresult")}"

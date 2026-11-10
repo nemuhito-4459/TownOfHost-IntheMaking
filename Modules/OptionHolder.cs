@@ -488,10 +488,7 @@ namespace TownOfHost
         public static OptionItem OutroCrewWinreasonchenge;
         public static OptionItem TeamHideChat;
         public static OptionItem ImpostorHideChat;
-        public static OptionItem LoversHideChat;
         public static OptionItem JackalHideChat;
-        public static OptionItem TwinsHideChat;
-        public static OptionItem ConnectingHideChat;
 
         public static OptionItem DisableTaskWin;
 
@@ -646,15 +643,6 @@ namespace TownOfHost
             JackalHideChat = BooleanOptionItem.Create(105005, "JackalHideChat", false, TabGroup.MainSettings, false)
                 .SetTag(CustomOptionTags.Standard)
                 .SetColor(UtilsRoleText.GetRoleColor(CustomRoles.Jackal)).SetParent(TeamHideChat);
-            LoversHideChat = BooleanOptionItem.Create(105006, "LoversHideChat", false, TabGroup.MainSettings, false)
-                .SetTag(CustomOptionTags.Standard)
-                .SetColor(UtilsRoleText.GetRoleColor(CustomRoles.Lovers)).SetParent(TeamHideChat);
-            TwinsHideChat = BooleanOptionItem.Create(105007, "TwinsCanUseHideChet", false, TabGroup.MainSettings, false)
-                .SetTag(CustomOptionTags.Standard)
-                .SetColor(UtilsRoleText.GetRoleColor(CustomRoles.Twins)).SetParent(TeamHideChat);
-            ConnectingHideChat = BooleanOptionItem.Create(105008, "ConnectingHideChat", false, TabGroup.MainSettings, false)
-                .SetTag(CustomOptionTags.Standard)
-                .SetColor(UtilsRoleText.GetRoleColor(CustomRoles.Connecting)).SetParent(TeamHideChat);
             ExRpcWeightR = BooleanOptionItem.Create(105009, "ExRpcWeightR", false, TabGroup.MainSettings, false).SetParent(ExperimentalMode);
             ExCallMeetingBlackout = BooleanOptionItem.Create(105012, "ExCallMeetingBlackout", false, TabGroup.MainSettings, false)
                 .SetParent(ExperimentalMode)
