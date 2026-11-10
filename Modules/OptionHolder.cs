@@ -691,6 +691,9 @@ namespace TownOfHost
                 .SetValueFormat(OptionFormat.Seconds).SetZeroNotation(OptionZeroNotation.Infinity);
 
             CreateRoleOption(sortedRoleInfo, CustomRoleTypes.Neutral);
+            // 陣営共通設定(バニラから移したもの)
+            FactionCommonOptions.SetupImpostorOptions();
+            FactionCommonOptions.SetupCrewmateOptions();
             // Jackaldoll Common Options (役職一覧には出さず、ジャッカル陣営タブの共通設定にする)
             Roles.Neutral.JackalDoll.SetupCommonOption();
 

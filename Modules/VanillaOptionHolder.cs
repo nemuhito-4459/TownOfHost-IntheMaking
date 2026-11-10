@@ -68,6 +68,7 @@ class VanillaOptionHolder
         }))
         {
             SetOptinItem();
+            FactionCommonOptions.ApplyToVanilla();//陣営タブへ移した設定はそちらの値を使う
             return;
         }
 
@@ -92,6 +93,7 @@ class VanillaOptionHolder
                 case VanillaOptionName.MapId: Main.NormalOptions.SetByte(ByteOptionNames.MapId, (byte)data.Value.GetInt()); break;
             }
         }
+        FactionCommonOptions.ApplyToVanilla();//陣営タブへ移した設定はそちらの値を使う
         StringOptionStartPatch.all.Do(x =>
         {
             x.Value = Main.NormalOptions.GetInt(x.stringOptionName);
@@ -165,6 +167,7 @@ class VanillaOptionHolder
                 case VanillaOptionName.MapId: Main.NormalOptions.SetByte(ByteOptionNames.MapId, 0); break;
             }
         }
+        FactionCommonOptions.ApplyToVanilla();//陣営タブへ移した設定はそちらの値を使う
         StringOptionStartPatch.all.Do(x =>
         {
             x.Value = Main.NormalOptions.GetInt(x.stringOptionName);

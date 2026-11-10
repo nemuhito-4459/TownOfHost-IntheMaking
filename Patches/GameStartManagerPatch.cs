@@ -228,6 +228,8 @@ namespace TownOfHost
         {
             public static bool Prefix(GameStartManager __instance)
             {
+                //陣営タブの共通設定(キルクール・タスク数など)をバニラの設定へ反映してから開始する
+                FactionCommonOptions.ApplyToVanilla();
                 if (TaskBattle.IsAllMapMode is false)
                 {
                     if (TaskBattle.AllMapMode.GetBool())
