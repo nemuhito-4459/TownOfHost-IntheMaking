@@ -726,6 +726,8 @@ namespace TownOfHost
             CreateRoleOption(sortedRoleInfo, CustomRoleTypes.Crewmate);
 
             CreateRoleOption(sortedRoleInfo, CustomRoleTypes.Neutral);
+            //アサシンとマーリン: ON/OFFの行と、アサシン・マーリンそれぞれの設定の行
+            AssassinMerlinOptions.Setup();
 
             SetupRoleOptions(102800, TabGroup.MainSettings, CustomRoles.NotAssigned, new(1, 1, 1));
             //Com

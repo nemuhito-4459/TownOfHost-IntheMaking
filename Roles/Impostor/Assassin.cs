@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using AmongUs.GameOptions;
 using HarmonyLib;
 using Hazel;
@@ -114,6 +115,8 @@ public sealed class Assassin : RoleBase, IImpostor, IUsePhantomButton, IDoubleTr
         OptionHaveRole = FilterOptionItem.Create(RoleInfo, 12, OptionName.AssassinHaveRole, 0, false, OptionHasOtherRole, true, false, false, false, false, () => InvalidRoles());
         OptionAssassinMeetingTime = IntegerOptionItem.Create(RoleInfo, 25, OptionName.AssassinMeetingTime, new(1, 240, 1), 35, false).SetValueFormat(OptionFormat.Seconds);
 
+        //ここから下はマーリンの設定(AssassinMerlinOptionsでマーリンのページへ移す)
+        var merlinStart = OptionItem.AllOptions.Count;
         ObjectOptionitem.Create(RoleInfo, 26, "AssassinMerlin", true, null).SetOptionName(() => "Merlin Setting").SetColor(Merlin.RoleInfo.RoleColor);
         OptionMerlinHasTask = BooleanOptionItem.Create(RoleInfo, 24, OptionName.MerlinHasTask, false, false);
         OptionMerlinNomalTask = OverrideTasksData.Create(RoleInfo, 16, rolename: CustomRoles.Merlin, tasks: (true, 2, 0, 0), OptionMerlinHasTask);
@@ -122,7 +125,10 @@ public sealed class Assassin : RoleBase, IImpostor, IUsePhantomButton, IDoubleTr
         OptionMerlinCanSeeMadmate = BooleanOptionItem.Create(RoleInfo, 21, OptionName.MerlinCanSeeMadmate, true, false, OptionMerlinCanSeeNeutral);
         OptionMerlinOnlyNeutralKiller = BooleanOptionItem.Create(RoleInfo, 22, OptionName.MerlinOnlyNeutralKiller, false, false, OptionMerlinCanSeeNeutral);
         OptionMerlinCantSeeNeutralColor = BooleanOptionItem.Create(RoleInfo, 23, OptionName.MerlinCantSeeNeutralColor, true, false, OptionMerlinCanSeeNeutral);
+        MerlinOptions = OptionItem.AllOptions.Skip(merlinStart).ToList();
     }
+    /// <summary>マーリンの設定(アサシンの設定の中で作っているもの)</summary>
+    public static List<OptionItem> MerlinOptions = new();
     public override void Add()
     {
         if (OptionHasOtherRole.GetBool())

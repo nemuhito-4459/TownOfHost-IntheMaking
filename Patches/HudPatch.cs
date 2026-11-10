@@ -604,7 +604,7 @@ namespace TownOfHost
             {
                 var text = "";
                 var desc = "";
-                var inforole = GameSettingMenuStartPatch.NowRoleTab is CustomRoles.NotAssigned || GameSettingMenuStartPatch.NowRoleTab.IsCombinationRole() ? GameSettingMenuStartPatch.Nowinfo : GameSettingMenuStartPatch.NowRoleTab;
+                var inforole = GameSettingMenuStartPatch.NowRoleTab is CustomRoles.NotAssigned ? GameSettingMenuStartPatch.Nowinfo : GameSettingMenuStartPatch.NowRoleTab;//役職のページを開いているときはその役職(アサシン/マーリンも別々)
                 var inforoleinfo = inforole.GetRoleInfo();
 
                 text = $"<size=150%><{UtilsRoleText.GetRoleColorCode(inforole)}>{UtilsRoleText.GetRoleName(inforole)}\n</size>";

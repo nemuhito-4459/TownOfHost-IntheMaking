@@ -878,21 +878,7 @@ namespace TownOfHost
                                     {
                                         var oldinfo = Nowinfo;
                                         Nowinfo = option.CustomRole;
-                                        if (HudManager.Instance.TaskPanel.open && oldinfo.IsCombinationRole() && Nowinfo.IsCombinationRole())
-                                        {
-                                            switch (oldinfo)
-                                            {
-                                                case CustomRoles.Assassin: if (Nowinfo is CustomRoles.Assassin) Nowinfo = CustomRoles.Merlin; break;
-                                                case CustomRoles.Merlin: if (Nowinfo is CustomRoles.Assassin) Nowinfo = CustomRoles.Assassin; break;
-                                                case CustomRoles.Driver: if (Nowinfo is CustomRoles.Driver) Nowinfo = CustomRoles.Braid; break;
-                                                case CustomRoles.Braid: if (Nowinfo is CustomRoles.Driver) Nowinfo = CustomRoles.Driver; break;
-                                                case CustomRoles.Vega: if (Nowinfo is CustomRoles.Vega) Nowinfo = CustomRoles.Altair; break;
-                                                case CustomRoles.Altair: if (Nowinfo is CustomRoles.Vega) Nowinfo = CustomRoles.Vega; break;
-                                                case CustomRoles.Fool: if (Nowinfo is CustomRoles.Nue) Nowinfo = CustomRoles.Nue; break;
-                                                case CustomRoles.Nue: if (Nowinfo is CustomRoles.Nue) Nowinfo = CustomRoles.Fool; break;
-                                            }
-                                            return;
-                                        }
+                                        //アサシンとマーリンは行を分けたので、組み合わせ役職の切り替え処理は不要(普通の役職と同じく、同じ「？」でもう一度押すと閉じる)
                                         if (HudManager.Instance.TaskPanel.open is false || Nowinfo == oldinfo)
                                             HudManager.Instance.TaskPanel.ToggleOpen();
                                     }));
