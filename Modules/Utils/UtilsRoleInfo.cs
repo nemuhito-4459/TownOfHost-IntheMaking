@@ -391,7 +391,7 @@ namespace TownOfHost
                 {
                     rolebasetype = pc.Data.Role.Role;
                 }
-                state.NowRoleType = rolebasetype;
+                pc.GetPlayerState().NowRoleType = rolebasetype;
             }
         }
     }
