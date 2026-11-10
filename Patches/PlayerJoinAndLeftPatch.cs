@@ -235,8 +235,6 @@ namespace TownOfHost
         public static bool IsIntroError;
         static void Prefix([HarmonyArgument(0)] ClientData data)
         {
-            if (CustomRoles.Executioner.IsPresent())
-                Executioner.ChangeRoleByTarget(data?.Character?.PlayerId ?? byte.MaxValue);
         }
         public static void Postfix(AmongUsClient __instance, [HarmonyArgument(0)] ClientData data, [HarmonyArgument(1)] DisconnectReasons reason)
         {

@@ -204,8 +204,6 @@ namespace TownOfHost
                                 player?.SetRealKiller(player, true);
                             if (requireResetCam)
                                 player?.ResetPlayerCam(1f);
-                            if (roleClass is Executioner executioner && executioner.TargetId == x.Key)
-                                Executioner.ChangeRoleByTarget(x.Key);
                         });
                         Main.AfterMeetingDeathPlayers.Clear();
                     }, 0.6f, "AfterMeetingDeathPlayer", null);

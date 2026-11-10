@@ -217,15 +217,6 @@ namespace TownOfHost.Roles.Impostor
                             return;
                         }
                     }
-                    if (targetroleclass is BakeCat bakeneko)
-                    {
-                        if (bakeneko.Team == ISchrodingerCatOwner.TeamType.None)
-                        {
-                            bakeneko.ChangeTeamOnKill(Player);
-                            Player.SetKillCooldown(target: bakeneko.Player);
-                            return;
-                        }
-                    }
 
                     _ = new LateTask(() => SetSpelled(target), 0.35f, "WhichSetKIll", true);
                     UtilsNotifyRoles.NotifyRoles(SpecifySeer: Player);

@@ -22,7 +22,6 @@ public interface ISchrodingerCatOwner
     /// シュレディンガーの猫をキルした際に追加で実行するアクション
     /// </summary>
     public void OnSchrodingerCatKill(SchrodingerCat schrodingerCat) { }
-    public void OnBakeCatKill(BakeCat bakeCat) { }
     /// <summary>
     /// 陣営状態
     /// </summary>

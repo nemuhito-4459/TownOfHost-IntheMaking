@@ -1178,24 +1178,15 @@ namespace TownOfHost
 
             static void CreateRoleOption(IOrderedEnumerable<SimpleRoleInfo> sortedRoleInfo, CustomRoleTypes roleTypes)
             {
-                bool Create = true;
-                int NowTabNum = 0;
-                while (Create)
+                //役職を消してグループ番号が歯抜けになっても止まらないよう、存在する番号だけを順に回す
+                var RoleList = sortedRoleInfo.Where(role => role.CustomRoleType == roleTypes)
+                    .OrderBy(role => role.OptionSort.TabNumber)
+                    .ThenBy(role => role.OptionSort.SortNumber);
+                foreach (var info in RoleList)
                 {
-                    var RoleList = sortedRoleInfo.Where(role => role.CustomRoleType == roleTypes
-                    && role.OptionSort.TabNumber == NowTabNum);
-                    if (RoleList.Count() <= 0)
-                    {
-                        Create = false;
-                        break;
-                    }
-                    foreach (var info in RoleList.OrderBy(role => role.OptionSort.SortNumber))
-                    {
-                        if (info.RoleName is CustomRoles.AlienHijack) continue;
-                        SetupRoleOptions(info);
-                        info.OptionCreator?.Invoke();
-                    }
-                    NowTabNum++;
+                    if (info.RoleName is CustomRoles.AlienHijack) continue;
+                    SetupRoleOptions(info);
+                    info.OptionCreator?.Invoke();
                 }
             }
         }

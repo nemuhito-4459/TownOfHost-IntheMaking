@@ -61,8 +61,6 @@ namespace TownOfHost
                                 player?.SetRealKiller(player, true);
                             if (requireResetCam)
                                 player?.ResetPlayerCam(1f);
-                            if (roleClass is Executioner executioner && executioner.TargetId == x.Key)
-                                Executioner.ChangeRoleByTarget(x.Key);
                         });
                         Main.AfterMeetingDeathPlayers.Clear();
                     }
@@ -107,7 +105,6 @@ namespace TownOfHost
                             PlayerCatch.AllPlayerControls
                                 .Where(pc => (pc.Is(CustomRoleTypes.Impostor) || pc.Is(CustomRoleTypes.Madmate) || pc.Is(CustomRoles.SKMadmate)) && (!pc.GetCustomRole().IsLovers() || !pc.Is(CustomRoles.Jackaldoll)))
                                 .Do(pc => CustomWinnerHolder.WinnerIds.Add(pc.PlayerId));
-                            if (Egoist.CheckWin()) break;
                             foreach (var pc in PlayerCatch.AllPlayerControls)
                             {
                                 if (pc.GetCustomRole() is CustomRoles.Jackaldoll ||
@@ -162,13 +159,6 @@ namespace TownOfHost
                 {
                     CurseMaker.CheckWin();
                     Fox.SFoxCheckWin(ref reason);
-                }
-                foreach (var phantomthiefplayer in PlayerCatch.AllAlivePlayerControls.Where(pc => pc.GetCustomRole() is CustomRoles.PhantomThief))
-                {
-                    if (phantomthiefplayer.GetRoleClass() is PhantomThief phantomThief)
-                    {
-                        phantomThief.CheckWin();
-                    }
                 }
                 foreach (var player in PlayerCatch.AllPlayerControls)
                 {

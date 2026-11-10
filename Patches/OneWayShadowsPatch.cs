@@ -11,7 +11,7 @@ public static class OneWayShadowsIsIgnoredPatch
     {
         var roleInfo = PlayerControl.LocalPlayer.GetCustomRole().GetRoleInfo();
         var amDesyncImpostor = roleInfo?.IsDesyncImpostor == true;
-        if (__instance.IgnoreImpostor && amDesyncImpostor && ((PlayerControl.LocalPlayer?.GetRoleClass() as BakeCat)?.CanKill is null or true))
+        if (__instance.IgnoreImpostor && amDesyncImpostor)
         {
             __result = true;
             return false;

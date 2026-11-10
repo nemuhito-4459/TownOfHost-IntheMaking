@@ -265,13 +265,6 @@ public sealed class BountyHunter : RoleBase, IImpostor
             ResetTarget();  // ターゲットの選びなおし
         }
     }
-    public void OnBakeCatKill(BakeCat bake)
-    {
-        if (GetTarget() == bake.Player)
-        {
-            ResetTarget();  // ターゲットの選びなおし
-        }
-    }
     public void OnKingKill(King king)
     {
         if (GetTarget() == king.Player)

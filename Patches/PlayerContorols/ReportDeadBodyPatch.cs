@@ -154,11 +154,6 @@ namespace TownOfHost
             var check = false;
             if (target != null)
             {
-                if (repoter.GetRoleClass() is MassMedia massMedia)
-                {
-                    if (massMedia.Targetid == target.PlayerId)
-                        DontAddonCheck = true;
-                }
                 if (repoter.GetCustomRole() is CustomRoles.Vulture)
                     DontAddonCheck = true;
             }

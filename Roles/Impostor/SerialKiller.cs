@@ -123,10 +123,6 @@ namespace TownOfHost.Roles.Impostor
         {
             SuicideTimer = null;
         }
-        public void OnBakeCatKill(BakeCat bakeneko)
-        {
-            SuicideTimer = null;
-        }
         float alivetimer;
         public override void CheckWinner(GameOverReason reason)
         {
