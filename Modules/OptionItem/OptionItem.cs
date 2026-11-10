@@ -26,7 +26,7 @@ namespace TownOfHost
         // 必須情報 (コンストラクタで必ず設定させる必要がある値)
         public int Id { get; }
         public string Name { get; }
-        public int DefaultValue { get; }
+        public int DefaultValue { get; protected set; }
         public TabGroup Tab { get; }
         public bool IsSingleValue { get; }
 
@@ -162,6 +162,13 @@ namespace TownOfHost
         public OptionItem SetEnabled(Func<bool> value) => Do(i => i.IsEnabled = value);
         public OptionItem SetInfo(string value) => Do(i => i.Fromtext = "<line-height=25%><size=25%>\n</size><size=60%></color> <b>" + value + "</b></size>");
         public OptionItem SetZeroNotation(OptionZeroNotation value) => Do(i => i.ZeroNotation = value);
+        /// <summary>初期値を変えて、全プリセットの値も初期値に戻す(設定の範囲を作り直したとき用)</summary>
+        protected void ResetDefaultValue(int defaultValue)
+        {
+            DefaultValue = defaultValue;
+            SingleValue = defaultValue;
+            for (int i = 0; i < NumPresets; i++) AllValues[i] = defaultValue;
+        }
         public OptionItem SetOptionName(Func<string> value) => Do(i => i.funcOptionName = value);
         public OptionItem SetTooltip(Func<string> value) => Do(i => i.Tooltip = value);
         public OptionItem SetSubRoleOptionItem(CustomRoles role) =>

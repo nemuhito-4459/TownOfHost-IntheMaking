@@ -1211,6 +1211,10 @@ namespace TownOfHost
             VanillaOptionHolder.Initialize();
             DebugModeManager.SetupCustomOption();
 
+            //役職の秒数設定を0.5秒刻み・0.5〜180秒にそろえる(保存した値を読み込む前にやる)
+            foreach (var floatOption in OptionItem.AllOptions.OfType<FloatOptionItem>())
+                floatOption.NormalizeRoleSeconds();
+
             OptionSaver.Load();
 
             Combinations = null; //使わないから消す
