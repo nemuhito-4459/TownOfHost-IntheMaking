@@ -29,13 +29,8 @@ namespace TownOfHost
                     searchtext.enabled = search.textArea.text == "";
                     prisettext.enabled = priset.textArea.text == "";
 
-                    var active = true;//上のバーは常に表示
-
-                    searchtext.gameObject.SetActive(active);
-                    prisettext.gameObject.SetActive(active);
-                    search.gameObject.SetActive(active);
-                    priset.gameObject.SetActive(active);
-                    activeonly.gameObject.SetActive(active);
+                    //上のバーは、バニラ設定を開いているとき以外は常に表示
+                    LeftMenuLayout.SetBarVisible(GameSettingMenu.Instance?.GameSettingsTab?.gameObject?.activeSelf != true);
                 }
                 if (timer > 0)
                 {

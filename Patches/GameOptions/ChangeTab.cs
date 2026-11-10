@@ -55,6 +55,8 @@ namespace TownOfHost
         public static void Postfix(GameSettingMenu __instance, [HarmonyArgument(0)] int tabNum, [HarmonyArgument(1)] bool previewOnly)
         {
             if (previewOnly) return;
+            //上のバーはバニラ設定(1)のときだけ隠す
+            LeftMenuLayout.SetBarVisible(tabNum != 1);
 
             var l = Last;
             if (tabNum == Last && tabNum == 3)

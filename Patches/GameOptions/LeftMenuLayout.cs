@@ -9,7 +9,7 @@ namespace TownOfHost
 {
     /// <summary>
     /// 設定画面のレイアウト変更<br/>
-    /// ・左のメニューに「プリセット」「公式のゲーム設定」「MODのタブ7つ」を2列で並べる(常に表示)<br/>
+    /// ・左のメニューに「バニラ設定」「MODのタブ7つ」を2列で並べる(常に表示。ゲーム・プリセットは隠す)<br/>
     /// ・上のバー(人数・タイマー、有効な設定のみ表示、検索、プリセット名)を、元のタブの段へ移す(常に表示)<br/>
     /// 位置は今ある部品の実際の位置・大きさを基準に計算する。微調整は下の定数で行う。
     /// </summary>
@@ -23,7 +23,7 @@ namespace TownOfHost
         /// <summary>ボタンの縦の間隔(ボタンの高さに対する倍率)</summary>
         const float RowGap = 1.3f;
         /// <summary>上のバーを移したあとの追加のずらし(ワールド座標)</summary>
-        static readonly Vector3 BarExtraOffset = Vector3.zero;
+        static readonly Vector3 BarExtraOffset = new(0f, 0.15f, 0f);
 
         /// <summary>左に並べたMODのタブのボタン(TabGroup順)</summary>
         public static List<PassiveButton> LeftTabButtons = new();
@@ -120,7 +120,8 @@ namespace TownOfHost
             //「TOWNOFHOST-INTHEMAKING」ボタンも隠す(MODのタブのボタンで代わりに開く)
             if (ModSettingsButton) ModSettingsButton.transform.localPosition = new Vector3(1000f, 1000f, 0f);
 
-            var cells = new List<PassiveButton> { presetButton, OfficialButton };
+            //ゲーム・プリセットはリストラ(位置と大きさの基準にだけ使う)
+            var cells = new List<PassiveButton> { OfficialButton };
 
             var tabLength = EnumHelper.GetAllValues<TabGroup>().Length;
             for (var i = 0; i < tabLength; i++)
@@ -147,7 +148,7 @@ namespace TownOfHost
                 cells.Add(button);
             }
 
-            //プリセットを左上にして、左→右、上→下の順に並べる
+            //バニラ設定を左上(元のプリセットの位置)にして、左→右、上→下の順に並べる
             for (var i = 0; i < cells.Count; i++)
             {
                 var col = i % 2;
@@ -158,8 +159,7 @@ namespace TownOfHost
                 cells[i].gameObject.SetActive(true);
             }
 
-            //プリセットを押したときも選択表示を切り替える
-            presetButton.OnClick.AddListener((Action)(() => SelectLeft(presetButton)));
+            presetButton.gameObject.SetActive(false);
         }
 
         static void SetLabel(PassiveButton button, string text, Color32? color)
@@ -178,6 +178,18 @@ namespace TownOfHost
                 button.activeSprites.GetComponent<SpriteRenderer>().color = col;
                 button.selectedSprites.GetComponent<SpriteRenderer>().color = ((Color)col).ShadeColor(-0.3f);
             }
+        }
+
+        /// <summary>上のバー(人数・タイマー、有効な設定のみ表示、検索、プリセット名)の表示を切り替える</summary>
+        public static void SetBarVisible(bool active)
+        {
+            if (LobbyTimer) LobbyTimer.gameObject.SetActive(active);
+            if (LobbyCount) LobbyCount.gameObject.SetActive(active);
+            if (search) search.gameObject.SetActive(active);
+            if (priset) priset.gameObject.SetActive(active);
+            if (searchtext) searchtext.gameObject.SetActive(active);
+            if (prisettext) prisettext.gameObject.SetActive(active);
+            if (activeonly) activeonly.gameObject.SetActive(active);
         }
 
         /// <summary>押したボタンだけを選択中の見た目にする</summary>
