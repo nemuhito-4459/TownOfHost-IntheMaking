@@ -22,7 +22,8 @@ public sealed class Merlin : RoleBase, IRoomTasker
             "mer",
             "#8cc2ff",
             (2, 1),
-            combination: CombinationRoles.AssassinandMerlin
+            combination: CombinationRoles.AssassinandMerlin,
+            from: From.TownOfHost_K
         );
     public Merlin(PlayerControl player)
     : base(

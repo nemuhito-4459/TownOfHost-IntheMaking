@@ -17,7 +17,8 @@ namespace TownOfHost.Roles.Impostor
                 25400,
                 SetupOptionItem,
                 "Evb",
-                OptionSort: (2, 4)
+                OptionSort: (2, 4),
+                from: From.TownOfHost_K
             );
         public EvilButtoner(PlayerControl player)
         : base(

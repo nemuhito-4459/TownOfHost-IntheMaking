@@ -23,6 +23,7 @@ public enum From
     Jester,
     TownOfUs,
     TownOfHost,
+    TownOfHost_K,//TownOfHost-K で作られた役職
     TownOfHost_Y,
     TownOfHost_for_E,
     TownOfHost_E,
