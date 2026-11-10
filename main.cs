@@ -62,8 +62,8 @@ namespace TownOfHost
         public const string PluginGuid = "com.walf4459.townofhost-inthemaking";
         // バージョンは「1.xx」表記。更新ごとに xx を1増やす(xx は16進数: 1.00 → 1.09 → 1.0a → … → 1.ff)
         // PluginVersion は BepInEx/Version.Parse 用に数字だけで「1.(xxを10進にした値).0」と書く。例: 1.0a → "1.10.0"
-        public const string PluginVersion = "1.12.0";
-        public const string PluginShowVersion = "1.0c";
+        public const string PluginVersion = "1.13.0";
+        public const string PluginShowVersion = "1.0d";
 
         /// 配布するデバッグ版なのであればtrue。リリース時にはfalseにすること。
         public static bool DebugVersion = false;

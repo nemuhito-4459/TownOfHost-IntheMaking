@@ -670,9 +670,9 @@ namespace TownOfHost
                 .SetColor(new Color32(255, 255, 0, 255))
                 .SetInfo(Translator.GetString("FixSpawnPacketSizeInfo"));
 
-            // Impostor
-            CreateRoleOption(sortedRoleInfo, CustomRoleTypes.Impostor);
-
+            //── 各陣営タブの共通設定(役職の一覧より上に出すため、役職より先に作る) ──
+            // Impostor Common Options
+            FactionCommonOptions.SetupImpostorOptions();
             DoubleTriggerThreshold = FloatOptionItem.Create(102500, "DoubleTriggerThreashould", new(0.3f, 1f, 0.1f), 0.5f, TabGroup.ImpostorRoles, false)
                 .SetHeader(true)
                 .SetValueFormat(OptionFormat.Seconds).SetTooltip(() => Translator.GetString("DoubleTriggerThresholdInfo"));
@@ -682,24 +682,6 @@ namespace TownOfHost
             DefaultShapeshiftDuration = FloatOptionItem.Create(102502, "DefaultShapeshiftDuration", new(1, 300, 1f), 10, TabGroup.ImpostorRoles, false)
                 .SetValueFormat(OptionFormat.Seconds);
 
-            // Madmate, Crewmate, Neutral
-            CreateRoleOption(sortedRoleInfo, CustomRoleTypes.Madmate);
-            CreateRoleOption(sortedRoleInfo, CustomRoleTypes.Crewmate);
-            DefaultEngineerCooldown = FloatOptionItem.Create(102503, "DefaultEngineerCooldown", new(0, 180, 1f), 15, TabGroup.CrewmateRoles, false)
-                .SetHeader(true).SetValueFormat(OptionFormat.Seconds);
-            DefaultEngineerInVentMaxTime = FloatOptionItem.Create(102504, "DefaultEngineerInVentMaxTime", new(0, 180, 1), 5, TabGroup.CrewmateRoles, false)
-                .SetValueFormat(OptionFormat.Seconds).SetZeroNotation(OptionZeroNotation.Infinity);
-
-            CreateRoleOption(sortedRoleInfo, CustomRoleTypes.Neutral);
-            // 陣営共通設定(バニラから移したもの)
-            FactionCommonOptions.SetupImpostorOptions();
-            FactionCommonOptions.SetupCrewmateOptions();
-            RoomTaskSettings.SetupCrewmateOptions();
-            RoomTaskSettings.SetupNeutralOptions();
-            // Jackaldoll Common Options (役職一覧には出さず、ジャッカル陣営タブの共通設定にする)
-            Roles.Neutral.JackalDoll.SetupCommonOption();
-
-            SetupRoleOptions(102800, TabGroup.MainSettings, CustomRoles.NotAssigned, new(1, 1, 1));
             // Madmate Common Options
             CanMakeMadmateCount = IntegerOptionItem.Create(102000, "CanMakeMadmateCount", new(0, 15, 1), 0, TabGroup.MadmateRoles, false)
                 .SetValueFormat(OptionFormat.Players)
@@ -736,6 +718,28 @@ namespace TownOfHost
                 .SetValueFormat(OptionFormat.Seconds);
             MadmateCanMovedByVent = BooleanOptionItem.Create(102019, "MadmateCanMovedByVent", true, TabGroup.MadmateRoles, false).SetColorcode("#8cffff").SetParent(MadMateOption);
 
+            // Crewmate Common Options
+            FactionCommonOptions.SetupCrewmateOptions();
+            RoomTaskSettings.SetupCrewmateOptions();
+            DefaultEngineerCooldown = FloatOptionItem.Create(102503, "DefaultEngineerCooldown", new(0, 180, 1f), 15, TabGroup.CrewmateRoles, false)
+                .SetHeader(true).SetValueFormat(OptionFormat.Seconds);
+            DefaultEngineerInVentMaxTime = FloatOptionItem.Create(102504, "DefaultEngineerInVentMaxTime", new(0, 180, 1), 5, TabGroup.CrewmateRoles, false)
+                .SetValueFormat(OptionFormat.Seconds).SetZeroNotation(OptionZeroNotation.Infinity);
+
+            // Neutral / Jackal Common Options
+            RoomTaskSettings.SetupNeutralOptions();
+            Roles.Neutral.JackalDoll.SetupCommonOption();//役職一覧には出さず、ジャッカル陣営タブの共通設定にする
+
+            // Impostor
+            CreateRoleOption(sortedRoleInfo, CustomRoleTypes.Impostor);
+
+            // Madmate, Crewmate, Neutral
+            CreateRoleOption(sortedRoleInfo, CustomRoleTypes.Madmate);
+            CreateRoleOption(sortedRoleInfo, CustomRoleTypes.Crewmate);
+
+            CreateRoleOption(sortedRoleInfo, CustomRoleTypes.Neutral);
+
+            SetupRoleOptions(102800, TabGroup.MainSettings, CustomRoles.NotAssigned, new(1, 1, 1));
             //Com
 
 
