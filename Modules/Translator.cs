@@ -73,6 +73,12 @@ namespace TownOfHost
             var assembly = System.Reflection.Assembly.GetExecutingAssembly();
             var stream = assembly.GetManifestResourceStream("TownOfHost.Resources.achievements.csv");
             achievementMaps = new Dictionary<string, Dictionary<int, string>>();
+            //実績の翻訳ファイル(achievements.csv)を消しているので、無ければ読み込まずに進む
+            if (stream == null)
+            {
+                Logger.Warn("achievements.csvが無いため、実績の翻訳は読み込みません", "LoadAchievementLangs");
+                return;
+            }
 
             var options = new CsvOptions()
             {
