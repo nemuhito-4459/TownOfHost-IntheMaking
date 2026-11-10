@@ -25,7 +25,18 @@ namespace TownOfHost
         /// <summary>上のバーを移したあとの追加のずらし(ワールド座標)</summary>
         static readonly Vector3 BarExtraOffset = new(0f, 0.15f, 0f);
 
-        /// <summary>左に並べたMODのタブのボタン(TabGroup順)</summary>
+        /// <summary>
+        /// 左に並べるMODのタブの順番(バニラ設定の次から、左→右・上→下)<br/>
+        /// バニラ設定 / TOH-IMの設定、インポスター / マッドメイト、クルーメイト / アサシンとマーリン、ジャッカル / ニュートラル
+        /// </summary>
+        static readonly TabGroup[] LeftOrder =
+        {
+            TabGroup.MainSettings,
+            TabGroup.ImpostorRoles, TabGroup.MadmateRoles,
+            TabGroup.CrewmateRoles, TabGroup.Combinations,
+            TabGroup.JackalRoles, TabGroup.NeutralRoles,
+        };
+        /// <summary>左に並べたMODのタブのボタン(LeftOrder順)</summary>
         public static List<PassiveButton> LeftTabButtons = new();
         static PassiveButton OfficialButton;
         /// <summary>有効な設定のみ表示ボタンの位置(Update.csで毎フレーム使う)</summary>
@@ -123,14 +134,17 @@ namespace TownOfHost
             //ゲーム・プリセットはリストラ(位置と大きさの基準にだけ使う)
             var cells = new List<PassiveButton> { OfficialButton };
 
-            var tabLength = EnumHelper.GetAllValues<TabGroup>().Length;
-            for (var i = 0; i < tabLength; i++)
+            foreach (var tab in LeftOrder)
             {
-                var tab = (TabGroup)i;
-                var index = i;
+                var index = (int)tab;
                 var button = UnityEngine.Object.Instantiate(presetButton, presetButton.transform.parent);
                 button.name = $"LeftTab_{tab}";
-                var label = tab is TabGroup.MainSettings ? Main.ModName : GetString("TabGroup." + tab);
+                var label = tab switch
+                {
+                    TabGroup.MainSettings => GetString("LeftTab.MainSettings"),
+                    TabGroup.Combinations => GetString("LeftTab.Combinations"),
+                    _ => GetString("TabGroup." + tab)
+                };
                 SetLabel(button, label, TabColors.TryGetValue(tab, out var c) ? (Color32?)c : null);
                 button.OnClick = new();
                 button.OnClick.AddListener((Action)(() =>
