@@ -442,6 +442,7 @@ namespace TownOfHost
         MadmateRoles,
         CrewmateRoles,
         NeutralRoles,
+        JackalRoles,//ジャッカル陣営
         Combinations,
         Addons,
         GhostRoles

@@ -128,6 +128,9 @@ public class SimpleRoleInfo
                 CustomRoleTypes.Neutral => TabGroup.NeutralRoles,
                 _ => tab
             };
+        //ジャッカル陣営はニュートラルとは別のタブに出す
+        if (tab == TabGroup.NeutralRoles && roleName.IsJackalTeam())
+            tab = TabGroup.JackalRoles;
         Tab = tab;
 
         CustomRoleManager.AllRolesInfo.Add(roleName, this);
