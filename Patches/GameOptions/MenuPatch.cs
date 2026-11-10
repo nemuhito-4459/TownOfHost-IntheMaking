@@ -89,6 +89,8 @@ namespace TownOfHost
         public static PassiveButton ModSettingsButton;
         public static RolesSettingsMenu ModSettingsTab;
         public static PassiveButton activeonly;
+        /// <summary>上のバーの人数・タイマー(レイアウト変更で動かす)</summary>
+        public static Transform LobbyTimer, LobbyCount;
         public static bool ActiveOnlyMode;
         public static FreeChatInputField priset;
         public static TMPro.TextMeshPro prisettext;
@@ -401,6 +403,8 @@ namespace TownOfHost
                     search?.gameObject?.SetActive(true);
                     search.submitButton.OnPressed = (Action)(() =>
                     {
+                        //MOD設定以外を開いているときは、MOD設定に切り替えてから探す
+                        if (!(ModSettingsTab?.gameObject?.active ?? false)) __instance.ChangeTab(3, false);
                         bool ch = false;
                         List<OptionItem> subopt = new();
                         foreach (var op in OptionItem.AllOptions.Where(o => (o as ObjectOptionitem)?.IsHedderObject is not true))
@@ -521,6 +525,9 @@ namespace TownOfHost
 
                 CreateLobbyInfo();
 
+                //左のメニューにタブを並べ、上のバーをタブの段へ移す
+                LeftMenuLayout.Apply(__instance, GamePresetButton, GameSettingsButton);
+
                 ErrorNumber = 14;
                 __instance.transform.localScale = size;
             }
@@ -575,6 +582,8 @@ namespace TownOfHost
 
                 timer.transform.localScale = new(0.45f, 0.45f, 1);
                 count.transform.localScale = new(0.45f, 0.45f, 1);
+                LobbyTimer = timer.transform;
+                LobbyCount = count.transform;
 
                 InfoTimer = timer.transform.GetComponentInChildren<TMPro.TextMeshPro>();
                 InfoCount = count.transform.GetComponentInChildren<TMPro.TextMeshPro>();
