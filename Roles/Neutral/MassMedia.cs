@@ -8,7 +8,6 @@ using TownOfHost.Modules;
 using TownOfHost.Roles.Core;
 using TownOfHost.Roles.Core.Interfaces;
 using Hazel;
-using TownOfHost.Roles.AddOns.Common;
 
 namespace TownOfHost.Roles.Neutral;
 
@@ -106,7 +105,6 @@ public sealed class MassMedia : RoleBase, IKiller, IKillFlashSeeable
         Vector2 GSpos = player.transform.position;
         var Mieruhani = Main.DefaultCrewmateVision;
         if (player.Is(CustomRoles.Lighting)) Mieruhani = Main.DefaultImpostorVision;
-        if (player.Is(CustomRoles.Sunglasses)) Mieruhani *= Sunglasses.SunglassesVisionmagnification.GetFloat() * 0.01f;
 
         Mieruhani *= 6.5f;
         //position
@@ -180,7 +178,6 @@ public sealed class MassMedia : RoleBase, IKiller, IKillFlashSeeable
     }
     public override void OnReportDeadBody(PlayerControl repo, NetworkedPlayerInfo tg)
     {
-        if (Amnesia.CheckAbilityreturn(Player)) return;
         if (tg != null && tg.PlayerId == Targetid)
         {
             if (Is(repo) && Player.Is(CustomRoles.MassMedia))
@@ -267,7 +264,6 @@ public sealed class MassMedia : RoleBase, IKiller, IKillFlashSeeable
     }
     public override void AfterMeetingTasks()
     {
-        if (Amnesia.CheckAbilityreturn(Player)) return;
         if (Win && AmongUsClient.Instance.AmHost)
         {
             if (CustomWinnerHolder.ResetAndSetAndChWinner(CustomWinner.MassMedia, Player.PlayerId, true))

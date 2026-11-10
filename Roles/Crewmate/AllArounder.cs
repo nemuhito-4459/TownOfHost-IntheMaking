@@ -566,7 +566,6 @@ public sealed class AllArounder : RoleBase, ISystemTypeUpdateHook, IKillFlashSee
 
     public bool CanUseAbility()
     {
-        if (AddOns.Common.Amnesia.CheckAbilityreturn(Player)) return false;
         if (NowRole is NowMode.SabotageMaster) return MyTaskState.HasCompletedEnoughCountOfTasks(AbilitycanuseTaskCount.GetInt());
         return MyTaskState.HasCompletedEnoughCountOfTasks(AbilitycanuseTaskCount.GetInt()) && !Utils.IsActive(SystemTypes.Comms);
     }

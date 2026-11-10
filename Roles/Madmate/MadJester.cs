@@ -49,7 +49,6 @@ public sealed class MadJester : RoleBase, IKillFlashSeeable, IDeathReasonSeeable
 
     public override void OnExileWrapUp(NetworkedPlayerInfo exiled, ref bool DecidedWinner)
     {
-        if (AddOns.Common.Amnesia.CheckAbilityreturn(Player)) return;
         if (!AmongUsClient.Instance.AmHost || Player.PlayerId != exiled.PlayerId) return;
         if (!IsTaskFinished) return;
 

@@ -4,7 +4,6 @@ using HarmonyLib;
 using UnityEngine;
 
 using TownOfHost.Roles.Core;
-using TownOfHost.Roles.Ghost;
 using static TownOfHost.DisableDevice;
 using Hazel;
 
@@ -181,16 +180,9 @@ namespace TownOfHost
             if (!player.IsAlive() && player.PlayerId == PlayerControl.LocalPlayer.PlayerId) return true;
             else if (!player.IsAlive()) return false;
 
-            if (DemonicCrusher.DemUseAbility) return i == null;
-
             if (optTimeLimitAdmin > 0 && GameAdminTimer > optTimeLimitAdmin) return i == null;
 
             if (optTurnTimeLimitAdmin > 0 && TurnAdminTimer > optTurnTimeLimitAdmin) return i == null;
-
-            if (player.Is(CustomRoles.InfoPoor) ||
-                (RoleAddAddons.GetRoleAddon(player.GetCustomRole(), out var data, player, subrole: CustomRoles.InfoPoor) &&
-                data.GiveInfoPoor.GetBool()))
-                return i == null;
 
             if (player.Is(CustomRoles.MassMedia)) return i == null;
 
@@ -202,16 +194,9 @@ namespace TownOfHost
             if (!player.IsAlive() && player.PlayerId == PlayerControl.LocalPlayer.PlayerId) return true;
             else if (!player.IsAlive()) return false;
 
-            if (DemonicCrusher.DemUseAbility) return i == null;
-
             if (optTimeLimitVital > 0 && GameVitalTimer > optTimeLimitVital) return i == null;
 
             if (optTurnTimeLimitVital > 0 && TurnVitalTimer > optTurnTimeLimitVital) return i == null;
-
-            if (player.Is(CustomRoles.InfoPoor) ||
-                (RoleAddAddons.GetRoleAddon(player.GetCustomRole(), out var data, player, subrole: CustomRoles.InfoPoor) &&
-                data.GiveInfoPoor.GetBool()))
-                return i == null;
 
             if (player.Is(CustomRoles.MassMedia)) return i == null;
 
@@ -224,16 +209,9 @@ namespace TownOfHost
             if (!player.IsAlive() && player.PlayerId == PlayerControl.LocalPlayer.PlayerId) return true;
             else if (!player.IsAlive()) return false;
 
-            if (DemonicCrusher.DemUseAbility) return i == null;
-
             if (optTimeLimitCamAndLog > 0 && GameLogAndCamTimer > optTimeLimitCamAndLog) return i == null;
 
             if (optTurnTimeLimitCamAndLog > 0 && TurnLogAndCamTimer > optTurnTimeLimitCamAndLog) return i == null;
-
-            if (player.Is(CustomRoles.InfoPoor) ||
-                (RoleAddAddons.GetRoleAddon(player.GetCustomRole(), out var data, player, subrole: CustomRoles.InfoPoor) &&
-                data.GiveInfoPoor.GetBool()))
-                return i == null;
 
             //ここから
             if (player.Is(CustomRoles.MassMedia)) return i == null;
@@ -585,7 +563,6 @@ namespace TownOfHost
         public static void Postfix(VitalsMinigame __instance)
         {
             if (Ability && PlayerControl.LocalPlayer.IsAlive()) return;
-            if (PlayerControl.LocalPlayer.IsAlive() && DemonicCrusher.DemUseAbility) __instance.Close();
 
             if (PlayerControl.LocalPlayer.IsAlive())
             {
@@ -608,7 +585,6 @@ namespace TownOfHost
     {
         public static void Postfix(PlanetSurveillanceMinigame __instance)
         {
-            if (PlayerControl.LocalPlayer.IsAlive() && DemonicCrusher.DemUseAbility) __instance.Close();
             if (PlayerControl.LocalPlayer.IsAlive() && __instance)
             {
                 if ((optTimeLimitCamAndLog > 0 && GameLogAndCamTimer > optTimeLimitCamAndLog)
@@ -624,7 +600,6 @@ namespace TownOfHost
     {
         public static void Postfix(SurveillanceMinigame __instance)
         {
-            if (PlayerControl.LocalPlayer.IsAlive() && DemonicCrusher.DemUseAbility) __instance.Close();
 
             if (PlayerControl.LocalPlayer.IsAlive() && __instance)
             {
@@ -640,7 +615,6 @@ namespace TownOfHost
     {
         public static void Postfix(SecurityLogGame __instance)
         {
-            if (PlayerControl.LocalPlayer.IsAlive() && DemonicCrusher.DemUseAbility) __instance.Close();
 
             if (PlayerControl.LocalPlayer.IsAlive() && __instance)
             {
@@ -665,11 +639,6 @@ namespace TownOfHost
         {
             if (GameStates.IsFreePlay && CustomSpawnEditor.ActiveEditMode) return;
 
-            if (PlayerControl.LocalPlayer.IsAlive() && DemonicCrusher.DemUseAbility)
-            {
-                MapBehaviour.Instance.Close();
-                return;
-            }
             if (PlayerControl.LocalPlayer.IsAlive() && MapBehaviour.Instance && __instance)
             {
                 if ((optTimeLimitAdmin > 0 && GameAdminTimer > optTimeLimitAdmin)

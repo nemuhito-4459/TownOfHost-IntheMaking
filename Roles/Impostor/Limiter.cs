@@ -86,7 +86,6 @@ namespace TownOfHost.Roles.Impostor
             if (Limit) return;
             if (!player.IsAlive()) return;
             if (!LimitTimer) return;
-            if (AddOns.Common.Amnesia.CheckAbilityreturn(player)) return;
 
             Timer += Time.fixedDeltaTime;
 
@@ -134,7 +133,6 @@ namespace TownOfHost.Roles.Impostor
                 if (Limit) return;
                 if (!Player.IsAlive()) return;
                 if (OptionLimitKill.GetInt() == 0) return;
-                if (AddOns.Common.Amnesia.CheckAbilityreturn(Player)) return;
 
                 killcount++;
                 if (OptionLimitKill.GetInt() <= killcount)
@@ -163,7 +161,6 @@ namespace TownOfHost.Roles.Impostor
 
         public override void AfterMeetingTasks()//一旦はアムネシア中なら回避してるけどリミッターは削除してあげてもいいかも
         {
-            if (AddOns.Common.Amnesia.CheckAbilityreturn(Player)) return;
             if (LimiterTurnLimit == 0) return;
 
             if (LimiterTurnLimit <= UtilsGameLog.day && Player.IsAlive())
@@ -212,7 +209,6 @@ namespace TownOfHost.Roles.Impostor
         }
         public override void OnReportDeadBody(PlayerControl repo, NetworkedPlayerInfo target)
         {
-            if (AddOns.Common.Amnesia.CheckAbilityreturn(Player)) return;
             if (OptionLimitMeeting.GetBool()) return;
             if (Limit && Player.IsAlive())
             {

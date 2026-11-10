@@ -102,7 +102,6 @@ namespace TownOfHost.Roles.Neutral
             .SetValueFormat(OptionFormat.Seconds);
             OptionSidekickPromotion = BooleanOptionItem.Create(RoleInfo, 24, JackalOption.JackalSidekickPromotion, false, false, OptionCanMakeSidekick);
             ObjectOptionitem.Create(RoleInfo, 8, "AddonOption", true, null).SetOptionName(() => "Sidekick Setting");
-            RoleAddAddons.Create(RoleInfo, 25, NeutralKiller: true);
         }   //↑あってるかは知らない、
         public ISchrodingerCatOwner.TeamType SchrodingerCatChangeTo => ISchrodingerCatOwner.TeamType.Jackal;
         public float CalculateKillCooldown() => KillCooldown;

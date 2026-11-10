@@ -236,8 +236,6 @@ class ShowFilter
                                 TabGroup.NeutralRoles => data.Key.IsNeutral() && !data.Key.IsJackalTeam(),
                                 TabGroup.JackalRoles => data.Key.IsJackalTeam(),
                                 TabGroup.CrewmateRoles => data.Key.IsCrewmate(),
-                                TabGroup.GhostRoles => data.Key.IsGhostRole(),
-                                TabGroup.Addons => data.Key.IsAddOn(),
                                 TabGroup.Combinations => data.Key.IsCombinationRole(),
                                 _ => false
                             };
@@ -271,8 +269,6 @@ class ShowFilter
                                 TabGroup.NeutralRoles => data.Key.IsNeutral() && !data.Key.IsJackalTeam(),
                                 TabGroup.JackalRoles => data.Key.IsJackalTeam(),
                                 TabGroup.CrewmateRoles => data.Key.IsCrewmate(),
-                                TabGroup.GhostRoles => data.Key.IsGhostRole(),
-                                TabGroup.Addons => data.Key.IsAddOn(),
                                 TabGroup.Combinations => data.Key.IsCombinationRole(),
                                 _ => false
                             };
@@ -342,8 +338,6 @@ class ShowFilter
                 TabGroup.NeutralRoles => buttongameobjectdata.Key.IsNeutral() && !buttongameobjectdata.Key.IsJackalTeam(),
                 TabGroup.JackalRoles => buttongameobjectdata.Key.IsJackalTeam(),
                 TabGroup.CrewmateRoles => buttongameobjectdata.Key.IsCrewmate(),
-                TabGroup.GhostRoles => buttongameobjectdata.Key.IsGhostRole(),
-                TabGroup.Addons => buttongameobjectdata.Key.IsAddOn(),
                 TabGroup.Combinations => buttongameobjectdata.Key.IsCombinationRole(),
                 _ => false
             };

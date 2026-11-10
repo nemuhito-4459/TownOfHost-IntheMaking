@@ -47,7 +47,6 @@ namespace TownOfHost.Roles.Crewmate
 
         public int CalculateMeetingTimeDelta()
         {
-            if (AddOns.Common.Amnesia.CheckAbilityreturn(Player)) return 0;
             var sec = IncreaseMeetingTime * MyTaskState.CompletedTasksCount;
             return sec;
         }

@@ -43,7 +43,7 @@ public abstract class RoleDescription
                 case CountTypes.Fox: overrideRoleText = CustomRoles.Fox; break;
                 case CountTypes.GrimReaper: overrideRoleText = CustomRoles.GrimReaper; break;
                 case CountTypes.Remotekiller: overrideRoleText = CustomRoles.Remotekiller; break;
-                case CountTypes.MilkyWay: countText = Neutral.Vega.TeamText; break;
+                case CountTypes.MilkyWay: countText = $"<color=#f0e7a8>{Translator.GetString(CountTypes.MilkyWay.ToString())}</color>"; break;
                 default: overrideRoleText = CustomRoles.Crewmate; break;
             }
 

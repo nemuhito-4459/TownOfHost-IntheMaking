@@ -18,7 +18,7 @@ public static class DoorsSystemTypeUpdateSystemPatch
             amount = newReader.ReadByte();
             newReader.Recycle();
         }
-        if (player.Is(CustomRoles.Opener) || (RoleAddAddons.GetRoleAddon(player.GetCustomRole(), out var data, player, subrole: CustomRoles.Opener) && data.GiveOpener.GetBool()))
+        if (player.Is(CustomRoles.Opener))
         {
             if (DoorsProgressing) return true;
             int mapId = Main.NormalOptions.MapId;
@@ -70,7 +70,6 @@ public static class DoorsSystemTypeUpdateSystemPatch
             DoorsProgressing = false;
             return true;
         }
-        if (Roles.AddOns.Common.Amnesia.CheckAbility(player))
             if (player.GetRoleClass() is ISystemTypeUpdateHook systemTypeUpdateHook && !systemTypeUpdateHook.UpdateDoorsSystem(__instance, amount))
             {
                 return false;

@@ -7,7 +7,6 @@ using UnityEngine;
 using TownOfHost.Modules;
 using TownOfHost.Roles;
 using TownOfHost.Roles.Core;
-using TownOfHost.Roles.AddOns.Neutral;
 
 namespace TownOfHost
 {
@@ -163,17 +162,6 @@ namespace TownOfHost
         public static OptionItem ExCallMeetingBlackout;
         public static OptionItem ExIntroWeight;
         public static OptionItem ExChatMonochrome;
-
-        //幽霊役職
-        public static OptionItem GhostRoleOption;
-        public static OptionItem GhostRoleCanSeeOtherRoles;
-        public static OptionItem GhostRoleCanSeeOtherTasks;
-        public static OptionItem GhostRoleCanSeeOtherVotes;
-        public static OptionItem GhostRoleCanSeeDeathReason;
-        public static OptionItem GhostRoleCanSeeKillerColor;
-        public static OptionItem GhostRoleCanSeeAllTasks;
-        public static OptionItem GhostRoleCanSeeKillflash;
-        public static OptionItem GhostRoleCanSeeNumberOfButtonsOnOthers;
 
         public static OptionItem KillFlashDuration;
 
@@ -705,7 +693,6 @@ namespace TownOfHost
             CreateRoleOption(sortedRoleInfo, CustomRoleTypes.Neutral);
 
             SetupRoleOptions(102800, TabGroup.MainSettings, CustomRoles.NotAssigned, new(1, 1, 1));
-            RoleAddAddons.Create(102810, TabGroup.MainSettings, CustomRoles.NotAssigned);
             // Madmate Common Options
             CanMakeMadmateCount = IntegerOptionItem.Create(102000, "CanMakeMadmateCount", new(0, 15, 1), 0, TabGroup.MadmateRoles, false)
                 .SetValueFormat(OptionFormat.Players)
@@ -744,40 +731,8 @@ namespace TownOfHost
 
             //Com
 
-            ObjectOptionitem.Create(1_000_115, "Group-Addon", true, null, TabGroup.Combinations).SetOptionName(() => "Combi Add-on").SetColor(ModColors.AddonsColor).SetTag(CustomOptionTags.Role);
-            Faction.SetUpOption();
-            Twins.SetUpTwinsOptions();
-            GhostRoleCore.SetupCustomOptionAddonAndIsGhostRole();
 
             SlotRoleAssign.SetupOptionItem();
-            //幽霊役職の設定
-            GhostRoleOption = BooleanOptionItem.Create(106000, "GhostRoleOptions", false, TabGroup.GhostRoles, false)
-                .SetHeader(true)
-                .SetColorcode("#666699");
-            GhostRoleCanSeeOtherRoles = BooleanOptionItem.Create(106001, "GhostRoleCanSeeOtherRoles", false, TabGroup.GhostRoles, false)
-                .SetColorcode("#7474ab")
-                .SetParent(GhostRoleOption);
-            GhostRoleCanSeeOtherTasks = BooleanOptionItem.Create(106002, "GhostRoleCanSeeOtherTasks", false, TabGroup.GhostRoles, false)
-                .SetColor(Color.yellow)
-                .SetParent(GhostRoleOption);
-            GhostRoleCanSeeOtherVotes = BooleanOptionItem.Create(106003, "GhostRoleCanSeeOtherVotes", false, TabGroup.GhostRoles, false)
-                .SetColorcode("#800080")
-                .SetParent(GhostRoleOption);
-            GhostRoleCanSeeDeathReason = BooleanOptionItem.Create(106004, "GhostRoleCanSeeDeathReason", false, TabGroup.GhostRoles, false)
-                .SetColorcode("#80ffdd")
-                .SetParent(GhostRoleOption);
-            GhostRoleCanSeeKillerColor = BooleanOptionItem.Create(106005, "GhostRoleCanSeeKillerColor", false, TabGroup.GhostRoles, false)
-                .SetColorcode("#80ffdd")
-                .SetParent(GhostRoleCanSeeDeathReason);
-            GhostRoleCanSeeAllTasks = BooleanOptionItem.Create(106006, "GhostRoleCanSeeAllTasks", false, TabGroup.GhostRoles, false)
-                .SetColorcode("#cee4ae")
-                .SetParent(GhostRoleOption);
-            GhostRoleCanSeeNumberOfButtonsOnOthers = BooleanOptionItem.Create(106007, "GhostRoleCanSeeNumberOfButtonsOnOthers", false, TabGroup.GhostRoles, false)
-                .SetColorcode("#d7c447")
-                .SetParent(GhostRoleOption);
-            GhostRoleCanSeeKillflash = BooleanOptionItem.Create(106008, "GhostRoleCanSeeKillflash", false, TabGroup.GhostRoles, false)
-                .SetColorcode("#61b26c")
-                .SetParent(GhostRoleOption);
             #endregion
 
             KillFlashDuration = FloatOptionItem.Create(90000, "KillFlashDuration", new(0.1f, 0.45f, 0.05f), 0.3f, TabGroup.MainSettings, false)

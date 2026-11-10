@@ -68,7 +68,6 @@ public sealed class MadSnitch : RoleBase, IKillFlashSeeable, IDeathReasonSeeable
             .SetValueFormat(OptionFormat.Pieces);
         OptionTaskTrigger = IntegerOptionItem.Create(RoleInfo, 12, GeneralOption.TaskTrigger, new(0, 99, 1), 1, false).SetValueFormat(OptionFormat.Pieces);
         Tasks = OverrideTasksData.Create(RoleInfo, 20);
-        RoleAddAddons.Create(RoleInfo, 25);
     }
 
     private bool KnowsImpostor()

@@ -10,9 +10,6 @@ using TownOfHost.Modules;
 using TownOfHost.Roles.Core;
 using TownOfHost.Roles.Impostor;
 using TownOfHost.Roles.Neutral;
-using TownOfHost.Roles.AddOns.Common;
-using TownOfHost.Roles.AddOns.Neutral;
-using TownOfHost.Roles.AddOns.Impostor;
 
 using static TownOfHost.Utils;
 using static TownOfHost.RandomSpawn;
@@ -103,10 +100,9 @@ namespace TownOfHost
                 var seerRoleInfo = seer.GetCustomRole().GetRoleInfo();
                 var seerSubrole = seer.GetCustomSubRoles();
                 var seerisAlive = seer.IsAlive();
-                var Amnesiacheck = Amnesia.CheckAbility(seer);
+                var Amnesiacheck = true;
                 var seerConnecting = seer.Is(CustomRoles.Connecting);
                 var IsMisidentify = seer.GetMisidentify(out var missrole);
-                RoleAddAddons.GetRoleAddon(role, out var data, seer, subrole: [CustomRoles.Guesser]);
                 // 会議じゃなくて，キノコカオス中で，seerが生きていてdesyncインポスターの場合に自身の名前を消す
                 if (isMushroomMixupActive && seerisAlive && !role.IsImpostor() && seerRoleInfo?.IsDesyncImpostor == true)
                 {
@@ -322,11 +318,6 @@ namespace TownOfHost
                             var TargetRoleText = targetRoleData.enabled ? $"<size={fontSize}>{targetRoleData.text}</size>\r\n" : $"";
 
                             //見る側が双子で相方が双子の場合
-                            if (Twins.TwinsList.TryGetValue(seer.PlayerId, out var targetid))
-                            {
-                                if (targetid == target.PlayerId) TargetRoleText = GetRoleColorAndtext(CustomRoles.Twins) + TargetRoleText;
-                            }
-
                             TargetSuffix.Clear();
                             //seerに関わらず発動するLowerText
                             TargetSuffix.Append(CustomRoleManager.GetLowerTextOthers(seer, target, isForMeeting: false));
@@ -479,14 +470,9 @@ namespace TownOfHost
                 var seerRoleInfo = seer.GetCustomRole().GetRoleInfo();
                 var seerSubrole = seer.GetCustomSubRoles();
                 var seerisAlive = seer.IsAlive();
-                var Amnesiacheck = Amnesia.CheckAbility(seer);
+                var Amnesiacheck = true;
                 var seercone = seer.Is(CustomRoles.Connecting);
                 var IsMisidentify = seer.GetMisidentify(out _);
-                RoleAddAddons.GetRoleAddon(role, out var data, seer, subrole: [CustomRoles.Guesser]);
-                var hasgessuer = seerSubrole.Contains(CustomRoles.Guesser)
-                            || data.GiveGuesser.GetBool()
-                            || (seerSubrole.Contains(CustomRoles.LastImpostor) && LastImpostor.giveguesser)
-                            || (seerSubrole.Contains(CustomRoles.LastNeutral) && LastNeutral.GiveGuesser.GetBool());
 
                 {
                     var aliveplayer = PlayerCatch.AllAlivePlayerControls.OrderBy(x => x.PlayerId);
@@ -709,15 +695,6 @@ namespace TownOfHost
                             var meetingageru = targetRoleData.enabled;
 
                             //見る側が双子で相方が双子の場合
-                            if (Twins.TwinsList.TryGetValue(seer.PlayerId, out var targetid) && seerisAlive)
-                            {
-                                if (targetid == target.PlayerId)
-                                {
-                                    meetingageru |= true;
-                                    if (TargetRoleText == "") TargetRoleText = $"<size={fontSize}>{GetRoleColorAndtext(CustomRoles.Twins)}</size>\r\n";
-                                    else TargetRoleText = GetRoleColorAndtext(CustomRoles.Twins) + TargetRoleText;
-                                }
-                            }
 
                             if (TargetRoleText is "" && tageismeI)
                             {
@@ -760,14 +737,6 @@ namespace TownOfHost
 
                             //ターゲットのプレイヤー名の色を書き換えます。
                             TargetPlayerName = TargetPlayerName.ApplyNameColorData(seer, target, true);
-
-                            if (hasgessuer)
-                            {
-                                if (seerisAlive && targetisalive)
-                                {
-                                    TargetPlayerName = target.PlayerId.ToString() + " " + TargetPlayerName;
-                                }
-                            }
 
                             string TargetDeathReason = "";
                             if (seer.KnowDeathReason(target))

@@ -4,7 +4,6 @@ using System.Linq;
 using HarmonyLib;
 using Hazel;
 using TownOfHost.Modules;
-using TownOfHost.Roles.AddOns.Common;
 using TownOfHost.Roles.Core;
 using TownOfHost.Roles.Core.Interfaces;
 using UnityEngine;
@@ -109,12 +108,6 @@ namespace TownOfHost
                             newReader.Recycle();
                         }
                         Logger.Info($"SnapTo: {player.GetRealName()}, ({position.x}, {position.y})", "RandomSpawn");
-                        if (AntiTeleporter.TryConsumePendingReturn(player.PlayerId, out var returnPos))
-                        {
-                            player.RpcSnapToForced(AntiTeleporter.GetSafeReturnPosition(returnPos));
-                            state.HasSpawned = true;
-                            return false;
-                        }
                         // SnapTo先が湧き位置だったら湧き処理に進む
                         if (IsAirshipVanillaSpawnPosition(position))
                         {
@@ -180,18 +173,6 @@ namespace TownOfHost
 
                 if (__instance.amClosing != Minigame.CloseState.None)
                 {
-                    return false;
-                }
-                if (AntiTeleporter.TryConsumePendingReturn(PlayerControl.LocalPlayer.PlayerId, out var returnPos))
-                {
-                    __instance.gotButton = true;
-                    PlayerControl.LocalPlayer.SetKinematic(true);
-                    PlayerControl.LocalPlayer.NetTransform.SetPaused(true);
-                    PlayerControl.LocalPlayer.RpcSnapToForced(AntiTeleporter.GetSafeReturnPosition(returnPos));
-                    PlayerState.GetByPlayerId(PlayerControl.LocalPlayer.PlayerId).HasSpawned = true;
-                    DestroyableSingleton<HudManager>.Instance.PlayerCam.SnapToTarget();
-                    __instance.StopAllCoroutines();
-                    __instance.StartCoroutine(__instance.CoSpawnAt(PlayerControl.LocalPlayer, spawnPoint));
                     return false;
                 }
                 // ランダムスポーンが有効ならバニラの湧きをキャンセル

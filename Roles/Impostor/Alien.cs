@@ -85,7 +85,6 @@ public sealed class Alien : RoleBase, IMeetingTimeAlterable, IImpostor, INekomat
     public override void OnReportDeadBody(PlayerControl repo, NetworkedPlayerInfo __)
     {
         if (!AmongUsClient.Instance.AmHost) return;
-        if (AddOns.Common.Amnesia.CheckAbilityreturn(Player)) return;
         Remotekillertarget = 111;
         NameAddmin.Clear();
         Puppets.Clear();
@@ -173,14 +172,12 @@ public sealed class Alien : RoleBase, IMeetingTimeAlterable, IImpostor, INekomat
     }
     public int CalculateMeetingTimeDelta()
     {
-        if (AddOns.Common.Amnesia.CheckAbilityreturn(Player)) return 0;
         var sec = -(TimeThiefDecreaseMeetingTime * Count);
         return sec;
     }
     public bool DoRevenge(CustomDeathReason deathReason) => mode == AlienMode.NekoKabocha && revengeOnExile && deathReason == CustomDeathReason.Vote;
     public override void AfterMeetingTasks()
     {
-        if (AddOns.Common.Amnesia.CheckAbilityreturn(Player)) return;
         if (!Player.IsAlive()) return;
 
         RestartAbduct();

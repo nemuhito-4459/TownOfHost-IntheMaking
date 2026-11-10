@@ -24,7 +24,6 @@ using static TownOfHost.Translator;
 using static TownOfHost.PlayerCatch;
 using TownOfHost.Roles.Core.Descriptions;
 using TownOfHost.Patches;
-using TownOfHost.Roles.AddOns.Common;
 
 namespace TownOfHost
 {
@@ -99,7 +98,6 @@ namespace TownOfHost
             }
             args = args.Skip(1).ToArray();
 
-            if (GuessManager.GuesserMsg(PlayerControl.LocalPlayer, text)) canceled = true;
             if (args[0].StartsWith("/") is false) args[0] = $"/{args[0]}";
 
             switch (args[0])
@@ -566,8 +564,7 @@ namespace TownOfHost
                             {
                                 if ((imp.GetRoleClass() as Amnesiac)?.Realized == false && imp.IsAlive()) continue;
 
-                                if ((imp.GetCustomRole().IsImpostor() || imp.GetCustomRole() is CustomRoles.Egoist)
-                                && OneWolf.playerIdList.Contains(imp.PlayerId) is false)
+                                if ((imp.GetCustomRole().IsImpostor() || imp.GetCustomRole() is CustomRoles.Egoist))
                                 {
                                     sendplayers.Add(imp);
                                     continue;
@@ -642,42 +639,6 @@ namespace TownOfHost
                                 }
                             }
                         }
-                        break;
-                    case "/Twinschat":
-                    case "/twinschet":
-                    case "/tc":
-                        if (Assassin.NowUse) break;
-                        if (GameStates.InGame && Options.TwinsHideChat.GetBool() && PlayerControl.LocalPlayer.IsAlive() && Twins.TwinsList.TryGetValue(PlayerControl.LocalPlayer.PlayerId, out var twinsid))
-                        {
-                            if (GameStates.ExiledAnimate)
-                            {
-                                canceled = true;
-                                break;
-                            }
-
-                            var send = "";
-                            foreach (var ag in args)
-                            {
-                                if (ag.StartsWith("/")) continue;
-                                send += ag;
-                            }
-
-                            Logger.Info($"{PlayerControl.LocalPlayer.Data.GetLogPlayerName()} : {send}", "TwinsChat");
-                            foreach (var twins in AllPlayerControls)
-                            {
-                                if (twins && (twins.PlayerId == twinsid || twins.PlayerId == PlayerControl.LocalPlayer.PlayerId || !twins.IsAlive()))
-                                {
-                                    if (AmongUsClient.Instance.AmHost)
-                                    {
-                                        var clientid = twins.GetClientId();
-                                        if (clientid == -1) continue;
-                                        SendMessage(send.Mark(GetRoleColor(CustomRoles.Twins)), twins.PlayerId,
-                                        ColorString(GetRoleColor(CustomRoles.Twins), $"∈{PlayerControl.LocalPlayer.GetPlayerColor()}∈"));
-                                    }
-                                }
-                            }
-                        }
-                        canceled = true;
                         break;
                     case "/Connectingchat":
                     case "/cc":
@@ -1302,8 +1263,6 @@ namespace TownOfHost
             }
             if (args[0].StartsWith("/cmd") is false) return;//cmdが無い場合は処理をしない
 
-            if (GuessManager.GuesserMsg(player, text)) { canceled = true; return; }
-
             canceled = true;
 
             if (args[0] != "/cmd" || args.Length <= 1) return;
@@ -1497,7 +1456,7 @@ namespace TownOfHost
                 case "/ic":
                     if (GameStates.InGame && Options.ImpostorHideChat.GetBool() && player.IsAlive() && (player.GetCustomRole().IsImpostor() || player.GetCustomRole() is CustomRoles.Egoist))
                     {
-                        if ((player.GetRoleClass() as Amnesiac)?.Realized == false || OneWolf.playerIdList.Contains(player.PlayerId))
+                        if ((player.GetRoleClass() as Amnesiac)?.Realized == false)
                         {
                             canceled = true;
                             break;
@@ -1510,8 +1469,7 @@ namespace TownOfHost
                         {
                             if ((imp.GetRoleClass() as Amnesiac)?.Realized == false && imp.IsAlive()) continue;
                             if (imp.PlayerId == player.PlayerId && !Isclient) continue;
-                            if ((imp.GetCustomRole().IsImpostor() || imp.GetCustomRole() is CustomRoles.Egoist)
-                            && OneWolf.playerIdList.Contains(imp.PlayerId) is false)
+                            if ((imp.GetCustomRole().IsImpostor() || imp.GetCustomRole() is CustomRoles.Egoist))
                             {
                                 sendplayers.Add(imp);
                                 continue;
@@ -1597,34 +1555,6 @@ namespace TownOfHost
                                     string title = ColorString(GetRoleColor(loverrole), $"♥{player.GetPlayerColor()}♥</line-height>");
                                     string sendtext = send.Mark(GetRoleColor(loverrole));
                                     SendMessage(sendtext, lover.PlayerId, title);
-                                }
-                            }
-                        }
-                        player.RpcProtectedMurderPlayer();
-                    }
-                    canceled = true;
-                    break;
-                case "/Twinschat":
-                case "/twinschet":
-                case "/tc":
-                    if (Assassin.NowUse) break;
-                    if (GameStates.InGame && Options.TwinsHideChat.GetBool() && player.IsAlive() && Twins.TwinsList.TryGetValue(player.PlayerId, out var twinsid))
-                    {
-                        string send = "";
-                        if (GetHideSendText(ref canceled, ref send) is false) return;
-                        Logger.Info($"{player.Data.GetLogPlayerName()} : {send}", "TwinsChat");
-                        foreach (var twins in AllPlayerControls)
-                        {
-                            if (twins && (twins.PlayerId == twinsid || (!twins.IsAlive())))
-                            {
-                                if (twins.PlayerId == player.PlayerId && !Isclient) continue;
-                                if (AmongUsClient.Instance.AmHost)
-                                {
-                                    var clientid = twins.GetClientId();
-                                    if (clientid == -1) continue;
-                                    string title = ColorString(GetRoleColor(CustomRoles.Twins), $"∈{player.GetPlayerColor()}∋</line-height>");
-                                    string sendtext = send.Mark(GetRoleColor(CustomRoles.Twins));
-                                    SendMessage(sendtext, twins.PlayerId, title);
                                 }
                             }
                         }

@@ -8,7 +8,6 @@ using AmongUs.GameOptions;
 using TownOfHost.Roles;
 using TownOfHost.Roles.Core;
 using TownOfHost.Roles.Core.Interfaces;
-using TownOfHost.Roles.AddOns.Common;
 using TownOfHost.Roles.Impostor;
 using TownOfHost.Roles.Neutral;
 using static TownOfHost.Translator;
@@ -137,7 +136,6 @@ namespace TownOfHost
                     {
                         if (roleClass != null)
                         {
-                            if (Amnesia.CheckAbility(player))
                             {
                                 var killLabel = (roleClass as IKiller)?.OverrideKillButtonText(out string text) == true ? text : GetString(StringNames.KillLabel);
                                 __instance.KillButton.OverrideText(killLabel);
@@ -447,7 +445,6 @@ namespace TownOfHost
             RealName = RealName.ApplyNameColorData(seer, target, false);
 
             //seer役職が対象のMark
-            if (Amnesia.CheckAbility(seer))
                 Mark.Append(seerRole?.GetMark(seer, target, false));
             //seerに関わらず発動するMark
             Mark.Append(CustomRoleManager.GetMarkOthers(seer, target, false));
@@ -477,7 +474,6 @@ namespace TownOfHost
             }
             //seerに関わらず発動するLowerText
             Suffix.Append(CustomRoleManager.GetLowerTextOthers(seer, target));
-            if (Amnesia.CheckAbility(seer))
             {
                 //エーリアン
                 if ((seerRole as Alien)?.mode == Alien.AlienMode.ProgressKiller && Alien.ProgressWorkhorseseen)

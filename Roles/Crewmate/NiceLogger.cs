@@ -120,7 +120,6 @@ namespace TownOfHost.Roles.Crewmate
         public override void OnStartMeeting()
         {
             if (!AmongUsClient.Instance.AmHost) return;
-            if (AddOns.Common.Amnesia.CheckAbilityreturn(Player)) return;
             if (Player.IsAlive() && LogPos != new Vector2(999f, 999f))
             {
                 foreach (var pc in PlayerCatch.AllPlayerControls)

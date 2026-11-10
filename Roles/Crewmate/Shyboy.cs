@@ -2,7 +2,6 @@ using AmongUs.GameOptions;
 using UnityEngine;
 using System;
 using TownOfHost.Roles.Core;
-using TownOfHost.Roles.AddOns.Common;
 namespace TownOfHost.Roles.Crewmate;
 
 public sealed class Shyboy : RoleBase
@@ -68,10 +67,6 @@ public sealed class Shyboy : RoleBase
     public override void StartGameTasks()
     {
         Shydeathdi = Player.Is(CustomRoles.Lighting) ? Main.DefaultImpostorVision : Main.DefaultCrewmateVision;
-        if (Player.Is(CustomRoles.Sunglasses))
-        {
-            Shydeathdi *= Sunglasses.SunglassesVisionmagnification.GetFloat() * 0.01f;
-        }
 
 
         Shydeathdi *= 4.5f;

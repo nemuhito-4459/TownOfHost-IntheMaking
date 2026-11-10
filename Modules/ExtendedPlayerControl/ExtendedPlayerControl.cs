@@ -10,9 +10,6 @@ using TownOfHost.Roles.Core;
 using TownOfHost.Roles.Core.Interfaces;
 using TownOfHost.Roles.Impostor;
 using TownOfHost.Roles.Neutral;
-using TownOfHost.Roles.AddOns.Impostor;
-using TownOfHost.Roles.AddOns.Neutral;
-using TownOfHost.Roles.AddOns.Common;
 
 using static TownOfHost.Translator;
 using TownOfHost.Roles.Madmate;
@@ -262,10 +259,6 @@ namespace TownOfHost
 
             var roleCanUse = (pc.GetRoleClass() as IKiller)?.CanUseKillButton();
 
-            if (pc.Is(CustomRoles.SlowStarter) && !pc.Is(CustomRoles.Mafia))
-            {
-                roleCanUse = SlowStarter.CanUseKill();
-            }
 
             return roleCanUse ?? pc.Is(CustomRoleTypes.Impostor);
         }
@@ -349,18 +342,9 @@ namespace TownOfHost
             }
             if (!Main.AllPlayerKillCooldown.ContainsKey(player.PlayerId)) Main.AllPlayerKillCooldown.Add(player.PlayerId, Options.DefaultKillCooldown);
             Main.AllPlayerKillCooldown[player.PlayerId] = (player.GetRoleClass() as IKiller)?.CalculateKillCooldown() ?? Options.DefaultKillCooldown; //キルクールをデフォルトキルクールに変更
-            if (player.Is(CustomRoles.Serial))
-                Main.AllPlayerKillCooldown[player.PlayerId] = Serial.KillCooldown.GetFloat();
-            if (player.PlayerId == LastImpostor.currentId)
-                LastImpostor.SetKillCooldown(player);
-            if (player.PlayerId == LastNeutral.currentId)
-                LastNeutral.SetKillCooldown(player);
-
-            if (player.Is(CustomRoles.Amnesia) && Amnesia.OptionDefaultKillCool.GetBool()) Main.AllPlayerKillCooldown[player.PlayerId] = Options.DefaultKillCooldown;
         }
         public static bool CanMakeMadmate(this PlayerControl player)
         {
-            if (Amnesia.CheckAbilityreturn(player)) return false;
             var role = player.GetCustomRole();
 
             if (
@@ -471,7 +455,7 @@ namespace TownOfHost
                 return false;
             }
             // seerが死亡済で，霊界から死因が見える設定がON
-            if (!seer.IsAlive() && (Options.GhostCanSeeDeathReason.GetBool() || !Options.GhostOptions.GetBool()) && !seer.Is(CustomRoles.AsistingAngel) && (!seer.IsGhostRole() || Options.GhostRoleCanSeeDeathReason.GetBool()))
+            if (!seer.IsAlive() && (Options.GhostCanSeeDeathReason.GetBool() || !Options.GhostOptions.GetBool()))
             {
                 return true;
             }
@@ -481,7 +465,6 @@ namespace TownOfHost
             // 役職による仕分け
             if (seer.GetRoleClass() is IDeathReasonSeeable deathReasonSeeable)
             {
-                if (Amnesia.CheckAbility(seer))
                 {
                     var role = deathReasonSeeable.CheckSeeDeathReason(seen);
                     if (role is null) return false;
@@ -489,16 +472,9 @@ namespace TownOfHost
                 }
             }
 
-            if (seer.Is(CustomRoles.LastImpostor) && LastImpostor.GiveAutopsy.GetBool()) check |= !Utils.IsActive(SystemTypes.Comms) || LastImpostor.AutopsyCanSeeComms.GetBool();
-            if (seer.Is(CustomRoles.LastNeutral) && LastNeutral.GiveAutopsy.GetBool()) check |= !Utils.IsActive(SystemTypes.Comms) || LastNeutral.AutopsyCanSeeComms.GetBool();
-
-            if (RoleAddAddons.GetRoleAddon(seer.GetCustomRole(), out var data, seer, subrole: CustomRoles.Autopsy))
-                if (data.GiveAutopsy.GetBool()) check |= !Utils.IsActive(SystemTypes.Comms) || data.AutopsyCanSeeComms.GetBool();
-
             // IDeathReasonSeeable未対応役職はこちら
             return check ||
-            (seer.Is(CustomRoleTypes.Madmate) && Options.MadmateCanSeeDeathReason.GetBool())
-            || (seer.Is(CustomRoles.Autopsy) && (!Utils.IsActive(SystemTypes.Comms) || Autopsy.CanUseActiveComms.GetBool()));
+            (seer.Is(CustomRoleTypes.Madmate) && Options.MadmateCanSeeDeathReason.GetBool());
         }
         public static string GetRoleDesc(this PlayerControl player, bool InfoLong = false)
         {
@@ -576,8 +552,6 @@ namespace TownOfHost
             {
                 Main.HostKill.TryAdd(target.PlayerId, State.DeathReason);
             }
-            if (!(AntiBlackout.IsCached || GameStates.CalledMeeting || GameStates.ExiledAnimate))
-                Twins.TwinsSuicide();
 
             if (Options.GhostIgnoreTasks.GetBool())
             {

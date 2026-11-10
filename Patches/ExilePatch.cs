@@ -2,7 +2,6 @@ using AmongUs.Data;
 using AmongUs.GameOptions;
 using HarmonyLib;
 using TownOfHost.Modules;
-using TownOfHost.Roles.AddOns.Common;
 using TownOfHost.Roles.Core;
 using TownOfHost.Roles.Impostor;
 using TownOfHost.Roles.Neutral;
@@ -136,7 +135,6 @@ namespace TownOfHost
             FallFromLadder.Reset();
             PlayerCatch.CountAlivePlayers(true);
             Utils.AfterMeetingTasks();
-            AntiTeleporter.AfterMeetingTasks();
 
             if (AmongUsClient.Instance.AmHost && Main.NormalOptions.MapId != 4)
             {

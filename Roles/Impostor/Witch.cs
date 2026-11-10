@@ -165,7 +165,6 @@ namespace TownOfHost.Roles.Impostor
         }
         public override string MeetingAddMessage()
         {
-            if (AddOns.Common.Amnesia.CheckAbilityreturn(Player)) return "";
             if (SpelledPlayer.Count == 0) return "";
 
             //ウィッチ本人が会議前に死んでたら削除
@@ -255,7 +254,6 @@ namespace TownOfHost.Roles.Impostor
         }
         public override void AfterMeetingTasks()
         {
-            if (AddOns.Common.Amnesia.CheckAbilityreturn(Player)) return;
             if (Player.IsAlive() && MyState.DeathReason != CustomDeathReason.Vote)
             {//吊られなかった時呪いキル発動
                 var spelledIdList = new List<byte>();

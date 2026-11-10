@@ -80,7 +80,6 @@ public sealed class Banker : RoleBase, IKiller, IAdditionalWinner
         DieRemoveTurn = IntegerOptionItem.Create(RoleInfo, 17, Option.BankerDieRemoveTurn, new(1, 100, 1), 10, false, DieCanWin);
         KillCoolDown = FloatOptionItem.Create(RoleInfo, 18, GeneralOption.KillCooldown, new(0f, 180f, 0.5f), 15f, false).SetValueFormat(OptionFormat.Seconds);
         OverrideTasksData.Create(RoleInfo, 19);
-        RoleAddAddons.Create(RoleInfo, 23);
     }
     public bool CanUseSabotageButton() => false;
     public bool CanUseKillButton() => !TaskMode;

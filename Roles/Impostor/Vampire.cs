@@ -125,7 +125,6 @@ namespace TownOfHost.Roles.Impostor
         }
         public override void OnReportDeadBody(PlayerControl repo, NetworkedPlayerInfo __)
         {
-            if (AddOns.Common.Amnesia.CheckAbilityreturn(Player)) return;
             foreach (var targetId in BittenPlayers.Keys)
             {
                 var target = PlayerCatch.GetPlayerById(targetId);

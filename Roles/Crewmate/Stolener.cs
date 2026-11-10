@@ -45,7 +45,6 @@ public sealed class Stolener : RoleBase
     {
         OptionCanUseaddon = BooleanOptionItem.Create(RoleInfo, 10, OptionName.StolenerCanuseaddon, true, false);
         OptionCanUseaddonOnfinish = BooleanOptionItem.Create(RoleInfo, 11, OptionName.StolenerCanUseaddonOnfinish, true, false, OptionCanUseaddon);
-        RoleAddAddons.Create(RoleInfo, 20, DefaaultOn: true);
     }
     ///マジシャンとかのキルでも受け渡したい
     public override void OnFixedUpdate(PlayerControl player)
@@ -59,11 +58,6 @@ public sealed class Stolener : RoleBase
         realkiller?.SetKillCooldown(force: true);
         UtilsNotifyRoles.NotifyRoles();
 
-        if (realkiller is not null)
-            if (RoleAddAddons.GetRoleAddon(CustomRoles.Stolener, out var d, null, subrole: [CustomRoles.Guarding]))
-            {
-                if (d.GiveGuarding.GetBool()) realkiller.GetPlayerState().HaveGuard[1] += d.Guard.GetInt();
-            }
         UtilsOption.SyncAllSettings();
     }
     public override void CheckWinner(GameOverReason reason)

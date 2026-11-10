@@ -11,7 +11,6 @@ using TownOfHost.Roles;
 using TownOfHost.Roles.Core;
 using TownOfHost.Roles.Neutral;
 using TownOfHost.Roles.Impostor;
-using TownOfHost.Roles.AddOns.Common;
 using static TownOfHost.Utils;
 using static TownOfHost.Translator;
 using static TownOfHost.UtilsRoleText;
@@ -553,39 +552,6 @@ namespace TownOfHost
                     if (deep > 0) continue;
                 }
 
-                if (pc != null)
-                {
-                    if (!pc.Is(CustomRoleTypes.Crewmate))
-                    {
-                        if (opt.Value == Guesser.Crewmateset) continue;
-                        if (opt.Value == Guesser.CCanGuessVanilla) continue;
-                        if (opt.Value == Guesser.CCanGuessNakama) continue;
-                        if (opt.Value == Guesser.CCanWhiteCrew) continue;
-                    }
-                    if (!pc.Is(CustomRoleTypes.Impostor))
-                    {
-                        if (opt.Value == Guesser.impset) continue;
-                        if (opt.Value == Guesser.ICanGuessVanilla) continue;
-                        if (opt.Value == Guesser.ICanGuessNakama) continue;
-                        if (opt.Value == Guesser.ICanGuessTaskDoneSnitch) continue;
-                        if (opt.Value == Guesser.ICanWhiteCrew) continue;
-                    }
-                    if (!pc.Is(CustomRoleTypes.Madmate))
-                    {
-                        if (opt.Value == Guesser.Madset) continue;
-                        if (opt.Value == Guesser.MCanGuessVanilla) continue;
-                        if (opt.Value == Guesser.MCanGuessNakama) continue;
-                        if (opt.Value == Guesser.MCanGuessTaskDoneSnitch) continue;
-                        if (opt.Value == Guesser.MCanWhiteCrew) continue;
-                    }
-                    if (!pc.Is(CustomRoleTypes.Neutral))
-                    {
-                        if (opt.Value == Guesser.Neuset) continue;
-                        if (opt.Value == Guesser.NCanGuessVanilla) continue;
-                        if (opt.Value == Guesser.NCanGuessTaskDoneSnitch) continue;
-                        if (opt.Value == Guesser.NCanWhiteCrew) continue;
-                    }
-                }
 
                 if (deep > 0)
                 {

@@ -70,7 +70,6 @@ namespace TownOfHost.Roles.Neutral
             OptionCanVent = BooleanOptionItem.Create(RoleInfo, 11, GeneralOption.CanVent, true, false);
             OptionCanUseSabotage = BooleanOptionItem.Create(RoleInfo, 12, GeneralOption.CanUseSabotage, false, false);//正味サボ使用不可でもいい気がする
             OptionGrimReaperCanButtom = BooleanOptionItem.Create(RoleInfo, 14, OptionName.GrimReaperCanButtom, false, false);
-            RoleAddAddons.Create(RoleInfo, 15);
         }
         public float CalculateKillCooldown() => KillCooldown;
         public bool CanUseSabotageButton() => CanUseSabotage;
@@ -107,7 +106,6 @@ namespace TownOfHost.Roles.Neutral
         }
         public override void OnReportDeadBody(PlayerControl repo, NetworkedPlayerInfo __)
         {
-            if (AddOns.Common.Amnesia.CheckAbilityreturn(Player)) return;
             foreach (var targetId in GrimPlayers.Keys)
             {
                 var target = PlayerCatch.GetPlayerById(targetId);
@@ -121,7 +119,6 @@ namespace TownOfHost.Roles.Neutral
         public override void AfterMeetingTasks()
         {
             cankill = true;
-            if (Player.Is(CustomRoles.Amnesia) && AddOns.Common.Amnesia.OptionDefaultKillCool.GetBool()) return;
             Main.AllPlayerKillCooldown[Player.PlayerId] = KillCooldown;
             if (!AmongUsClient.Instance.AmHost) return;
             Player.SyncSettings();

@@ -266,7 +266,7 @@ public sealed class SchrodingerCat : RoleBase, IAdditionalWinner, IDeathReasonSe
             TeamType.Remotekiller => UtilsRoleText.GetRoleColor(CustomRoles.Remotekiller),
             TeamType.CountKiller => UtilsRoleText.GetRoleColor(CustomRoles.CountKiller),
             TeamType.DoppelGanger => UtilsRoleText.GetRoleColor(CustomRoles.DoppelGanger),
-            TeamType.MilkyWay => StringHelper.CodeColor(Vega.TeamColor),
+            TeamType.MilkyWay => StringHelper.CodeColor("#f0e7a8"),
             TeamType.Betrayer => UtilsRoleText.GetRoleColor(CustomRoles.MadBetrayer),
             _ => null,
         };

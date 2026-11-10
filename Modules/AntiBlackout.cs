@@ -8,7 +8,6 @@ using Hazel;
 using TownOfHost.Attributes;
 using TownOfHost.Modules;
 using TownOfHost.Patches;
-using TownOfHost.Roles.AddOns.Common;
 using TownOfHost.Roles.Core;
 using TownOfHost.Roles.Core.Interfaces;
 using TownOfHost.Roles.Impostor;
@@ -271,21 +270,11 @@ namespace TownOfHost
                     var IDesycImpostor = Player.GetCustomRole().GetRoleInfo()?.IsDesyncImpostor ?? false;
                     IDesycImpostor |= SuddenDeathMode.NowSuddenDeathMode || Player.Is(CustomRoles.OneWolf) || pc.Is(CustomRoles.OneWolf);
 
-                    if (pc.Is(CustomRoles.Amnesia))
-                    {
-                        if (roleinfo?.IsDesyncImpostor == true && !pc.Is(CustomRoleTypes.Impostor))
-                            role = RoleTypes.Crewmate;
-                        if (Amnesia.dontcanUseability)
-                        {
-                            role = pc.Is(CustomRoleTypes.Impostor) ? RoleTypes.Impostor : RoleTypes.Crewmate;
-                        }
-                    }
                     var setrole = (IDesycImpostor && Player != pc) ? (!isalive ? RoleTypes.CrewmateGhost : RoleTypes.Crewmate) : role;
 
                     if (pc.PlayerId == Player.PlayerId)
                     {
-                        if (pc.GetRoleClass()?.AfterMeetingRole is not null && pc.IsAlive()
-                                && (!pc.Is(CustomRoles.Amnesia) || !Amnesia.dontcanUseability))
+                        if (pc.GetRoleClass()?.AfterMeetingRole is not null && pc.IsAlive())
                         {
                             setrole = pc.GetRoleClass().AfterMeetingRole.Value;
                         }
@@ -344,7 +333,6 @@ namespace TownOfHost
                 }, Main.LagTime, "Re-SetRole", true);
 
             {
-                Twins.TwinsSuicide(true);
                 if (CustomWinnerHolder.WinnerTeam is not CustomWinner.Default) return;
                 Player.RpcResetAbilityCooldown();
                 UtilsNotifyRoles.NotifyRoles(true, true, SpecifySeer: Player);

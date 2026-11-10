@@ -104,7 +104,6 @@ public sealed class ShrineMaiden : RoleBase, ISelfVoter
     }
     public override void AfterMeetingTasks()
     {
-        if (AddOns.Common.Amnesia.CheckAbilityreturn(Player)) return;
         IsReport = false;//いらない気がするけど一応保険
         OnikuId = byte.MaxValue;
     }

@@ -8,14 +8,10 @@ using HarmonyLib;
 using AmongUs.GameOptions;
 
 using TownOfHost.Roles.Core.Interfaces;
-using TownOfHost.Roles.AddOns.Common;
-using TownOfHost.Roles.Ghost;
 using TownOfHost.Roles.Crewmate;
 using TownOfHost.Roles.Impostor;
 using TownOfHost.Modules;
 using TownOfHost.Roles.Vanilla;
-using TownOfHost.Roles.AddOns.Neutral;
-using TownOfHost.Roles.AddOns.Impostor;
 
 namespace TownOfHost.Roles.Core;
 
@@ -41,9 +37,7 @@ public static class CustomRoleManager
     /// <param name="attemptTarget">>Killerが実際にキルを行おうとしたプレイヤー 不変</param>
     public static bool OnCheckMurder(PlayerControl attemptKiller, PlayerControl attemptTarget)
     {
-        if (attemptKiller.Is(CustomRoles.Powerful)
-        || (attemptKiller.Is(CustomRoles.LastImpostor) && LastImpostor.GivePowerful.GetBool())
-        || (attemptKiller.Is(CustomRoles.LastNeutral) && LastNeutral.GivePowerful.GetBool()))
+        if (attemptKiller.Is(CustomRoles.Powerful))
         {
             return OnCheckMurder(attemptKiller, attemptTarget, attemptKiller, attemptTarget, Killpower: 2);
         }
@@ -86,14 +80,12 @@ public static class CustomRoleManager
             {
                 if (killerRole is EarnestWolf earnestWolf)//最優先
                 {
-                    if (Amnesia.CheckAbility(attemptKiller))
                         if (earnestWolf.OnCheckMurderAsEarnestWolf(info))
                             return true;
                 }
 
                 if (targetRole != null && info.DontRoleAbility is not true)
                 {
-                    if (Amnesia.CheckAbility(attemptTarget))
                     {
                         if (!targetRole.OnCheckMurderAsTarget(info))
                         {
@@ -104,32 +96,6 @@ public static class CustomRoleManager
                     }
                 }
 
-                if (AsistingAngel.Guard)
-                {
-                    if (attemptTarget == AsistingAngel.Asist)
-                    {
-                        GuardreasonNumber = 2;
-                        info.GuardPower = 1;
-                    }
-                }
-                //守護天使ちゃんの天使チェック
-                if (GuardianAngel.GuardianAngelGuarding.ContainsKey(attemptTarget.PlayerId))
-                {
-                    GuardreasonNumber = 1;
-                    info.GuardPower = 1;
-                }
-                //アブソーブチェック
-                if (info.KillPower > info.GuardPower && Absorb.IsAchive())
-                {
-                    if (Absorb.AbsorbGuard.TryGetValue(attemptTarget.PlayerId, out var count))
-                    {
-                        if (count > 0)
-                        {
-                            GuardreasonNumber = 4;
-                            info.GuardPower = 1;
-                        }
-                    }
-                }
                 //属性ガードのチェック
                 if (info.KillPower > info.GuardPower)//消費する必要がある
                 {
@@ -142,11 +108,6 @@ public static class CustomRoleManager
                         GuardreasonNumber = 0;
                     }
                 }
-                if (info.AttemptKiller.Is(CustomRoles.Faction) && info.AttemptTarget.Is(CustomRoles.Faction) && deathReason is CustomDeathReason.Kill && Faction.CantKillFaction.GetBool())
-                {
-                    info.CanKill = false;
-                }
-                OneWolf.OnCheckMurder(info);
             }
 
             // キラーのキルチェック処理実行
@@ -185,31 +146,7 @@ public static class CustomRoleManager
                         UtilsGameLog.AddGameLog($"Guard", UtilsName.GetPlayerColor(attemptTarget) + ":  " + string.Format(Translator.GetString("GuardMaster.Guard"), UtilsName.GetPlayerColor(attemptKiller, true)));
                         Logger.Info($"{attemptTarget.GetNameWithRole().RemoveHtmlTags()} ガード残り : {HaveGuardCount}", "Guarding");
                         break;
-                    case 1: //Guardianangel
-                            //死んでる人にはパリーン見せる
-                        var owner = GuardianAngel.GuardianAngelGuarding[attemptTarget.PlayerId].owner;
-                        PlayerCatch.AllPlayerControls.Where(pc => pc is not null && !pc.IsAlive())
-                            .Do(pc =>
-                            {
-                                attemptKiller.RpcProtectedMurderPlayer(pc, attemptTarget);
-                                if (pc.PlayerId == owner) pc.RpcProtectedMurderPlayer();
-                            });
-                        GuardianAngel.MeetingNotify |= true;
-                        UtilsGameLog.AddGameLog($"GuardianAngel", UtilsName.GetPlayerColor(attemptTarget) + ":  " + string.Format(Translator.GetString("GuardMaster.Guard"), UtilsName.GetPlayerColor(attemptKiller, true)
-                            + $"({UtilsName.GetPlayerColor(owner)}"));
-                        Logger.Info($"{attemptKiller.GetNameWithRole().RemoveHtmlTags()} => {attemptTarget.GetNameWithRole().RemoveHtmlTags()}守護天使ちゃんのガード!", "GuardianAngel");
-                        if (GuardianAngel.GuardianAngelGuarding.ContainsKey(attemptTarget.PlayerId))
-                            GuardianAngel.GuardianAngelGuarding[attemptTarget.PlayerId] = (999f, owner);
-                        break;
-                    case 2://AsistingAngel
-                        UtilsGameLog.AddGameLog($"AsistingAngel", UtilsName.GetPlayerColor(PlayerCatch.AllPlayerControls.FirstOrDefault(x => x.Is(CustomRoles.AsistingAngel)))
-                        + ":  " + string.Format(Translator.GetString("GuardMaster.Guard"), UtilsName.GetPlayerColor(attemptKiller, true)));
-                        break;
                     case 3://Role
-                        break;
-                    case 4:
-                        Logger.Info($"AbsorbGuard : {--Absorb.AbsorbGuard[attemptTarget.PlayerId]}", "Absorb");
-                        UtilsGameLog.AddGameLog($"Guard", UtilsName.GetPlayerColor(attemptTarget) + ":  " + string.Format(Translator.GetString("GuardMaster.Guard"), UtilsName.GetPlayerColor(attemptKiller, true)));
                         break;
                     default:
                         break;
@@ -245,20 +182,6 @@ public static class CustomRoleManager
                             else
                                 appearanceTarget.RpcSetRoleDesync(RoleTypes.Noisemaker, pc.GetClientId());
                         }
-                }
-            }
-            if (GhostNoiseSender.Nois.ContainsValue(appearanceTarget.PlayerId))
-            {
-                if (AmongUsClient.Instance.AmHost)
-                {
-                    foreach (var pc in PlayerCatch.AllPlayerControls)
-                    {
-                        if (pc == PlayerControl.LocalPlayer)
-                            appearanceTarget.StartCoroutine(appearanceTarget.CoSetRole(RoleTypes.Noisemaker, true));
-                        else
-                            appearanceTarget.RpcSetRoleDesync(RoleTypes.Noisemaker, pc.GetClientId());
-                        appearanceTarget.SyncSettings();
-                    }
                 }
             }
 
@@ -321,7 +244,6 @@ public static class CustomRoleManager
         var killerrole = attemptKiller.GetRoleClass();
         if (roleability is false or null)
         {
-            if (Amnesia.CheckAbility(attemptKiller))
                 (killerrole as IKiller)?.OnMurderPlayerAsKiller(info);
         }
 
@@ -330,7 +252,6 @@ public static class CustomRoleManager
 
         if (roleability is false)
         {
-            if (Amnesia.CheckAbility(attemptKiller))
                 if (targetRole != null)
                     targetRole.OnMurderPlayerAsTarget(info);
         }
@@ -341,7 +262,6 @@ public static class CustomRoleManager
             onMurderPlayer(info);
         }
 
-        OneWolf.OnMurderPlayer(info);
 
         //以降共通処理
         var targetState = PlayerState.GetByPlayerId(attemptTarget.PlayerId);
@@ -358,7 +278,6 @@ public static class CustomRoleManager
         attemptTarget.SetRealKiller(attemptKiller, true);
         killerstate.Is10secKillButton = false;
 
-        GhostRoleAssingData.AssignAddOnsFromList(true);
 
         PlayerCatch.CountAlivePlayers(true);
 
@@ -393,36 +312,6 @@ public static class CustomRoleManager
         }
         var roleinfo = appearanceKiller.GetCustomRole().GetRoleInfo();
 
-        if (appearanceKiller.Is(CustomRoles.Amnesia) && Amnesia.OptionCanRealizeKill.GetBool())
-        {
-            if (Amnesia.OptionRealizeKillcount.GetInt() <= killerstate.Killcount)
-            {
-                if (!Utils.RoleSendList.Contains(appearanceKiller.PlayerId)) Utils.RoleSendList.Add(appearanceKiller.PlayerId);
-                Amnesia.RemoveAmnesia(appearanceKiller.PlayerId, true);
-
-                if (AmongUsClient.Instance.AmHost)
-                {
-                    if (appearanceKiller.PlayerId != PlayerControl.LocalPlayer.PlayerId)
-                        appearanceKiller.RpcSetRoleDesync(roleinfo.BaseRoleType.Invoke(), appearanceKiller.GetClientId());
-                    else if (appearanceKiller.PlayerId == PlayerControl.LocalPlayer.PlayerId)
-                    {
-                        if (roleinfo?.IsDesyncImpostor == true && roleinfo?.BaseRoleType?.Invoke() != RoleTypes.Impostor)
-                            RoleManager.Instance.SetRole(PlayerControl.LocalPlayer, roleinfo.BaseRoleType.Invoke());
-                        else if (roleinfo?.BaseRoleType.Invoke() == RoleTypes.Shapeshifter)
-                        {
-                            RoleManager.Instance.SetRole(PlayerControl.LocalPlayer, RoleTypes.Shapeshifter);
-                        }
-                    }
-                    appearanceKiller.ResetKillCooldown();
-                    _ = new LateTask(() =>
-                    {
-                        appearanceKiller.RpcResetAbilityCooldown(Sync: true);
-                        appearanceKiller.SetKillCooldown(delay: true);
-                        UtilsNotifyRoles.NotifyRoles();
-                    }, 0.2f, "SetKillCOolDown");
-                }
-            }
-        }
     }
     /// <summary>
     /// その他視点からのMurderPlayer処理
@@ -433,7 +322,7 @@ public static class CustomRoleManager
     {
         if (GameStates.IsInTask && !GameStates.CalledMeeting && (!Options.firstturnmeeting || !MeetingStates.FirstMeeting))
         {
-            if (Amnesia.CheckAbility(player)) player.GetRoleClass()?.OnFixedUpdate(player);
+            player.GetRoleClass()?.OnFixedUpdate(player);
             //その他視点処理があれば実行
             foreach (var onFixedUpdate in OnFixedUpdateOthers)
             {
@@ -511,59 +400,7 @@ public static class CustomRoleManager
 
     public static void OtherRolesAdd(PlayerControl pc, CustomRoles role = CustomRoles.NotAssigned)
     {
-        foreach (var subRole in role is CustomRoles.NotAssigned ? pc.GetCustomSubRoles() : [role])
-        {
-            switch (subRole)
-            {
-                case CustomRoles.Watching: Watching.Add(pc.PlayerId); break;
-                case CustomRoles.Speeding: Speeding.Add(pc.PlayerId); break;
-                case CustomRoles.Moon: Moon.Add(pc.PlayerId); break;
-                case CustomRoles.Guesser: Guesser.Add(pc.PlayerId); break;
-                case CustomRoles.Lighting: Lighting.Add(pc.PlayerId); break;
-                case CustomRoles.Tiebreaker: Tiebreaker.Add(pc.PlayerId); break;
-                case CustomRoles.Management: Management.Add(pc.PlayerId); break;
-                case CustomRoles.Connecting: Connecting.Add(pc.PlayerId); break;
-                case CustomRoles.Serial: Serial.Add(pc.PlayerId); break;
-                case CustomRoles.PlusVote: PlusVote.Add(pc.PlayerId); break;
-                case CustomRoles.Opener: Opener.Add(pc.PlayerId); break;
-                //case CustomRoles.AntiTeleporter: AntiTeleporter.Add(pc.PlayerId); break;
-                case CustomRoles.Revenger: Revenger.Add(pc.PlayerId); break;
-                case CustomRoles.Seeing: Seeing.Add(pc.PlayerId); break;
-                case CustomRoles.Guarding: Guarding.Add(pc.PlayerId); break;
-                case CustomRoles.Autopsy: Autopsy.Add(pc.PlayerId); break;
-                case CustomRoles.MagicHand: MagicHand.Add(pc.PlayerId); break;
-                case CustomRoles.Powerful: Powerful.Add(pc.PlayerId); break;
-                case CustomRoles.Absorb: Absorb.Add(pc.PlayerId); break;
-
-                case CustomRoles.SlowStarter: SlowStarter.Add(pc.PlayerId); break;
-                case CustomRoles.Notvoter: Notvoter.Add(pc.PlayerId); break;
-                case CustomRoles.Transparent: Transparent.Add(pc.PlayerId); break;
-                case CustomRoles.NonReport: NonReport.Add(pc.PlayerId); break;
-                case CustomRoles.Water: Water.Add(pc.PlayerId); break;
-                case CustomRoles.Clumsy: Clumsy.Add(pc.PlayerId); break;
-                case CustomRoles.Slacker: Slacker.Add(pc.PlayerId); break;
-                case CustomRoles.Elector: Elector.Add(pc.PlayerId); break;
-                case CustomRoles.Amnesia: Amnesia.Add(pc.PlayerId); break;
-                case CustomRoles.News: News.Add(pc.PlayerId); break;
-                case CustomRoles.Sunglasses: Sunglasses.Add(pc.PlayerId); break;
-
-                case CustomRoles.Amanojaku: Amanojaku.Add(pc.PlayerId); break;
-                case CustomRoles.OneWolf: OneWolf.Add(pc.PlayerId); break;
-                case CustomRoles.Stack: Stack.Add(pc.PlayerId); break;
-
-                case CustomRoles.Ghostbuttoner: Ghostbuttoner.Add(pc.PlayerId); break;
-                case CustomRoles.GhostNoiseSender: GhostNoiseSender.Add(pc.PlayerId); break;
-                case CustomRoles.GhostReseter: GhostReseter.Add(pc.PlayerId); break;
-                case CustomRoles.GhostRumour: GhostRumour.Add(pc.PlayerId); break;
-                case CustomRoles.GuardianAngel: GuardianAngel.Add(pc.PlayerId); break;
-                case CustomRoles.DemonicTracker: DemonicTracker.Add(pc.PlayerId); break;
-                case CustomRoles.DemonicVenter: DemonicVenter.Add(pc.PlayerId); break;
-                case CustomRoles.DemonicCrusher: DemonicCrusher.Add(pc.PlayerId); break;
-                case CustomRoles.DemonicSupporter: DemonicSupporter.Add(pc.PlayerId); break;
-                case CustomRoles.AsistingAngel: AsistingAngel.Add(pc.PlayerId); break;
-                case CustomRoles.SpiritGuide: SpiritGuide.Add(pc.PlayerId); break;
-            }
-        }
+        //属性と幽霊役職は削除済みなので、登録するものはない
     }
     /// <summary>
     /// 受信したRPCから送信先を読み取ってRoleClassに配信する

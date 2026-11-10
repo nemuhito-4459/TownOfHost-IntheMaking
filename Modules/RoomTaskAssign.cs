@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
 using Hazel;
-using TownOfHost.Roles.AddOns.Crewmate;
 using TownOfHost.Roles.Core;
 using TownOfHost.Roles.Core.Interfaces;
 using UnityEngine;
@@ -64,7 +63,6 @@ public class RoomTaskAssign
                     (player?.GetRoleClass() as IRoomTasker)?.OnComplete(completeroom);
 
                     var ret = true;
-                    ret &= Workhorse.OnCompleteTask(player);
                     if (ret)
                     {
                         var taskstate = player.GetPlayerTaskState();

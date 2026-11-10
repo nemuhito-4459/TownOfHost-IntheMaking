@@ -5,8 +5,6 @@ using UnityEngine;
 using TownOfHost.Modules;
 using TownOfHost.Roles.Core;
 using TownOfHost.Roles.Core.Interfaces;
-using TownOfHost.Roles.AddOns.Common;
-using TownOfHost.Roles.Ghost;
 
 namespace TownOfHost
 {
@@ -85,11 +83,6 @@ namespace TownOfHost
                 // 死者の最終位置にペットが残るバグ対応
                 //__instance.RpcSetPet("");
 
-                if (__instance.Is(CustomRoles.Amnesia))//アムネシア削除
-                {
-                    Amnesia.RemoveAmnesia(__instance.PlayerId, true);
-                }
-
                 if (CustomWinnerHolder.WinnerTeam == CustomWinner.Default)
                 {
                     if (!SuddenDeathMode.NowSuddenDeathMode && __instance.PlayerId != PlayerControl.LocalPlayer.PlayerId)//サボ可能役職のみインポスターゴーストにする
@@ -103,7 +96,6 @@ namespace TownOfHost
                                 }
                             }, 0.2f, "Fix sabotage", true);
                     }
-                    GhostRoleAssingData.AssignAddOnsFromList();
                 }
             }
         }

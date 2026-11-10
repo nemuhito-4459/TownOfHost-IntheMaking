@@ -6,7 +6,6 @@ using AmongUs.GameOptions;
 
 using TownOfHost.Roles.Core;
 using TownOfHost.Roles.Core.Interfaces;
-using TownOfHost.Roles.AddOns.Common;
 using Hazel;
 
 namespace TownOfHost.Roles.Crewmate;
@@ -55,12 +54,6 @@ public sealed class Cakeshop : RoleBase, INekomata
         _ = new LateTask(() =>
         {
             Logger.Info("あっ、ケーキの効果が切れちゃった!!", nameof(Cakeshop));
-            foreach (var gu in Addedaddons.Where(v => v.Value is CustomRoles.Guarding))
-            {
-                var state = PlayerCatch.GetPlayerState(gu.Key);
-
-                state.HaveGuard[1] -= Guarding.HaveGuard;
-            }
             PlayerState.AllPlayerStates.DoIf(
                 x => Addedaddons.ContainsKey(x.Key),
                 state => PlayerCatch.GetPlayerById(state.Key).RpcReplaceSubRole(Addedaddons[state.Key], true));
@@ -89,11 +82,6 @@ public sealed class Cakeshop : RoleBase, INekomata
                                 .FirstOrDefault();
                 Addedaddons[pc.PlayerId] = addon;
 
-                if (addon is CustomRoles.Guarding)
-                {
-                    var state = pc.GetPlayerState();
-                    state.HaveGuard[1] += Guarding.HaveGuard;
-                }
                 pc.RpcSetCustomRole(addon);
                 if (pc.IsModClient())
                 {
@@ -106,14 +94,8 @@ public sealed class Cakeshop : RoleBase, INekomata
 
     CustomRoles[] GetAddons(CustomRoleTypes type)
     {
-        return type switch
-        {
-            CustomRoleTypes.Impostor => AddOns.Common.AddOnsAssignData.AllData.Values.Where(x => x.ImpostorMaximum != null).Select(x => x.Role).ToArray(),
-            CustomRoleTypes.Madmate => AddOns.Common.AddOnsAssignData.AllData.Values.Where(x => x.MadmateMaximum != null).Select(x => x.Role).ToArray(),
-            CustomRoleTypes.Crewmate => AddOns.Common.AddOnsAssignData.AllData.Values.Where(x => x.CrewmateMaximum != null).Select(x => x.Role).ToArray(),
-            CustomRoleTypes.Neutral => AddOns.Common.AddOnsAssignData.AllData.Values.Where(x => x.NeutralMaximum != null).Select(x => x.Role).ToArray(),
-            _ => null,
-        };
+        //属性は削除済みなので、配れる属性はない
+        return null;
     }
 
     public string GetLowerTextOthers(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)

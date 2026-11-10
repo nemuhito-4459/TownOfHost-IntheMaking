@@ -10,7 +10,6 @@ using UnityEngine;
 using System.Text.RegularExpressions;
 using System;
 using AmongUs.GameOptions;
-using TownOfHost.Roles.AddOns.Common;
 
 namespace TownOfHost
 {
@@ -329,10 +328,6 @@ namespace TownOfHost
                 "ジャッカルドール" => GetString("Jackaldoll"),
                 "きつね" or "ようこ" or "妖狐" => GetString("Fox"),
                 "ヴァルチャー" or "バルチャー" => GetString("Vulture"),
-
-                "ドライバーとブレイド" => GetString("Driver"),
-
-                "織姫と彦星" => GetString("Vega"),
                 _ => text,
             };
         }
@@ -348,7 +343,7 @@ namespace TownOfHost
             foreach (CustomRoles role in Enum.GetValues(typeof(CustomRoles)))
             {
                 if (!includeVanilla && role.IsVanilla() && role is not CustomRoles.GuardianAngel and not CustomRoles.SpiritGuide) continue;
-                if (input == GuessManager.ChangeNormal2Vanilla(role))
+                if (input == GetString(Enum.GetName(typeof(CustomRoles), role)).TrimStart('*').ToLower().Trim().Replace(" ", string.Empty).RemoveHtmlTags())
                 {
                     output = role;
                     return true;
@@ -388,14 +383,6 @@ namespace TownOfHost
                 UtilsGameLog.LastLogRole[pc.PlayerId] = $"<b>{OneLovespace}" + ColorString(GetRoleColor(role), GetString($"{role}")) + "</b>";
                 PlayerCatch.AllPlayerFirstTypes.Add(pc.PlayerId, roletype);
 
-                //Addons
-                var state = pc.GetPlayerState();
-                if (pc.Is(CustomRoles.Guarding)) state.HaveGuard[1] += Guarding.HaveGuard;
-                //RoleAddons
-                if (RoleAddAddons.GetRoleAddon(role, out var data, pc, subrole: [CustomRoles.Guarding]))
-                {
-                    if (data.GiveGuarding.GetBool()) state.HaveGuard[1] += data.Guard.GetInt();
-                }
                 if (!Main.AllPlayerKillCooldown.ContainsKey(pc.PlayerId))
                     Main.AllPlayerKillCooldown.Add(pc.PlayerId, Options.DefaultKillCooldown);
 

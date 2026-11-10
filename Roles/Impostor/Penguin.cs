@@ -172,7 +172,6 @@ class Penguin : RoleBase, IImpostor
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
         stopCount = true;
-        if (AddOns.Common.Amnesia.CheckAbilityreturn(Player)) return;
         // 時間切れ状態で会議を迎えたらはしご中でも構わずキルする
         if (AbductVictim != null && AbductTimer <= 0f)
         {

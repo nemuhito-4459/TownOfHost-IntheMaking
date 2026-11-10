@@ -98,7 +98,6 @@ public sealed class JackalAlien : RoleBase, IMeetingTimeAlterable, ILNKiller, IS
     public override void OnReportDeadBody(PlayerControl repo, NetworkedPlayerInfo __)
     {
         if (!AmongUsClient.Instance.AmHost) return;
-        if (AddOns.Common.Amnesia.CheckAbilityreturn(Player)) return;
         Remotekillertarget = 111;
         NameAddmin.Clear();
         Puppets.Clear();
@@ -177,14 +176,12 @@ public sealed class JackalAlien : RoleBase, IMeetingTimeAlterable, ILNKiller, IS
     }
     public int CalculateMeetingTimeDelta()
     {
-        if (AddOns.Common.Amnesia.CheckAbilityreturn(Player)) return 0;
         var sec = -(TimeThiefDecreaseMeetingTime * Count);
         return sec;
     }
     public bool DoRevenge(CustomDeathReason deathReason) => mode == AlienMode.NekoKabocha && revengeOnExile && deathReason == CustomDeathReason.Vote;
     public override void AfterMeetingTasks()
     {
-        if (AddOns.Common.Amnesia.CheckAbilityreturn(Player)) return;
         if (!Player.IsAlive()) return;
 
         RestartAbduct();
@@ -1313,7 +1310,6 @@ public sealed class JackalAlien : RoleBase, IMeetingTimeAlterable, ILNKiller, IS
         OptionModeComebaker = FloatOptionItem.Create(RoleInfo, 54, OptionName.AlienCComebacker, new(0, 100, 5), 100, false).SetValueFormat(OptionFormat.Percent);
         OptionModeNomal = FloatOptionItem.Create(RoleInfo, 8, OptionName.AlienCNomal, new(0, 100, 5), 100, false).SetValueFormat(OptionFormat.Percent);
         ObjectOptionitem.Create(RoleInfo, 99, "AddonOption", true, null).SetOptionName(() => "Sidekick Setting");
-        RoleAddAddons.Create(RoleInfo, 100, NeutralKiller: true);
     }
     #endregion
     #endregion

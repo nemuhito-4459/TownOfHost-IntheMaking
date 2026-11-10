@@ -55,7 +55,6 @@ namespace TownOfHost.Roles.Impostor
         public float CalculateKillCooldown() => KillCooldown;
         public int CalculateMeetingTimeDelta()
         {
-            if (AddOns.Common.Amnesia.CheckAbilityreturn(Player)) return 0;
             var sec = -(DecreaseMeetingTime * MyState.GetKillCount(true));
             return sec;
         }

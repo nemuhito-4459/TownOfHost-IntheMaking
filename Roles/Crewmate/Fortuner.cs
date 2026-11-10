@@ -4,8 +4,6 @@ using System.Linq;
 
 using AmongUs.GameOptions;
 using Hazel;
-using TownOfHost.Roles.AddOns.Common;
-using TownOfHost.Roles.AddOns.Neutral;
 using TownOfHost.Roles.Core;
 using TownOfHost.Roles.Core.Interfaces;
 
@@ -166,11 +164,6 @@ public sealed class Fortuner : RoleBase, IKiller
                 {
                     role = giveadd[IRandom.Instance.Next(giveadd.Count())];
                     player.RpcSetCustomRole(role);
-                    if (role is CustomRoles.Guarding)
-                    {
-                        var state = PlayerCatch.GetPlayerState(player);
-                        state.HaveGuard[1] += Guarding.HaveGuard;
-                    }
                     if (role is CustomRoles.Amanojaku)
                         AssignAmanojaku(player);
                     Logger.Info($"Give({Player.PlayerId}): {player.PlayerId} + {role}", "Fortuner");
@@ -183,11 +176,6 @@ public sealed class Fortuner : RoleBase, IKiller
                         roletext += UtilsRoleText.GetRoleColorAndtext(addon);
                         player.RpcSetCustomRole(addon);
                         role = addon;
-                        if (addon is CustomRoles.Guarding)
-                        {
-                            var state = PlayerCatch.GetPlayerState(player);
-                            state.HaveGuard[1] += Guarding.HaveGuard;
-                        }
                         if (addon is CustomRoles.Amanojaku)
                             AssignAmanojaku(player);
 
@@ -210,18 +198,7 @@ public sealed class Fortuner : RoleBase, IKiller
 
         void AssignAmanojaku(PlayerControl player)
         {
-            Amanojaku.Add(player.PlayerId);
-            UtilsGameLog.AddGameLog($"Amanojaku", string.Format(GetString("Log.Amanojaku"), UtilsName.GetPlayerColor(player)));
-            UtilsGameLog.LastLogRole[player.PlayerId] = Utils.ColorString(UtilsRoleText.GetRoleColor(CustomRoles.Amanojaku), GetString("Amanojaku") + GetString($"{player.GetCustomRole()}"));
-            if (Faction.OptionRole.TryGetValue(CustomRoles.Amanojaku, out var option) && PlayerCatch.AllPlayerControls.Any(pc => pc.Is(CustomRoles.Faction)))
-            {
-                if (option.GetBool())
-                {
-                    PlayerState.GetByPlayerId(player.PlayerId).SetSubRole(CustomRoles.Faction);
-                    if (0 < UtilsGameLog.day) player.RpcSetCustomRole(CustomRoles.Faction);
-                    Logger.Info($"役職設定:{player.Data.GetLogPlayerName()} + Faction", "Faction");
-                }
-            }
+            //天邪鬼(属性)は削除済みなので何もしない
         }
     }
     void SendRpc()

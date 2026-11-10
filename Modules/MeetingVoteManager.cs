@@ -4,9 +4,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using TownOfHost.Roles.Core;
-using TownOfHost.Roles.AddOns.Common;
-using TownOfHost.Roles.AddOns.Impostor;
-using TownOfHost.Roles.AddOns.Neutral;
 using HarmonyLib;
 
 namespace TownOfHost.Modules;
@@ -108,7 +105,6 @@ public class MeetingVoteManager
         //定義
         var player = PlayerCatch.GetPlayerById(voter);
         var votetarget = PlayerCatch.GetPlayerById(voteFor);
-        RoleAddAddons.GetRoleAddon(player.GetCustomRole(), out var data, player, subrole: [CustomRoles.Elector, CustomRoles.PlusVote, CustomRoles.Notvoter]);
 
         if (Isjudgevote)
         {
@@ -123,17 +119,10 @@ public class MeetingVoteManager
             return;
         }
 
-        if ((player.Is(CustomRoles.Elector) || data.GiveElector.GetBool()) && voteFor == Skip)
-        {
-            logger.Info($"{player.GetNameWithRole().RemoveHtmlTags()} スキップ投票は取り消されます");
-            doVote = false;
-            return;
-        }
 
         foreach (var role in CustomRoleManager.AllActiveRoles.Values)
         {
             var (roleVoteFor, roleNumVotes, roleDoVote) = ((byte?)voteFor, (int?)numVotes, isIntentional);
-            if (Amnesia.CheckAbility(role.Player))
                 (roleVoteFor, roleNumVotes, roleDoVote) = role.ModifyVote(voter, voteFor, isIntentional);
 
             if (roleVoteFor.HasValue)
@@ -151,19 +140,6 @@ public class MeetingVoteManager
                 logger.Info($"{role.Player.GetNameWithRole().RemoveHtmlTags()} によって投票は取り消されます");
                 doVote = roleDoVote;
             }
-        }
-
-        //プラスポート
-        if (data.GivePlusVote.GetBool())
-            numVotes += data.AdditionalVote.GetInt();
-        if (player.Is(CustomRoles.PlusVote))
-            numVotes += PlusVote.AdditionalVote.GetInt();
-
-        //ノットヴォウター
-        if (player.Is(CustomRoles.Notvoter) || data.GiveNotvoter.GetBool())
-        {
-            logger.Info($"{player.GetNameWithRole().RemoveHtmlTags()} の {player.GetNameWithRole().RemoveHtmlTags()} の投票数を 0 に変更します");
-            numVotes = 0;
         }
 
         if (doVote)
@@ -325,21 +301,6 @@ public class MeetingVoteManager
                 votes.TryAdd(vote.VotedFor, vote.NumVotes);
             }
 
-            if (vote.NumVotes is not 0)
-            {
-                if (voter.Is(CustomRoles.Tiebreaker)
-                || (voter.Is(CustomRoles.LastImpostor) && LastImpostor.GiveTiebreaker.GetBool())
-                || (voter.Is(CustomRoles.LastNeutral) && LastNeutral.GiveTiebreaker.GetBool())
-                || (RoleAddAddons.GetRoleAddon(voter.GetCustomRole(), out var data, voter, subrole: CustomRoles.Tiebreaker) && data.GiveTiebreaker.GetBool())
-                )//タイブレ投票は1固定
-                {
-                    if (Tie.ContainsKey(vote.VotedFor))
-                    {
-                        Tie[vote.VotedFor] += 1;
-                    }
-                    else Tie.TryAdd(vote.VotedFor, 1);
-                }
-            }
         }
 
         foreach (var vote in votes.OrderBy(x => x.Value))

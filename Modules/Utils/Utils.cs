@@ -14,10 +14,6 @@ using TownOfHost.Roles;
 using TownOfHost.Roles.Core;
 using TownOfHost.Roles.Core.Interfaces;
 using TownOfHost.Roles.Crewmate;
-using TownOfHost.Roles.AddOns.Common;
-using TownOfHost.Roles.AddOns.Impostor;
-using TownOfHost.Roles.AddOns.Neutral;
-using TownOfHost.Roles.Ghost;
 using static TownOfHost.Translator;
 using static TownOfHost.UtilsRoleText;
 using TownOfHost.Patches;
@@ -125,7 +121,7 @@ namespace TownOfHost
 
             if (seer.Is(CustomRoles.GM)) return true;
 
-            if (seer.Data.IsDead && (Options.GhostCanSeeKillflash.GetBool() || !Options.GhostOptions.GetBool()) && !seer.Is(CustomRoles.AsistingAngel) && (!seer.IsGhostRole() || Options.GhostRoleCanSeeKillflash.GetBool()) && target != seer) return true;
+            if (seer.Data.IsDead && (Options.GhostCanSeeKillflash.GetBool() || !Options.GhostOptions.GetBool()) && target != seer) return true;
             if (seer.Data.IsDead || killer == seer || target == seer) return false;
 
             //ラスポスで付いてるのに！とかが一応ありえる。
@@ -133,7 +129,6 @@ namespace TownOfHost
 
             if (seer.GetRoleClass() is IKillFlashSeeable killFlashSeeable)
             {
-                if (Amnesia.CheckAbility(seer))
                 {
                     var role = killFlashSeeable.CheckKillFlash(info);
                     if (role is null) return false;
@@ -142,19 +137,12 @@ namespace TownOfHost
             }
 
 
-            if (seer.Is(CustomRoles.LastImpostor) && LastImpostor.GiveSeeing.GetBool()) check |= !IsActive(SystemTypes.Comms) || LastImpostor.SeeingCanSeeComms.GetBool();
-            if (seer.Is(CustomRoles.LastNeutral) && LastNeutral.GiveSeeing.GetBool()) check |= !IsActive(SystemTypes.Comms) || LastNeutral.SeeingCanSeeComms.GetBool();
-
-            if (RoleAddAddons.GetRoleAddon(seer.GetCustomRole(), out var data, seer, subrole: CustomRoles.Seeing))
-                if (data.GiveSeeing.GetBool()) check |= !IsActive(SystemTypes.Comms) || data.SeeingCanSeeComms.GetBool();
-
             if (SuddenDeathMode.SuddenCanSeeKillflash.GetBool()) return true;
 
             return check || seer.GetCustomRole() switch
             {
                 // IKillFlashSeeable未適用役職はここに書く
-                _ => (seer.Is(CustomRoleTypes.Madmate) && Options.MadmateCanSeeKillFlash.GetBool())
-                || (seer.Is(CustomRoles.Seeing) && (!IsActive(SystemTypes.Comms) || Seeing.OptionCanSeeActiveComms.GetBool()))
+                _ => seer.Is(CustomRoleTypes.Madmate) && Options.MadmateCanSeeKillFlash.GetBool()
             };
         }
         public static bool NowKillFlash = false;
@@ -240,9 +228,7 @@ namespace TownOfHost
             var pc = PlayerCatch.GetPlayerById(playerId);
             if (pc == null) return false;
             var isAlive = pc.IsAlive();
-            var GhostRole = pc.IsGhostRole();
-            if (!isAlive && GhostRole) return Options.GhostRoleCanSeeKillerColor.GetBool();
-            if (!isAlive && !GhostRole) return Options.GhostCanSeeKillerColor.GetBool() || !Options.GhostOptions.GetBool();
+            if (!isAlive) return Options.GhostCanSeeKillerColor.GetBool() || !Options.GhostOptions.GetBool();
             return false;
         }
         public static string GetVitalText(byte playerId, bool? RealKillerColor = false, bool alivecolor = true)
@@ -692,21 +678,6 @@ namespace TownOfHost
             else
             {
                 Balancer.AfterMeetingReset();
-                if (!Options.firstturnmeeting || !MeetingStates.First)
-                {
-                    Amanojaku.Assign();
-                    if (Amnesia.OptionCanRealizeDay.GetBool() && Amnesia.OptionRealizeDayCount.GetInt() <= UtilsGameLog.day)
-                    {
-                        foreach (var pc in PlayerCatch.AllPlayerControls)
-                        {
-                            if (pc.Is(CustomRoles.Amnesia))
-                            {
-                                if (!RoleSendList.Contains(pc.PlayerId)) RoleSendList.Add(pc.PlayerId);
-                                Amnesia.RemoveAmnesia(pc.PlayerId);
-                            }
-                        }
-                    }
-                }
                 foreach (var pc in PlayerCatch.AllPlayerControls)
                 {
                     var roleClass = pc.GetRoleClass();
@@ -715,11 +686,6 @@ namespace TownOfHost
                 }
                 if (!Options.firstturnmeeting || !MeetingStates.First)
                 {
-                    if (AsistingAngel.CanSetAsistTarget())
-                    {
-                        AsistingAngel.Limit++;
-                    }
-
                     UtilsGameLog.day++;
                     UtilsGameLog.AddGameLogsub("\n" + string.Format(GetString("Message.Day").RemoveDeltext("【").RemoveDeltext("】"), UtilsGameLog.day).Color(Palette.Orange));
                 }
@@ -737,7 +703,6 @@ namespace TownOfHost
                     ventilationSystem.IsDirty = true;
                 }
                 CoEnterVentPatch.VentPlayers.Clear();
-                GuessManager.Reset();//会議後にリセット入れる
                 GameStates.ExiledAnimate = false;
             }
         }

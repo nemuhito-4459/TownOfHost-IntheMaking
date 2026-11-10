@@ -11,7 +11,6 @@ using TownOfHost.Roles.Core.Interfaces;
 using TownOfHost.Roles.Crewmate;
 using TownOfHost.Roles.Impostor;
 using TownOfHost.Roles.Neutral;
-using TownOfHost.Roles.AddOns.Common;
 using TownOfHost.Modules.ChatManager;
 
 namespace TownOfHost
@@ -283,12 +282,6 @@ namespace TownOfHost
                     Mark.Clear();
                     Suffix.Clear();
 
-                    //見る側が双子で相方が双子の場合
-                    if (Twins.TwinsList.TryGetValue(PlayerControl.LocalPlayer.PlayerId, out var targetid) && seer.IsAlive())
-                    {
-                        if (targetid == target.PlayerId) RoleText.text = UtilsRoleText.GetRoleColorAndtext(CustomRoles.Twins) + RoleText.text;
-                    }
-
                     //名前を一時的に上書きするかのチェック
                     var TemporaryName = roleclass?.GetTemporaryName(ref name, ref nomarker, false, seer, target) ?? false;
 
@@ -338,7 +331,6 @@ namespace TownOfHost
                             Suffix.Append("<#ffffff><size=75%>" + MeetingVoteManager.Voteresult + "</color></size>");
                         }
                         //seer役職が対象のSuffix
-                        if (Amnesia.CheckAbility(player))
                         {
                             Mark.Append(seerRole?.GetMark(seer, target, false));
 

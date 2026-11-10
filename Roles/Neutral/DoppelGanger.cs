@@ -82,7 +82,6 @@ public sealed class DoppelGanger : RoleBase, ILNKiller, ISchrodingerCatOwner, IA
         OptionShapeCountUp = FloatOptionItem.Create(RoleInfo, 90, OptionName.DoppelGangerShapeCountUp, new(0, 0.9f, 0.1f), 0.1f, false);
         OptionAddWinCount = FloatOptionItem.Create(RoleInfo, 13, OptionName.DoppelGangerAddWinCount, new(0f, 300f, 1f), 45f, false);
         OptionSoloWinCount = FloatOptionItem.Create(RoleInfo, 14, OptionName.DoppelGangerSoloWinCount, new(0f, 300f, 1f), 70f, false);
-        RoleAddAddons.Create(RoleInfo, 15);
     }
     public float CalculateKillCooldown() => KillCooldown;
     public bool CanUseSabotageButton() => false;

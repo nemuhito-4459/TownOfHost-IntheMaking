@@ -227,7 +227,7 @@ class RoleInfoShower
                                         case CountTypes.Fox: overrideRoleText = CustomRoles.Fox; break;
                                         case CountTypes.GrimReaper: overrideRoleText = CustomRoles.GrimReaper; break;
                                         case CountTypes.Remotekiller: overrideRoleText = CustomRoles.Remotekiller; break;
-                                        case CountTypes.MilkyWay: countText = Roles.Neutral.Vega.TeamText; break;
+                                        case CountTypes.MilkyWay: countText = $"<color=#f0e7a8>{Translator.GetString(CountTypes.MilkyWay.ToString())}</color>"; break;
                                         default: overrideRoleText = CustomRoles.Crewmate; break;
                                     }
 
@@ -359,8 +359,6 @@ class MainMenuManagerUpdatePatch
                 TabGroup.NeutralRoles => buttongameobjectdata.Key.IsNeutral() && !buttongameobjectdata.Key.IsJackalTeam(),
                 TabGroup.JackalRoles => buttongameobjectdata.Key.IsJackalTeam(),
                 TabGroup.CrewmateRoles => buttongameobjectdata.Key.IsCrewmate(),
-                TabGroup.GhostRoles => buttongameobjectdata.Key.IsGhostRole(),
-                TabGroup.Addons => buttongameobjectdata.Key.IsAddOn(),
                 TabGroup.Combinations => buttongameobjectdata.Key.IsCombinationRole(),
                 null => (int)buttongameobjectdata.Key < 0,
                 _ => false

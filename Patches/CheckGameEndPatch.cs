@@ -11,10 +11,7 @@ using TownOfHost.Modules;
 using TownOfHost.Roles.Core;
 using TownOfHost.Roles.Core.Interfaces;
 using TownOfHost.Roles.Neutral;
-using TownOfHost.Roles.AddOns.Neutral;
-using TownOfHost.Roles.AddOns.Common;
 using TownOfHost.Roles.Crewmate;
-using TownOfHost.Roles.Ghost;
 using TownOfHost.Patches;
 
 namespace TownOfHost
@@ -159,8 +156,6 @@ namespace TownOfHost
                                 }
                             }
                         }
-                        LastNeutral.CheckAddWin(pc, reason);
-                        Amanojaku.CheckWin(pc, reason);
                     }
                 }
                 if (CustomWinnerHolder.WinnerTeam is not CustomWinner.Draw)
@@ -168,7 +163,6 @@ namespace TownOfHost
                     CurseMaker.CheckWin();
                     Fox.SFoxCheckWin(ref reason);
                 }
-                AsistingAngel.CheckAddWin();
                 foreach (var phantomthiefplayer in PlayerCatch.AllAlivePlayerControls.Where(pc => pc.GetCustomRole() is CustomRoles.PhantomThief))
                 {
                     if (phantomthiefplayer.GetRoleClass() is PhantomThief phantomThief)
@@ -181,8 +175,6 @@ namespace TownOfHost
                     var roleclass = player.GetRoleClass();
                     roleclass?.CheckWinner(reason);
                 }
-                Twins.CheckAddWin();
-                Faction.CheckWin();
 
                 ShipStatus.Instance.enabled = false;
                 if (CustomWinnerHolder.WinnerTeam != CustomWinner.Crewmate && (reason.Equals(GameOverReason.CrewmatesByTask) || reason.Equals(GameOverReason.CrewmatesByVote)))

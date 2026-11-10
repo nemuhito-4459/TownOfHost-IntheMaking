@@ -60,7 +60,6 @@ public sealed class Egoist : RoleBase, ISidekickable, ILNKiller, ISchrodingerCat
             .SetValueFormat(OptionFormat.Seconds);
         OptionCanCreateSideKick = BooleanOptionItem.Create(RoleInfo, 11, GeneralOption.CanCreateSideKick, false, false);
         OptionNameColor = BooleanOptionItem.Create(RoleInfo, 12, Op.EgoistNameColor, false, false);
-        RoleAddAddons.Create(RoleInfo, 13);
     }
     public override void Add()
     {

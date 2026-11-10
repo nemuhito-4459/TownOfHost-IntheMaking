@@ -234,7 +234,6 @@ public sealed class SwitchSheriff : RoleBase, IKiller, ISchrodingerCatOwner
     public override void AfterSabotage(SystemTypes systemType) => Flug3 = 0;
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
-        if (AddOns.Common.Amnesia.CheckAbilityreturn(Player)) return;
         if (Player.IsAlive())
         {
             ModeSwitching(true);
@@ -270,7 +269,6 @@ public sealed class SwitchSheriff : RoleBase, IKiller, ISchrodingerCatOwner
     public override void AfterMeetingTasks()
     {
         if (!Player.IsAlive()) return;
-        if (AddOns.Common.Amnesia.CheckAbilityreturn(Player)) return;
         _ = new LateTask(() => nowcool = CurrentKillCooldown, Main.LagTime, "Reset-SwitchSheriff");
     }
     public override string GetProgressText(bool comms = false, bool gamelog = false)
@@ -366,7 +364,6 @@ public sealed class SwitchSheriff : RoleBase, IKiller, ISchrodingerCatOwner
     {
         if (!CanChangeMode()) return true;
         if (CommsMode.GetValue() == 0) return true;
-        if (AddOns.Common.Amnesia.CheckAbility(Player))
             if (sabotage == SystemTypes.Comms)
             {
                 var task = CommsMode.GetValue() == 2;

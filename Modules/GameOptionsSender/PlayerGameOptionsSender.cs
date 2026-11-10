@@ -7,12 +7,8 @@ using InnerNet;
 using Mathf = UnityEngine.Mathf;
 
 using TownOfHost.Roles.Core;
-using TownOfHost.Roles.AddOns.Impostor;
-using TownOfHost.Roles.AddOns.Neutral;
-using TownOfHost.Roles.Ghost;
 using static TownOfHost.Options;
 using TownOfHost.Roles.Core.Interfaces;
-using TownOfHost.Roles.AddOns.Common;
 using TownOfHost.Roles.Vanilla;
 
 namespace TownOfHost.Modules
@@ -169,7 +165,6 @@ namespace TownOfHost.Modules
             }
 
             CustomRoles role = player.GetCustomRole();
-            var HasRoleAddon = RoleAddAddons.GetRoleAddon(role, out var data, player, subrole: [CustomRoles.Lighting, CustomRoles.Moon, CustomRoles.Sunglasses, CustomRoles.Watching, CustomRoles.Speeding]);
 
             if (player.IsAlive())
             {
@@ -177,9 +172,9 @@ namespace TownOfHost.Modules
                 opt.SetFloat(FloatOptionNames.EngineerInVentMaxTime, DefaultEngineerInVentMaxTime.GetFloat());
                 opt.SetInt(Int32OptionNames.NumEmergencyMeetings, (int)state.NumberOfRemainingButtons);
 
-                var HasLithing = player.Is(CustomRoles.Lighting);
-                var HasMoon = player.Is(CustomRoles.Moon);
-                var HasSunglasses = player.Is(CustomRoles.Sunglasses);
+                //属性は削除済み。ライティング/ムーンはマッドメイトの設定からだけ付く
+                var HasLithing = false;
+                var HasMoon = false;
                 opt.SetFloat(FloatOptionNames.ImpostorLightMod, Main.DefaultImpostorVision);
                 opt.SetFloat(FloatOptionNames.CrewLightMod, Main.DefaultCrewmateVision);
 
@@ -210,48 +205,11 @@ namespace TownOfHost.Modules
                     //    return opt;
                 }
 
-                if (player.Is(CustomRoles.MagicHand))
-                    opt.SetInt(Int32OptionNames.KillDistance, MagicHand.KillDistance.GetInt());
-
                 //キルレンジ
                 if (OverrideKilldistance.AllData.TryGetValue(role, out var killdistance))
                     opt.SetInt(Int32OptionNames.KillDistance, killdistance.Killdistance.GetInt());
 
-                if (Amnesia.CheckAbility(player))
                     roleClass?.ApplyGameOptions(opt);
-
-                foreach (var subRole in player.GetCustomSubRoles())
-                {
-                    switch (subRole)
-                    {
-                        case CustomRoles.LastImpostor:
-                            if (LastImpostor.GiveWatching.GetBool()) opt.SetBool(BoolOptionNames.AnonymousVotes, false);
-                            if (OverrideKilldistance.AllData.TryGetValue(CustomRoles.LastImpostor, out var kd))
-                                opt.SetInt(Int32OptionNames.KillDistance, kd.Killdistance.GetInt());
-                            break;
-                        case CustomRoles.LastNeutral:
-                            if (LastNeutral.GiveWatching.GetBool()) opt.SetBool(BoolOptionNames.AnonymousVotes, false);
-                            if ((roleClass is ILNKiller || LastNeutral.ChKilldis.GetBool()) && OverrideKilldistance.AllData.TryGetValue(CustomRoles.LastNeutral, out var killd))
-                                opt.SetInt(Int32OptionNames.KillDistance, killd.Killdistance.GetInt());
-
-                            break;
-                        case CustomRoles.Watching:
-                            opt.SetBool(BoolOptionNames.AnonymousVotes, false);
-                            break;
-                    }
-                }
-
-                //書く役職の処
-                if (HasRoleAddon)
-                {
-                    //Wac
-                    if (data.GiveWatching.GetBool()) opt.SetBool(BoolOptionNames.AnonymousVotes, false);
-                    if (!data.IsImpostor)
-                    {
-                        HasLithing |= data.GiveLighting.GetBool();
-                        HasMoon |= data.GiveMoon.GetBool();
-                    }
-                }
 
                 var isElectrical = Utils.IsActive(SystemTypes.Electrical);
 
@@ -304,69 +262,26 @@ namespace TownOfHost.Modules
                     opt.SetInt(Int32OptionNames.NumEmergencyMeetings, 0);
                 }
 
-                if (data.GiveSunglasses.GetBool())
-                {
-                    opt.SetFloat(FloatOptionNames.ImpostorLightMod, opt.GetFloat(FloatOptionNames.ImpostorLightMod) * data.SunglassesVisionmagnification.GetFloat() * 0.01f);
-                    opt.SetFloat(FloatOptionNames.CrewLightMod, opt.GetFloat(FloatOptionNames.CrewLightMod) * data.SunglassesVisionmagnification.GetFloat() * 0.01f);
-                }
-                else if (HasSunglasses)
-                {
-                    opt.SetFloat(FloatOptionNames.ImpostorLightMod, opt.GetFloat(FloatOptionNames.ImpostorLightMod) * Sunglasses.SunglassesVisionmagnification.GetFloat() * 0.01f);
-                    opt.SetFloat(FloatOptionNames.CrewLightMod, opt.GetFloat(FloatOptionNames.CrewLightMod) * Sunglasses.SunglassesVisionmagnification.GetFloat() * 0.01f);
-                }
                 AURoleOptions.EngineerCooldown = Mathf.Max(1.2f, AURoleOptions.EngineerCooldown);
                 opt.BlackOut(state.IsBlackOut);
             }
             else
             {
-                bool HaveWatching = player.Is(CustomRoles.Watching);
+                bool HaveWatching = false;
 
-                if (HasRoleAddon && data.GiveWatching.GetBool()) HaveWatching = true;
-                if ((GhostCanSeeOtherVotes.GetBool() || !GhostOptions.GetBool()) && !player.Is(CustomRoles.AsistingAngel) && (!player.IsGhostRole() || GhostRoleCanSeeOtherVotes.GetBool()))
+                if (GhostCanSeeOtherVotes.GetBool() || !GhostOptions.GetBool())
                     HaveWatching |= true;
                 if (HaveWatching is false)
                 {
-                    foreach (var subrole in player.GetCustomSubRoles())
-                    {
-                        switch (subrole)
-                        {
-                            case CustomRoles.LastImpostor: HaveWatching |= LastImpostor.GiveWatching.GetBool(); break;
-                            case CustomRoles.LastNeutral: HaveWatching |= LastImpostor.GiveWatching.GetBool(); break;
-                        }
-                    }
                     if (role.IsMadmate() && MadmateCanSeeOtherVotes.GetBool()) HaveWatching = true;
                 }
 
                 if (HaveWatching) opt.SetBool(BoolOptionNames.AnonymousVotes, false);
 
-                //幽霊役職用の奴
-                if (player.IsGhostRole())
-                {
-                    var gr = PlayerState.GetByPlayerId(player.PlayerId).GhostRole;
-                    switch (gr)
-                    {
-                        case CustomRoles.Ghostbuttoner: AURoleOptions.GuardianAngelCooldown = CoolDown(Ghostbuttoner.CoolDown.GetFloat()); break;
-                        case CustomRoles.GhostNoiseSender: AURoleOptions.GuardianAngelCooldown = CoolDown(GhostNoiseSender.CoolDown.GetFloat()); break;
-                        case CustomRoles.GhostReseter: AURoleOptions.GuardianAngelCooldown = CoolDown(GhostReseter.CoolDown.GetFloat()); break;
-                        case CustomRoles.GhostRumour: AURoleOptions.GuardianAngelCooldown = CoolDown(GhostRumour.CoolDown.GetFloat()); break;
-                        case CustomRoles.GuardianAngel: AURoleOptions.GuardianAngelCooldown = CoolDown(GuardianAngel.CoolDown.GetFloat()); break;
-                        case CustomRoles.DemonicTracker: AURoleOptions.GuardianAngelCooldown = CoolDown(DemonicTracker.CoolDown.GetFloat()); break;
-                        case CustomRoles.DemonicCrusher: AURoleOptions.GuardianAngelCooldown = CoolDown(DemonicCrusher.CoolDown.GetFloat()); break;
-                        case CustomRoles.DemonicVenter: AURoleOptions.GuardianAngelCooldown = CoolDown(DemonicVenter.CoolDown.GetFloat()); break;
-                        case CustomRoles.AsistingAngel: AURoleOptions.GuardianAngelCooldown = CoolDown(AsistingAngel.GetNowCoolDown()); break;
-                        case CustomRoles.SpiritGuide: AURoleOptions.SpiritGuideCooldownSeconds = CoolDown(SpiritGuide.CoolDown.GetFloat()); break;
-                    }
-                }
             }
 
             if (Main.AllPlayerSpeed.TryGetValue(player.PlayerId, out var speed))
             {
-                if (0.25f <= speed)
-                {
-                    var addspeed = player.Is(CustomRoles.Speeding) ? Speeding.Speed : 0;
-                    if (HasRoleAddon) addspeed = data.GiveSpeeding.GetBool() ? data.Speed.GetFloat() : addspeed;
-                    speed += addspeed;
-                }
                 if (state.CanMove is false) speed = Main.MinSpeed;
                 AURoleOptions.PlayerSpeedMod = Mathf.Clamp(speed, Main.MinSpeed, Utils.IsRestriction() ? 3f : 10f);
             }

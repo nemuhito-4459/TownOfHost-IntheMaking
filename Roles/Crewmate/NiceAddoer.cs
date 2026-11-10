@@ -29,7 +29,6 @@ namespace TownOfHost.Roles.Crewmate
         }
         private static void SetupOptionItem()
         {
-            RoleAddAddons.Create(RoleInfo, 5, DefaaultOn: true);
         }
     }
 }

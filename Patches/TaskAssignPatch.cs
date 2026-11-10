@@ -4,7 +4,6 @@ using HarmonyLib;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 
 using TownOfHost.Roles.Core;
-using TownOfHost.Roles.AddOns.Crewmate;
 
 namespace TownOfHost
 {
@@ -89,9 +88,6 @@ namespace TownOfHost
                 NumShortTasks = data.numShortTasks.GetInt();    // 割り当てるショートタスクの数
                                                                 // ロングとショートは常時再割り当てが行われる。
             }
-            if (pc.Is(CustomRoles.Workhorse))
-                (hasCommonTasks, NumCommonTasks, NumLongTasks, NumShortTasks) = Workhorse.TaskData;
-
             if (Options.CurrentGameMode == CustomGameMode.TaskBattle && TaskBattle.IsAdding)
             {
                 hasCommonTasks = false;

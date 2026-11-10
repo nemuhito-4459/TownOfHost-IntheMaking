@@ -8,11 +8,8 @@ using Hazel;
 using TownOfHost.Modules;
 using TownOfHost.Roles;
 using TownOfHost.Roles.Core;
-using TownOfHost.Roles.Ghost;
-using TownOfHost.Roles.AddOns.Common;
 
 using static TownOfHost.Translator;
-using TownOfHost.Roles.AddOns.Neutral;
 
 namespace TownOfHost
 {
@@ -52,7 +49,6 @@ namespace TownOfHost
             UtilsGameLog.LastLogSubRole = new Dictionary<byte, string>();
             UtilsGameLog.LastLogLoveRole = new Dictionary<byte, string>();
             Main.AllPlayerTask = new Dictionary<byte, List<uint>>();
-            GhostRoleAssingData.GhostAssingCount = new Dictionary<CustomRoles, int>();
 
             Main.HostKill = new();
             PlayerCatch.SKMadmateNowCount = 0;
@@ -463,12 +459,6 @@ namespace TownOfHost
                     };
                     AssignCustomRolesFromList(role, baseRoleTypes);
                 }
-                AddOnsAssignDataOnlyKiller.AssignAddOnsFromList();
-                AddOnsAssignDataTeamImp.AssignAddOnsFromList();
-                AddOnsAssignData.AssignAddOnsFromList();
-                Twins.AssingAndReset();
-                if (Amanojaku.AssingDay.GetInt() == 0) AmanojakuAssing.AssignAddOnsFromList();
-                Faction.AssingFaction();
 
                 foreach (var pair in PlayerState.AllPlayerStates)
                 {

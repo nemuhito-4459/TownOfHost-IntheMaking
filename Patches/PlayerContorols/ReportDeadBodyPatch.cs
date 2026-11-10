@@ -4,7 +4,6 @@ using HarmonyLib;
 
 using TownOfHost.Modules;
 using TownOfHost.Roles.Core;
-using TownOfHost.Roles.AddOns.Common;
 using TownOfHost.Roles.Impostor;
 using TownOfHost.Roles.Neutral;
 using static TownOfHost.Roles.Core.RoleBase;
@@ -191,62 +190,6 @@ namespace TownOfHost
                 Logger.Info($"サボ発生中！キャンセルする！", "ReportDeadBody");
                 return false;
             }
-            RoleAddAddons.GetRoleAddon(repoter.GetCustomRole(), out var da, repoter, subrole: CustomRoles.NonReport);
-            var GiveNonReport = da.GiveNonReport.GetBool();
-            var val = da.mode;
-            if (target == null)
-            {
-                if (GiveNonReport && val is RoleAddAddons.NonReportMode.NonReportModeAll or RoleAddAddons.NonReportMode.NotButton)
-                {
-                    Logger.Info($"役職でノンレポ(Mode: {val})だからキャンセル。", "ReportDeadBody");
-                    GameStates.CalledMeeting = false;
-                    AddDontrepo(repoter, DontReportreson.NonReport);
-                    return false;
-                }
-                else
-                {
-                    if (repoter.Is(CustomRoles.NonReport) && NonReport.Mode is NonReport.NonReportMode.NonReportModeAll or NonReport.NonReportMode.NotButton)
-                    {
-                        Logger.Info($"属性でノンレポ(Mode: {val})だからキャンセル。", "ReportDeadBody");
-                        GameStates.CalledMeeting = false;
-                        AddDontrepo(repoter, DontReportreson.NonReport);
-                        return false;
-                    }
-                }
-            }
-            else if (!DontAddonCheck)
-            {
-                if (GiveNonReport && val is RoleAddAddons.NonReportMode.NonReportModeAll or RoleAddAddons.NonReportMode.NotReport)
-                {
-                    Logger.Info($"NonReportの設定が{val}だからキャンセル。", "ReportDeadBody");
-                    GameStates.CalledMeeting = false;
-                    AddDontrepo(repoter, DontReportreson.NonReport);
-                    return false;
-                }
-                else if (repoter.Is(CustomRoles.NonReport) && NonReport.Mode is NonReport.NonReportMode.NonReportModeAll or NonReport.NonReportMode.NotReport)
-                {
-                    Logger.Info($"属性でノンレポ(Mode: {val})だからキャンセル。", "ReportDeadBody");
-                    GameStates.CalledMeeting = false;
-                    AddDontrepo(repoter, DontReportreson.NonReport);
-                    return false;
-                }
-                else
-                    if (RoleAddAddons.GetRoleAddon(target?.Object.GetCustomRole() ?? CustomRoles.NotAssigned, out var d, target?.Object, subrole: CustomRoles.Transparent) && d.GiveTransparent.GetBool())
-                    {
-                        GameStates.CalledMeeting = false;
-                        Logger.Info($"ターゲットが属性トランスパレントだから通報をキャンセルする。", "ReportDeadBody");
-                        AddDontrepo(repoter, DontReportreson.Transparent);
-                        return false;
-                    }
-                    else
-                        if (target?.Object.Is(CustomRoles.Transparent) ?? false || Transparent.playerIdList.Contains(target.PlayerId))
-                        {
-                            GameStates.CalledMeeting = false;
-                            Logger.Info($"ターゲットが属性トランスパレントだから通報をキャンセルする。", "ReportDeadBody");
-                            AddDontrepo(repoter, DontReportreson.Transparent);
-                            return false;
-                        }
-            }
 
             if (!AmongUsClient.Instance.AmHost) return true;
 
@@ -318,7 +261,6 @@ namespace TownOfHost
                 kvp.Value.LastRoom = pc?.GetPlainShipRoom();
                 if (IsMeetingBlackout) kvp.Value.IsBlackOut = true;
             }
-            AntiTeleporter.OnMeetingCalled();
 
             AdminProvider.CalculateAdmin(true);
 
@@ -360,7 +302,6 @@ namespace TownOfHost
             DisableDevice.SendMessage();
 
             var meetingInfo = UtilsNotifyRoles.ExtendedMeetingText;
-            Notice.OnReportDeadBody(reporter, target);
             foreach (var pc in PlayerCatch.AllPlayerControls)
             {
                 var roleClass = pc.GetRoleClass();

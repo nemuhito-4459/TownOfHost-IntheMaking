@@ -71,7 +71,6 @@ public sealed class Jester : RoleBase, IKiller
     public override bool CanVentMoving(PlayerPhysics physics, int ventId) => CanVentMove.GetBool();
     public override void OnExileWrapUp(NetworkedPlayerInfo exiled, ref bool DecidedWinner)
     {
-        if (AddOns.Common.Amnesia.CheckAbilityreturn(Player)) return;
         if (!AmongUsClient.Instance.AmHost || Player.PlayerId != exiled.PlayerId) return;
 
         if (CustomWinnerHolder.ResetAndSetAndChWinner(CustomWinner.Jester, Player.PlayerId))

@@ -77,7 +77,6 @@ public sealed class MadWare : RoleBase, IKillFlashSeeable, IDeathReasonSeeable
         OptionRemoveSabotageCooldownPoint = IntegerOptionItem.Create(RoleInfo, 17, OptionName.MadWareRemoveSabotagePoint, new(0, 100, 1), 5, false).SetZeroNotation(OptionZeroNotation.Off);
         OptionRemoveSabotageCooldown = FloatOptionItem.Create(RoleInfo, 18, OptionName.MadWareRemoveSabotageCooldown, new(0.5f, 25f, 0.1f), 3, false, OptionRemoveSabotageCooldownPoint).SetValueFormat(OptionFormat.Seconds);
         OptionAddAddon = IntegerOptionItem.Create(RoleInfo, 19, OptionName.MadWareCanUseAddon, new(0, 100, 1), 3, false).SetZeroNotation(OptionZeroNotation.Off);
-        RoleAddAddons.Create(RoleInfo, 30, MadMate: true, DefaaultOn: true);
     }
     public override void ApplyGameOptions(IGameOptions opt)
     {

@@ -1,6 +1,5 @@
 using HarmonyLib;
 using Hazel;
-using TownOfHost.Roles.AddOns.Common;
 using TownOfHost.Roles.Core;
 using TownOfHost.Roles.Core.Interfaces;
 using TownOfHost.Roles.Neutral;
@@ -34,7 +33,6 @@ public static class HudOverrideSystemTypeUpdateSystemPatch
             (playerRole is SchrodingerCat schrodingerCat && schrodingerCat.AmMadmate);
 
         if ((isMadmate && !Options.MadmateCanFixComms.GetBool() && !player.Is(CustomRoles.MadWare))
-        || (player.Is(CustomRoles.Amanojaku) && !Amanojaku.OptCanFixComms.GetBool())
         || (player.Is(CustomRoles.Clumsy)))
         {
             return false;
@@ -44,9 +42,7 @@ public static class HudOverrideSystemTypeUpdateSystemPatch
             return false;
         }
 
-        if (RoleAddAddons.GetRoleAddon(player.GetCustomRole(), out var data, player, subrole: CustomRoles.Clumsy) && data.GiveClumsy.GetBool()) return false;
 
-        if (Amnesia.CheckAbility(player))
             if (playerRole is ISystemTypeUpdateHook systemTypeUpdateHook && !systemTypeUpdateHook.UpdateHudOverrideSystem(__instance, amount))
             {
                 return false;

@@ -4,7 +4,6 @@ using AmongUs.GameOptions;
 using UnityEngine;
 
 using TownOfHost.Roles.Core;
-using TownOfHost.Roles.AddOns.Neutral;
 using Hazel;
 
 namespace TownOfHost.Roles.Neutral;
@@ -98,7 +97,6 @@ public sealed class JackalDoll : RoleBase
         VentCool = FloatOptionItem.Create(RoleInfo, 17, GeneralOption.Cooldown, new(0f, 180f, 0.5f), 0f, false, CanVent).SetValueFormat(OptionFormat.Seconds);
         VentIntime = FloatOptionItem.Create(RoleInfo, 18, GeneralOption.EngineerInVentCooldown, new(0f, 180f, 0.5f), 0f, false, CanVent).SetZeroNotation(OptionZeroNotation.Infinity).SetValueFormat(OptionFormat.Seconds);
         CanVentMove = BooleanOptionItem.Create(RoleInfo, 19, "MadmateCanMovedByVent", false, false, CanVent);
-        RoleAddAddons.Create(RoleInfo, 20, MadMate: true);
     }
     public override bool CanVentMoving(PlayerPhysics physics, int ventId) => CanVentMove.GetBool();
     public override void ApplyGameOptions(IGameOptions opt)
@@ -198,11 +196,6 @@ public sealed class JackalDoll : RoleBase
 
         doll.RpcSetRole(CanVent.GetBool() ? RoleTypes.Engineer : RoleTypes.Crewmate, true);
 
-        //サイドキックがガード等発動しないため。
-        if (RoleAddAddons.GetRoleAddon(CustomRoles.Jackaldoll, out var addondate, doll, subrole: [CustomRoles.Guarding]))
-        {
-            if (addondate.GiveGuarding.GetBool()) doll.GetPlayerState().HaveGuard[1] += addondate.Guard.GetInt();
-        }
         foreach (var jackals in PlayerCatch.AllPlayerControls)
         {
             if (jackals.Is(CountTypes.Jackal))
@@ -279,16 +272,6 @@ public sealed class JackalDoll : RoleBase
                 CanPromotion = true;
                 if (!Utils.RoleSendList.Contains(Player.PlayerId)) Utils.RoleSendList.Add(Player.PlayerId);
                 player.RpcSetCustomRole(data.Ownerrole, true, log: null);
-
-                //徒党が存在していて、ジャッカルの徒党がON
-                if (PlayerCatch.AllPlayerControls.Any(pc => pc.Is(CustomRoles.Faction)) && Faction.OptionRole.TryGetValue(CustomRoles.Jackal, out var option))
-                {
-                    if (option.GetBool())
-                    {
-                        player.RpcSetCustomRole(CustomRoles.Faction);
-                        Logger.Info($"{player.Data.GetLogPlayerName()} => 昇格徒党", "Faction");
-                    }
-                }
             }
             CanPromotion = false;
         }

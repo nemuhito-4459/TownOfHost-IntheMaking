@@ -96,7 +96,6 @@ public sealed class Mayor : RoleBase
     }
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
-        if (AddOns.Common.Amnesia.CheckAbilityreturn(Player)) return;
         if (Is(reporter) && target == null) //ボタン
             LeftButtonCount--;
     }

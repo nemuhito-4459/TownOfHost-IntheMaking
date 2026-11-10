@@ -78,7 +78,6 @@ public sealed class AlienHijack : RoleBase, IMeetingTimeAlterable, IImpostor, IN
     public override void OnReportDeadBody(PlayerControl repo, NetworkedPlayerInfo __)
     {
         if (!AmongUsClient.Instance.AmHost) return;
-        if (AddOns.Common.Amnesia.CheckAbilityreturn(Player)) return;
         Remotekillertarget = 111;
         NameAddmin.Clear();
         Puppets.Clear();
@@ -165,7 +164,6 @@ public sealed class AlienHijack : RoleBase, IMeetingTimeAlterable, IImpostor, IN
     }
     public int CalculateMeetingTimeDelta()
     {
-        if (AddOns.Common.Amnesia.CheckAbilityreturn(Player)) return 0;
         var sec = -(TimeThiefDecreaseMeetingTime * Count);
         return sec;
     }

@@ -68,7 +68,6 @@ public sealed class MadBetrayer : RoleBase, IKiller, ISchrodingerCatOwner
         OptionCanUseSabotage = BooleanOptionItem.Create(RoleInfo, 13, GeneralOption.CanUseSabotage, false, false);
         OptionHasImpostorVision = BooleanOptionItem.Create(RoleInfo, 14, GeneralOption.ImpostorVision, true, false);
         OverrideTasksData.Create(RoleInfo, 15);
-        RoleAddAddons.Create(RoleInfo, 40, MadMate: true);
     }
     public ISchrodingerCatOwner.TeamType SchrodingerCatChangeTo => ISchrodingerCatOwner.TeamType.Betrayer;
 

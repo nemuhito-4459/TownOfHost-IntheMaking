@@ -52,7 +52,6 @@ namespace TownOfHost.Roles.Impostor
         }
         public override string MeetingAddMessage()
         {
-            if (AddOns.Common.Amnesia.CheckAbilityreturn(Player)) return "";
             if (Player.IsAlive() && TairouNotify)
             {
                 string TairouTitle = $"<size=90%><color=#ff0000>{GetString("Message.TairouTitle")}</size></color>";

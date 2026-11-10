@@ -63,7 +63,6 @@ public sealed class Turncoat : RoleBase, IKiller
         OptionCanTargetMadmate = BooleanOptionItem.Create(RoleInfo, 11, OptionName.TurncoatCanTargetMadmate, false, false);
         OptionCanTargetNeutral = BooleanOptionItem.Create(RoleInfo, 12, OptionName.TurncoatCanTargetNeutral, false, false);
 
-        RoleAddAddons.Create(RoleInfo, 20);
     }
     //ターゲットの選択
     public override void Add()

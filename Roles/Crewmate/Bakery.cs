@@ -52,7 +52,6 @@ public sealed class Bakery : RoleBase
     }
     public override string MeetingAddMessage()
     {
-        if (AddOns.Common.Amnesia.CheckAbilityreturn(Player)) return "";
         if (Player.IsAlive())
         {
             string BakeryTitle = $"<size=90%><color=#8f6121>{GetString("Message.BakeryTitle")}</size></color>";

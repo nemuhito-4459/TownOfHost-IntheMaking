@@ -1,6 +1,5 @@
 using HarmonyLib;
 using Hazel;
-using TownOfHost.Roles.AddOns.Common;
 using TownOfHost.Roles.Core;
 using TownOfHost.Roles.Core.Interfaces;
 using TownOfHost.Roles.Neutral;
@@ -35,13 +34,11 @@ public static class SwitchSystemUpdateSystemPatch
             // マッド属性化時に削除
             (roleclass is SchrodingerCat schrodingerCat && schrodingerCat.AmMadmate);
         if ((isMadmate && !Options.MadmateCanFixLightsOut.GetBool() && !player.Is(CustomRoles.MadWare))
-        || (player.Is(CustomRoles.Amanojaku) && !Amanojaku.OptCanFixLightsOut.GetBool())
         || player.Is(CustomRoles.Water))
         {
             return false;
         }
         // ロールの処理
-        if (Amnesia.CheckAbility(player))
         {
             if ((roleclass as ISystemTypeUpdateHook)?.UpdateSwitchSystem(__instance, amount) is false)
             {
@@ -53,8 +50,6 @@ public static class SwitchSystemUpdateSystemPatch
             {
                 return false;
             }
-
-        if (RoleAddAddons.GetRoleAddon(player.GetCustomRole(), out var data, player, subrole: CustomRoles.Water) && data.GiveWater.GetBool()) return false;
 
         //Airshipの特定の停電を直せないならキャンセル
         if ((MapNames)Main.NormalOptions.MapId == MapNames.Airship)

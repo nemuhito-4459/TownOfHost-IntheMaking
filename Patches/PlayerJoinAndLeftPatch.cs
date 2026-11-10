@@ -282,7 +282,6 @@ namespace TownOfHost
                         {
                             role?.OnLeftPlayer(data.Character);
                         }
-                        Twins.TwinsReset(data.Character.PlayerId);
                         state.SetDead();
                         AntiBlackout.OnDisconnect(data.Character.Data);
                         PlayerGameOptionsSender.RemoveSender(data.Character);

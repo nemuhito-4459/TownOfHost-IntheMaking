@@ -55,7 +55,6 @@ namespace TownOfHost.Roles.Neutral
             OptionKillCooldown = FloatOptionItem.Create(RoleInfo, 10, GeneralOption.KillCooldown, new(0f, 180f, 0.5f), 30f, false)
                 .SetValueFormat(OptionFormat.Seconds);
             OptionKillAnimation = BooleanOptionItem.Create(RoleInfo, 11, OptionName.KillAnimation, true, false);
-            RoleAddAddons.Create(RoleInfo, 12, NeutralKiller: true);
         }
         public ISchrodingerCatOwner.TeamType SchrodingerCatChangeTo => ISchrodingerCatOwner.TeamType.Remotekiller;
         public float CalculateKillCooldown() => KillCooldown;

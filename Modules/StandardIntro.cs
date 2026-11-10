@@ -5,7 +5,6 @@ using HarmonyLib;
 using System.Linq;
 
 using TownOfHost.Roles.Core;
-using TownOfHost.Roles.AddOns.Common;
 using static TownOfHost.SelectRolesPatch;
 using TownOfHost.Patches;
 
@@ -206,10 +205,6 @@ class StandardIntro
                     if (role is CustomRoles.Amnesiac) roleType = RoleTypes.Crewmate;
                 }
                 if (role is CustomRoles.BakeCat) roleType = RoleTypes.Crewmate;
-                if (pc.Is(CustomRoles.Amnesia) && Amnesia.dontcanUseability)
-                {
-                    roleType = role.IsImpostor() && !pc.Is(CustomRoles.Amnesiac) ? RoleTypes.Impostor : RoleTypes.Crewmate;
-                }
 
                 pc.RpcSetRoleDesync(roleType, pc.GetClientId(), SendOption.None);
 
@@ -258,10 +253,6 @@ class StandardIntro
 
                     if (role is CustomRoles.BakeCat) roleType = RoleTypes.Crewmate;
 
-                    if (pc.Is(CustomRoles.Amnesia) && Amnesia.dontcanUseability)
-                    {
-                        roleType = role.IsImpostor() && !pc.Is(CustomRoles.Amnesiac) ? RoleTypes.Impostor : RoleTypes.Crewmate;
-                    }
                     pc.RpcSetRoleDesync(roleType, pc.GetClientId(), SendOption.None);
                 }
                 SuddenDeathMode.ColorSetAndRoleset();
@@ -336,42 +327,6 @@ class StandardIntro
                                 {
                                     if (target.PlayerId == pc.PlayerId) continue;
                                     target.RpcSetRoleDesync(RoleTypes.Crewmate, pc.GetClientId());
-                                }
-                            }
-                            if (pc.Is(CustomRoles.Amnesia))//continueでいいかもだけど一応...
-                            {
-                                if (roleinfo?.IsDesyncImpostor == true && pc.Is(CustomRoleTypes.Crewmate))
-                                {
-                                    if (pc.PlayerId == PlayerControl.LocalPlayer.PlayerId)
-                                    {
-                                        RoleManager.Instance.SetRole(PlayerControl.LocalPlayer, RoleTypes.Crewmate);
-                                        continue;
-                                    }
-                                    pc.RpcSetRoleDesync(RoleTypes.Crewmate, pc.GetClientId());
-                                    continue;
-                                }
-                                if (Amnesia.dontcanUseability)
-                                {
-                                    if (pc.Is(CustomRoleTypes.Impostor))
-                                    {
-                                        if (pc.PlayerId == PlayerControl.LocalPlayer.PlayerId)
-                                        {
-                                            RoleManager.Instance.SetRole(PlayerControl.LocalPlayer, RoleTypes.Impostor);
-                                            continue;
-                                        }
-                                        pc.RpcSetRoleDesync(RoleTypes.Impostor, pc.GetClientId());
-                                        continue;
-                                    }
-                                    else
-                                    {
-                                        if (pc.PlayerId == PlayerControl.LocalPlayer.PlayerId)
-                                        {
-                                            RoleManager.Instance.SetRole(PlayerControl.LocalPlayer, RoleTypes.Crewmate);
-                                            continue;
-                                        }
-                                        pc.RpcSetRoleDesync(RoleTypes.Crewmate, pc.GetClientId());
-                                        continue;
-                                    }
                                 }
                             }
                             if (pc == PlayerControl.LocalPlayer && (roleinfo?.IsDesyncImpostor ?? false) && !(SuddenDeathMode.SuddenSharingRoles.GetBool() && SuddenDeathMode.SuddenTeamRole.GetBool())) continue;

@@ -144,7 +144,6 @@ public sealed class Chef : RoleBase, IKiller, IAdditionalWinner
     }
     public override void OnExileWrapUp(NetworkedPlayerInfo exiled, ref bool DecidedWinner)
     {
-        if (AddOns.Common.Amnesia.CheckAbilityreturn(Player)) return;
         if (!AmongUsClient.Instance.AmHost || Player.PlayerId != exiled.PlayerId) return;
         var chefdata = GetCheftargetCount();
         if (chefdata.Item1 != chefdata.Item2) return;

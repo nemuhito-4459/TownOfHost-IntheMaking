@@ -259,8 +259,6 @@ namespace TownOfHost
 
             try
             {
-                AddondataInfo.SetRoleColor();
-
                 var type = typeof(RoleBase);
                 var roleClassArray =
                 CustomRoleManager.AllRolesClassType = Assembly.GetAssembly(type)
@@ -432,9 +430,6 @@ namespace TownOfHost
     public enum CombinationRoles
     {
         None,
-        AssassinandMerlin,
-        DriverandBraid,
-        FoolandNue,
-        VegaandAltair
+        AssassinandMerlin
     }
 }

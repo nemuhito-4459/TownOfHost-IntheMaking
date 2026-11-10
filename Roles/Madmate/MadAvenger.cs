@@ -133,7 +133,6 @@ public sealed class MadAvenger : RoleBase, IKillFlashSeeable, IDeathReasonSeeabl
     public override void OnReportDeadBody(PlayerControl ___, NetworkedPlayerInfo __)
     {
         if (!Skill) return;
-        if (AddOns.Common.Amnesia.CheckAbilityreturn(Player)) return;
         UtilsNotifyRoles.ExtendedMeetingText = "<#ff1919><u>★</color>" + GetString("MadAvenger") + "</u>";
         _ = new LateTask(() => Utils.AllPlayerKillFlash(), 1.0f, "Kakumeikaigi");
         _ = new LateTask(() => Utils.AllPlayerKillFlash(), 2.5f, "Kakumeikaigi");

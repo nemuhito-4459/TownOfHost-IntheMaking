@@ -1,8 +1,6 @@
 using AmongUs.GameOptions;
 using System.Linq;
 using TownOfHost.Roles;
-using TownOfHost.Roles.AddOns.Impostor;
-using TownOfHost.Roles.AddOns.Neutral;
 using TownOfHost.Roles.Core;
 using TownOfHost.Roles.Madmate;
 
@@ -271,11 +269,7 @@ namespace TownOfHost
             foreach (var role in AllStandardRoles.Where(r => r.IsEnable()))
             {
                 if (GiveGuesserrole.Contains(role)) return true;
-                if (RoleAddAddons.GetRoleAddon(role, out var op, subrole: CustomRoles.Guesser))
-                    if (op.GiveGuesser.GetBool()) return true;
             }
-            if (CustomRoles.LastImpostor.IsPresent() && LastImpostor.giveguesser) return true;
-            if (CustomRoles.LastNeutral.IsPresent() && LastNeutral.GiveGuesser.GetBool()) return true;
 
             return false;
         }

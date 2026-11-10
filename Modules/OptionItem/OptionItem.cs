@@ -450,9 +450,7 @@ namespace TownOfHost
         CrewmateRoles,
         NeutralRoles,
         JackalRoles,//ジャッカル陣営
-        Combinations,
-        Addons,
-        GhostRoles
+        Combinations
     }
     public enum OptionFormat
     {

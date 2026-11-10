@@ -9,8 +9,6 @@ using AmongUs.GameOptions;
 using TownOfHost.Modules;
 using TownOfHost.Roles.Core;
 using TownOfHost.Roles.Core.Interfaces;
-using TownOfHost.Roles.Ghost;
-using TownOfHost.Roles.AddOns.Common;
 using TownOfHost.Patches.ISystemType;
 using TownOfHost.Roles.Neutral;
 
@@ -105,7 +103,6 @@ namespace TownOfHost
                 }
             }
             // 役職の処理
-            if (Amnesia.CheckAbility(shapeshifter))
                 if (roleclass?.CheckShapeshift(target, ref shouldAnimate) == false && !MeetingHud.Instance)
                 {
                     if (roleclass.CanDesyncShapeshift)
@@ -318,7 +315,6 @@ namespace TownOfHost
 
             var roleClass = user.GetRoleClass();
             var pos = __instance.transform.position;
-            if (Amnesia.CheckAbilityreturn(user)) roleClass = null;
             if ((!roleClass?.OnEnterVent(user.MyPhysics, id) ?? false) || !CoEnterVentPatch.CanUse(user.MyPhysics, id))
             {
                 if (Options.CurrentGameMode is not CustomGameMode.TaskBattle)
@@ -400,7 +396,6 @@ namespace TownOfHost
                 }
                 var roleClass = user.GetRoleClass();
                 var pos = __instance.transform.position;
-                if (Amnesia.CheckAbilityreturn(user)) roleClass = null;
 
                 if (!VentilationSystemUpdateSystemPatch.NowVentId.TryAdd(user.PlayerId, (byte)id))
                 {
@@ -633,20 +628,6 @@ namespace TownOfHost
             if (!AmongUsClient.Instance.AmHost || !Main.CanUseAbility) return false;
 
             Logger.Info("CheckProtect発生: " + __instance.GetNameWithRole().RemoveHtmlTags() + "=>" + target.GetNameWithRole().RemoveHtmlTags(), "CheckProtect");
-
-            if (__instance.IsGhostRole())
-            {
-                Ghostbuttoner.UseAbility(__instance);
-                GhostNoiseSender.UseAbility(__instance, target);
-                GhostReseter.UseAbility(__instance, target);
-                GhostRumour.UseAbility(__instance, target);
-                GuardianAngel.UseAbility(__instance, target);
-                DemonicTracker.UseAbility(__instance, target);
-                DemonicCrusher.UseAbility(__instance);
-                DemonicVenter.UseAbility(__instance, target);
-                AsistingAngel.UseAbility(__instance, target);
-                return false;
-            }
 
             if (__instance.GetCustomRole() is CustomRoles.Sheriff or CustomRoles.WolfBoy or CustomRoles.SwitchSheriff)
             {
