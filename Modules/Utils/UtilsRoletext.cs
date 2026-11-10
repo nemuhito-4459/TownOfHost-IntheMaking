@@ -54,13 +54,7 @@ namespace TownOfHost
                         || (Options.InsiderMode.GetBool() && seerrole.IsImpostor())
                         || (Options.CanSeeImpostorRole.GetBool() && seerrole.IsImpostor() && seen.GetCustomRole().IsImpostor())
                         || (Options.ImpostorCanSeeSKMadmate.GetBool() && seerrole.IsImpostor() && seen.Is(CustomRoles.SKMadmate))
-                        || seen.Is(CustomRoles.MadonnaLovers) && seer.Is(CustomRoles.MadonnaLovers) && Madonna.IsKnowRole
                         ;
-
-            foreach (var data in ColorLovers.Alldatas.Values)
-            {
-                enabled |= data.CheckCanSeeRole(seer, seen);
-            }
 
             //属性が見れるか
             bool addon = seer == seen

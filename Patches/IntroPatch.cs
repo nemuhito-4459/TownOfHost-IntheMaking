@@ -187,7 +187,6 @@ namespace TownOfHost
                 GameData.Instance.RecomputeTaskCounts();
                 TaskState.InitialTotalTasks = GameData.Instance.TotalTasks;
             }
-            MurderMystery.CheckArcher();
             if (AmongUsClient.Instance.AmHost is false)
             {
                 UtilsRoleInfo.SetRoleLists();

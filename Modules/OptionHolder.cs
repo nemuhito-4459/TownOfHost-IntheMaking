@@ -48,7 +48,6 @@ namespace TownOfHost
         public static void OptionsLoadStart(TranslationController __instance)
         {
             Logger.Info("Options.Load Start", "Options");
-            Main.UseYomiage.Value = false;
 #if RELEASE
             Main.ViewPingDetails.Value = false;
             Main.DebugSendAmout.Value = false;
@@ -92,7 +91,7 @@ namespace TownOfHost
 
         public static readonly string[] gameModes =
         {
-            "Standard", "HideAndSeek","TaskBattle","StandardHAS","SuddenDeath","MurderMystery",
+            "Standard", "HideAndSeek","TaskBattle","StandardHAS","SuddenDeath",
         };
 
         // MapActive
@@ -615,7 +614,6 @@ namespace TownOfHost
             TaskBattle.SetupOptionItem();
             //最初のオプションのみここ
             SuddenDeathMode.CreateOption();
-            MurderMystery.SetUpMurderMysteryOption();
             ObjectOptionitem.Create(1_000_121, "StandardHAS", true, null, TabGroup.MainSettings).SetOptionName(() => "Standard HAS").SetColorcode("#ecff41ff").SetTag(CustomOptionTags.StandardHAS);
             StandardHASWaitingTime = FloatOptionItem.Create(100007, "StandardHASWaitingTime", new(0f, 180f, 2.5f), 10f, TabGroup.MainSettings, false)
                 .SetValueFormat(OptionFormat.Seconds).SetTag(CustomOptionTags.StandardHAS).SetHeader(true);
@@ -749,7 +747,6 @@ namespace TownOfHost
             ObjectOptionitem.Create(1_000_115, "Group-Addon", true, null, TabGroup.Combinations).SetOptionName(() => "Combi Add-on").SetColor(ModColors.AddonsColor).SetTag(CustomOptionTags.Role);
             Faction.SetUpOption();
             Twins.SetUpTwinsOptions();
-            Lovers.SetLoversOptions();
             GhostRoleCore.SetupCustomOptionAddonAndIsGhostRole();
 
             SlotRoleAssign.SetupOptionItem();

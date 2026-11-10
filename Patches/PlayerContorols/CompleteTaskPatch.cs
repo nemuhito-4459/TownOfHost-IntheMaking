@@ -31,7 +31,6 @@ namespace TownOfHost
             if (Options.CurrentGameMode == CustomGameMode.MurderMystery)
             {
                 ret &= true;
-                MurderMystery.OnCompleteTask(pc);
                 UtilsNotifyRoles.NotifyRoles();
                 UtilsGameLog.AddGameLog("Task", string.Format(Translator.GetString("Taskfin"), UtilsName.GetPlayerColor(pc, true)));
                 return ret;

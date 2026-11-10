@@ -106,7 +106,6 @@ namespace TownOfHost.Modules.ChatManager
                     cancel = false;
                     break;
                 case 3: //投票の記録、通常のチャット
-                    if (Main.UseYomiage.Value && isalive) Yomiage.Send(player.Data.DefaultOutfit.ColorId, message).Wait();
                     message = msg;
                     string chatEntry = $"{player.PlayerId}: {message}";
                     chatHistory.Add(chatEntry);
@@ -126,7 +125,6 @@ namespace TownOfHost.Modules.ChatManager
                     cancel = false;
                     break;
                 case 6://ロビーの処理
-                    if (Main.UseYomiage.Value && isalive) Yomiage.Send(player.Data.DefaultOutfit.ColorId, message).Wait();
                     break;
             }
         }

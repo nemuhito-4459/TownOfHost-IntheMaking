@@ -332,7 +332,6 @@ namespace TownOfHost
                     + $"\n/cmd killlog(kl) - {GetString("Command.killlog")}"
                     + $"\n/cmd timer - {GetString("Command.timer")}";
             }
-            if (Main.UseYomiage.Value) text += $"\n/cmd voice - {GetString("Command.voice")}";
 
             SendMessage(text + tpinfo, to);
         }

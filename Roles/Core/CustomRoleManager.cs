@@ -348,13 +348,6 @@ public static class CustomRoleManager
             onMurderPlayer(info);
         }
 
-        //サブロール処理ができるまではラバーズをここで処理
-        foreach (var data in ColorLovers.Alldatas.Values)
-        {
-            data.LoversSuicide(attemptTarget.PlayerId);
-        }
-        Lovers.MadonnLoversSuicide(attemptTarget.PlayerId);
-        Lovers.OneLoveSuicide(attemptTarget.PlayerId);
         OneWolf.OnMurderPlayer(info);
 
         //以降共通処理
@@ -377,7 +370,6 @@ public static class CustomRoleManager
         PlayerCatch.CountAlivePlayers(true);
 
         Utils.TargetDies(info);
-        MurderMystery.CheckDeath(attemptTarget);
         AllActiveRoles.Do(role => role.Value.OnDead(attemptTarget));
 
         //サドンデスの初手キル処理なので、バウハン等の影響受けないように限定にしておく

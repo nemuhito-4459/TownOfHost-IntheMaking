@@ -130,17 +130,6 @@ namespace TownOfHost
                             if (SuddenDeathMode.SuddenDeathTimeLimit.GetFloat() > 0) SuddenDeathMode.SuddenDeathReactor();
                             if (SuddenDeathMode.SuddenPlayerArrow.GetBool()) SuddenDeathMode.ItijohoSend();
                         }
-                        MurderMystery.OnFixedUpdate();
-
-                        if (!GameStates.IsMeeting && timer is 7)
-                        {
-                            foreach (var Ldata in ColorLovers.Alldatas.Values)
-                            {
-                                Ldata.LoversSuicide();
-                            }
-                            Lovers.MadonnLoversSuicide();
-                            Lovers.OneLoveSuicide();
-                        }
                         if (DisableDevice.DoDisable)
                         {
                             DisableDevice.FixedUpdate();
@@ -328,8 +317,7 @@ namespace TownOfHost
                             Mark.Append(Utils.ColorString(UtilsRoleText.GetRoleColor(targetlover), "♥"));
                         }
                         else
-                            if ((Lovers.OneLovePlayer.BelovedId == target.PlayerId && target.PlayerId != seer.PlayerId && seerisonelover)
-                            || (target.Is(CustomRoles.OneLove) && target.PlayerId != seer.PlayerId && seerisonelover)
+                            if ((target.Is(CustomRoles.OneLove) && target.PlayerId != seer.PlayerId && seerisonelover)
                             || (seer.Data.IsDead && target.Is(CustomRoles.OneLove) && !seerisonelover))
                             {
                                 Mark.Append(Utils.ColorString(UtilsRoleText.GetRoleColor(CustomRoles.OneLove), "♡"));

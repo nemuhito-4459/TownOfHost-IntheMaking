@@ -89,11 +89,6 @@ namespace TownOfHost
                         }
 
                     if (States.GhostRole is CustomRoles.AsistingAngel) hasTasks = false;
-
-                    //ラバーズはタスクを勝利用にカウントしない
-                    //回線落ちになってもタスクは復活しない
-                    if (Lovers.HaveLoverDontTaskPlayers.Contains(p.PlayerId))
-                        hasTasks &= !ForRecompute;
                 }
                 return hasTasks;
             }

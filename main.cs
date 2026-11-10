@@ -88,7 +88,6 @@ namespace TownOfHost
         public static ConfigEntry<bool> ShowResults { get; private set; }
         public static ConfigEntry<bool> Hiderecommendedsettings { get; private set; }
         public static ConfigEntry<bool> UseWebHook { get; private set; }
-        public static ConfigEntry<bool> UseYomiage { get; private set; }
         public static ConfigEntry<bool> CustomName { get; private set; }
         public static ConfigEntry<bool> ShowGameSettingsTMP { get; private set; }
         public static ConfigEntry<bool> CustomSprite { get; private set; }
@@ -187,7 +186,6 @@ namespace TownOfHost
             ShowResults = Config.Bind("Result", "Show Results", true);
             Hiderecommendedsettings = Config.Bind("Client Options", "Hide recommended settings", false);
             UseWebHook = Config.Bind("Client Options", "UseWebHook", false);
-            UseYomiage = Config.Bind("Client Options", "UseYomiage", false);
             CustomName = Config.Bind("Client Options", "CustomName", true);
             ShowGameSettingsTMP = Config.Bind("Client Options", "Show GameSettings", true);
             CustomSprite = Config.Bind("Client Options", "CustomSprite", true);

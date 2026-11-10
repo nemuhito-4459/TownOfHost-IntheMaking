@@ -43,7 +43,6 @@ namespace TownOfHost
             if (Options.CurrentGameMode is CustomGameMode.HideAndSeek or CustomGameMode.TaskBattle or CustomGameMode.MurderMystery || Options.IsStandardHAS)
             {
                 GameStates.CalledMeeting = false;
-                MurderMystery.OnReportDeadBody(__instance, target);
                 return false;
             }
             GameStates.CalledMeeting = true;

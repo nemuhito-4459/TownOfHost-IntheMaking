@@ -463,7 +463,6 @@ namespace TownOfHost
                     };
                     AssignCustomRolesFromList(role, baseRoleTypes);
                 }
-                Lovers.AssignLoversRoles();
                 AddOnsAssignDataOnlyKiller.AssignAddOnsFromList();
                 AddOnsAssignDataTeamImp.AssignAddOnsFromList();
                 AddOnsAssignData.AssignAddOnsFromList();
@@ -507,7 +506,6 @@ namespace TownOfHost
                 switch (Options.CurrentGameMode)
                 {
                     case CustomGameMode.SuddenDeath: GameEndChecker.SetPredicateToSadness(); break;
-                    case CustomGameMode.MurderMystery: GameEndChecker.SetPredicateToMurderMystery(); break;
                     default: GameEndChecker.SetPredicateToNormal(); break;
                 }
             }

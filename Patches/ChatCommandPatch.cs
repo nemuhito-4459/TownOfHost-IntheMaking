@@ -118,12 +118,6 @@ namespace TownOfHost
                     }
                     if (version_text != "") SendMessage(version_text, PlayerControl.LocalPlayer.PlayerId);
                     break;
-                case "/voice":
-                case "/vo":
-                    canceled = true;
-                    if (!Yomiage.ChatCommand(args, PlayerControl.LocalPlayer.PlayerId))
-                        SendMessage("使用方法:\n/vo 音質 音量 速度 音程\n/vo set プレイヤーid 音質 音量 速度 音程\n\n音質の一覧表示:\n /vo get\n /vo g", PlayerControl.LocalPlayer.PlayerId);
-                    break;
                 default:
                     if (AmongUsClient.Instance.AmHost) break;
 
@@ -1240,10 +1234,6 @@ namespace TownOfHost
                                 case "resetdoorE":
                                     AirShipElectricalDoors.Initialize();
                                     break;
-                                case "GetVoice":
-                                    foreach (var r in Yomiage.GetvoiceListAsync().Result)
-                                        Logger.Info(r.Value, "VoiceList");
-                                    break;
                                 case "rev":
                                     if (!byte.TryParse(args[2], out byte idr)) break;
                                     var revpc = GetPlayerById(idr);
@@ -1510,11 +1500,6 @@ namespace TownOfHost
                             }
                         }
                     }
-                    break;
-                case "/voice":
-                case "/vo":
-                    if (!Yomiage.ChatCommand(args, player.PlayerId))
-                        SendMessage("使用方法:\n/vo 音質(id) 音量 速度 音程\n\n音質の一覧表示:\n /vo get\n /vo g", player.PlayerId);
                     break;
                 case "/impstorchat":
                 case "/impct":

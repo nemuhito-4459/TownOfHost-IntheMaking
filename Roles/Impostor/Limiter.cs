@@ -237,8 +237,6 @@ namespace TownOfHost.Roles.Impostor
         {
             if (Limit) return;
             if (Player.IsWinner(CustomWinner.Impostor)) Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[2]);
-            if (Player.IsWinner(CustomWinner.MadonnaLovers) && Lovers.MaMadonnaLoversPlayers.Any(lov => lov.PlayerId == Player.PlayerId))
-                Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[3]);
         }
         public static Dictionary<int, Achievement> achievements = new();
         [Attributes.PluginModuleInitializer]

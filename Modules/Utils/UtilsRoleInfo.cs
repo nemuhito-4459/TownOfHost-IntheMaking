@@ -406,12 +406,6 @@ namespace TownOfHost
                 }
                 state.NowRoleType = rolebasetype;
             }
-
-            if (Lovers.OneLovePlayer.BelovedId != byte.MaxValue && GameModeManager.IsStandardClass())
-            {
-                UtilsGameLog.LastLogRole[Lovers.OneLovePlayer.BelovedId] += ColorString(GetRoleColor(CustomRoles.OneLove), "♡");
-                if (Lovers.OneLovePlayer.doublelove) UtilsGameLog.LastLogRole[Lovers.OneLovePlayer.OneLove] += ColorString(GetRoleColor(CustomRoles.OneLove), "♡");
-            }
         }
     }
 }

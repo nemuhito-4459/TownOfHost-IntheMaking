@@ -498,7 +498,7 @@ public static class MeetingHudPatch
                             continue;
                         case CustomRoles.OneLove:
                             if (target == seer) continue;
-                            if (Lovers.OneLovePlayer.BelovedId == target.PlayerId || target.Is(CustomRoles.OneLove))
+                            if (target.Is(CustomRoles.OneLove))
                                 sb.Append(Utils.ColorString(UtilsRoleText.GetRoleColor(CustomRoles.OneLove), "♡"));
                             continue;
                     }
@@ -677,16 +677,6 @@ public static class MeetingHudPatch
     {
         foreach (var playerId in playerIds)
         {
-            //Loversの後追い
-            foreach (var data in ColorLovers.Alldatas.Values)
-            {
-                if (!data.IsLoversDead && data.LoverPlayer.Find(lp => lp.PlayerId == playerId) != null)
-                    data.LoversSuicide(playerId, true);
-            }
-            if (CustomRoles.MadonnaLovers.IsPresent() && !Lovers.isMadonnaLoversDead && Lovers.MaMadonnaLoversPlayers.Find(lp => lp.PlayerId == playerId) != null)
-                Lovers.MadonnLoversSuicide(playerId, true);
-            if (CustomRoles.OneLove.IsPresent() && !Lovers.isOneLoveDead)
-                Lovers.OneLoveSuicide(playerId, true);
             //道連れチェック
             RevengeOnExile(playerId, deathReason);
         }

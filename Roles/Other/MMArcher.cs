@@ -74,11 +74,6 @@ public sealed class MMArcher : RoleBase, IKiller, IUsePhantomButton
 
         Cooldown = OptionCoolDown.GetFloat();
         Arrowtime = OptionArrowTime.GetInt() is 0 ? null : OptionArrowTime.GetInt();
-        if (MurderMystery.TaskArchers.Contains(Player.PlayerId))
-        {
-            Arrowtime = OptionArrowTimeForTaskend.GetInt() is 0 ? null : OptionArrowTimeForTaskend.GetInt();
-            IsPromotioned = true;//タスク完了保安官は引き続きを行わない。
-        }
         LostArrowtimer = OptionLostArrowtimer.GetFloat();
         ArrowSpeedValue = OptionArrowSpeed.GetValue() + 2;//0.25 * Value
     }

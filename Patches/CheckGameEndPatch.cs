@@ -135,17 +135,12 @@ namespace TownOfHost
                 }
                 if (CustomWinnerHolder.WinnerTeam is not CustomWinner.Draw and not CustomWinner.None)
                 {
-                    if (!reason.Equals(GameOverReason.CrewmatesByTask))
-                    {
-                        Lovers.LoversSoloWin(ref reason);
-                    }
                     if (reason.Equals(GameOverReason.CrewmatesByTask))//タスクの場合リア充敗北☆
                     {
                         PlayerCatch.AllPlayerControls
                             .Where(pc => pc.IsLovers())
                             .Do(lover => CustomWinnerHolder.CantWinPlayerIds.Add(lover.PlayerId));
                     }
-                    Lovers.LoversAddWin();
 
                     //追加勝利陣営
                     foreach (var pc in PlayerCatch.AllPlayerControls.Where(pc => !CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId) || pc.GetCustomRole() is CustomRoles.Turncoat or CustomRoles.AllArounder))
@@ -368,9 +363,6 @@ namespace TownOfHost
                 case CustomGameMode.SuddenDeath:
                     SetPredicateToSadness();
                     break;
-                case CustomGameMode.MurderMystery:
-                    SetPredicateToMurderMystery();
-                    break;
                 case CustomGameMode.HideAndSeek:
                     SetPredicateToHideAndSeek();
                     break;
@@ -386,7 +378,6 @@ namespace TownOfHost
         public static void SetPredicateToNormal() => predicate = new NormalGameEndPredicate();
         public static void SetPredicateToHideAndSeek() => predicate = new HideAndSeekGameEndPredicate();
         public static void SetPredicateToTaskBattle() => predicate = new TaskBattle.TaskBattleGameEndPredicate();
-        public static void SetPredicateToMurderMystery() => predicate = new MurderMystery.MurderMysteryGameEndPredicate();
         public static void SetPredicateToSadness() => predicate = new SadnessGameEndPredicate();
     }
 }

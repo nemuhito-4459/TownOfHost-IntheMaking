@@ -272,7 +272,6 @@ namespace TownOfHost
                     {
                         //data.Character.Data.Role.Role = RoleTypes.CrewmateGhost;
 
-                        Lovers.LoverDisconnected(data.Character);
                         var state = PlayerState.GetByPlayerId(data.Character.PlayerId);
                         if (state.DeathReason == CustomDeathReason.etc) //死因が設定されていなかったら
                         {

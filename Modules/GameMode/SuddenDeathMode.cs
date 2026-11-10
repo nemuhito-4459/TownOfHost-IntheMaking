@@ -737,7 +737,6 @@ namespace TownOfHost.Modules
                 CustomWinnerHolder.WinnerIds.Add(winner.PlayerId);
                 return true;
             }
-            if (Lovers.CheckPlayercountWin()) return true;
             return false;
         }
         public static bool FinishTaskCheck(out GameOverReason reason)

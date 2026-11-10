@@ -84,10 +84,6 @@ namespace TownOfHost
                 reason = GameOverReason.ImpostorsByKill;
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.None);
             }
-            else if (Lovers.CheckPlayercountWin())
-            {
-                reason = GameOverReason.ImpostorsByKill;
-            }
             else if (Imp == 1 && Crew == 0 && GrimReaper == 1)//死神勝利(1)
             {
                 reason = GameOverReason.ImpostorsByKill;

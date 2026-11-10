@@ -143,7 +143,6 @@ namespace TownOfHost
                             if (!AmongUsClient.Instance.AmHost) break;
                             OptionItem.SyncAllOptions();
                             RPC.RpcSyncRoomTimer();
-                            RPC.SyncYomiage();
                         }
                     }
                     catch
@@ -204,18 +203,8 @@ namespace TownOfHost
                 case CustomRPC.SetNameColorData:
                     NameColorManager.ReceiveRPC(reader);
                     break;
-                case CustomRPC.SetLoversPlayers:
-                    Lovers.RPCSetLovers(reader);
-                    break;
+                case CustomRPC.SetLoversPlayers://恋人系は削除済み(RPC番号ずれ防止のため列挙子だけ残す)
                 case CustomRPC.SetMadonnaLovers:
-                    Lovers.MaMadonnaLoversPlayers.Clear();
-                    int Macount = reader.ReadInt32();
-                    for (int i = 0; i < Macount; i++)
-                    {
-                        var targetid = reader.ReadByte();
-                        Lovers.MaMadonnaLoversPlayers.Add(PlayerCatch.GetPlayerById(targetid));
-                        Lovers.HaveLoverDontTaskPlayers.Add(targetid);
-                    }
                     break;
                 case CustomRPC.SetRealKiller:
                     byte targetId = reader.ReadByte();
@@ -228,12 +217,7 @@ namespace TownOfHost
                         Main.HostKill.TryAdd(targetId, State.DeathReason);
                     }
                     break;
-                case CustomRPC.SyncYomiage:
-                    Yomiage.YomiageS.Clear();
-                    int yomi = reader.ReadInt32();
-                    //foreach (PlayerControl pc in PlayerCatch.AllPlayerControls)
-                    for (int i = 0; i < yomi; i++)
-                        Yomiage.YomiageS[reader.ReadInt32()] = reader.ReadString();
+                case CustomRPC.SyncYomiage://読み上げ機能は削除済み(RPC番号ずれ防止のため列挙子だけ残す)
                     break;
                 case CustomRPC.ModUnload:
                     RPC.RpcModUnload(__instance.PlayerId);
@@ -405,18 +389,6 @@ namespace TownOfHost
             state.IsDead = true;
         }
 
-        public static void SyncYomiage()
-        {
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncYomiage, SendOption.None, -1);
-            writer.Write(Yomiage.YomiageS.Count);
-            foreach (var data in Yomiage.YomiageS)
-            {
-                writer.Write(data.Key);
-                writer.Write(data.Value);
-            }
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
-        }
-
         public static void EndGame(MessageReader reader)
         {
             try
@@ -474,29 +446,6 @@ namespace TownOfHost
 
                 RemoveDisableDevicesPatch.UpdateDisableDevices();
             }
-        }
-        public static void SyncLoversPlayers(CustomRoles lover)
-        {
-            if (!AmongUsClient.Instance.AmHost) return;
-            if (!PlayerCatch.AnyModClient()) return;
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetLoversPlayers, SendOption.Reliable, -1);
-            writer.Write((int)lover);
-            ColorLovers.Alldatas.TryGetValue(lover, out var data);
-            {
-                writer.Write(data.LoverPlayer.Count);
-                foreach (var pc in data.LoverPlayer)
-                    writer.Write(pc.PlayerId);
-            }
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
-        }
-        public static void SyncMadonnaLoversPlayers()
-        {
-            if (!AmongUsClient.Instance.AmHost) return;
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetMadonnaLovers, SendOption.Reliable, -1);
-            writer.Write(Lovers.MaMadonnaLoversPlayers.Count);
-            foreach (PlayerControl lp in Lovers.MaMadonnaLoversPlayers)
-                writer.Write(lp.PlayerId);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
         public static void SendRpcLogger(uint targetNetId, byte callId, int targetClientId = -1)
         {
@@ -637,8 +586,7 @@ namespace TownOfHost
                     }
                 case ModSystem.SyncMuderMystery:
                     {
-                        var readdata = reader.ReadInt32();
-                        MurderMystery.DeadArcherCount = readdata is -5 ? null : readdata;
+                        reader.ReadInt32();
                         break;
                     }
                 case ModSystem.SyncNextSpawn:
@@ -653,10 +601,10 @@ namespace TownOfHost
                     }
                 case ModSystem.SyncOneLove:
                     {
-                        var oneloveid = reader.ReadByte();
-                        var targetid = reader.ReadByte();
-                        var isdoublelove = reader.ReadBoolean();
-                        Lovers.OneLovePlayer = (oneloveid, targetid, isdoublelove);
+                        //片思いは削除済み
+                        reader.ReadByte();
+                        reader.ReadByte();
+                        reader.ReadBoolean();
                         break;
                     }
                 case ModSystem.SyncVoteResult:

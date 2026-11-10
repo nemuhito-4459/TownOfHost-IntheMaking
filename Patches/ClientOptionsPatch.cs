@@ -16,7 +16,6 @@ namespace TownOfHost
         private static ClientActionItem OpenLogFolder;
         private static ClientActionItem ForceEnd;
         private static ClientActionItem UseWebHook;
-        private static ClientActionItem Yomiage;
         private static ClientActionItem CustomName;
         private static ClientActionItem CustomSprite;
         private static ClientActionItem HideSomeFriendCodes;
@@ -72,11 +71,6 @@ namespace TownOfHost
             {
                 if (Main.IsAndroid() is false)
                     UseWebHook = ClientOptionItem.Create("UseWebHook", Main.UseWebHook, __instance);
-            }
-            if (Yomiage == null || Yomiage.ToggleButton == null)
-            {
-                if (Main.IsAndroid() is false)
-                    Yomiage = ClientOptionItem.Create("UseYomiage", Main.UseYomiage, __instance);
             }
             if (CustomSprite == null || CustomSprite.ToggleButton == null)
             {
