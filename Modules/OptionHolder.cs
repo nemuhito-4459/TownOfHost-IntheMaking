@@ -1181,9 +1181,9 @@ namespace TownOfHost
             static void CreateRoleOption(IOrderedEnumerable<SimpleRoleInfo> sortedRoleInfo, CustomRoleTypes roleTypes)
             {
                 //役職を消してグループ番号が歯抜けになっても止まらないよう、存在する番号だけを順に回す
+                //役職は日本語名の五十音順(あ～ん)に並べる。漢字の役職は RoleSortHelper.Readings に読みを登録する
                 var RoleList = sortedRoleInfo.Where(role => role.CustomRoleType == roleTypes)
-                    .OrderBy(role => role.OptionSort.TabNumber)
-                    .ThenBy(role => role.OptionSort.SortNumber);
+                    .OrderBy(role => RoleSortHelper.GetSortKey(role.RoleName), StringComparer.Ordinal);
                 foreach (var info in RoleList)
                 {
                     if (info.RoleName is CustomRoles.AlienHijack or CustomRoles.Jackaldoll) continue;
