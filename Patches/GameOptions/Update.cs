@@ -147,7 +147,8 @@ namespace TownOfHost
                     }
                     if (isroleoption)
                     {
-                        color = option.NameColor.ShadeColor(-5);
+                        //役職の色に白を6割混ぜたパステルカラー
+                        color = option.NameColor.ShadeColor(-1.5f);
                     }
 
                     Transform titleText = option.OptionBehaviour.transform.Find("Title Text");
@@ -420,7 +421,8 @@ namespace TownOfHost
                     }
                     if (isroleoption)
                     {
-                        color = option.NameColor.ShadeColor(-5);
+                        //役職の色に白を6割混ぜたパステルカラー
+                        color = option.NameColor.ShadeColor(-1.5f);
                     }
 
                     Transform titleText = option.OptionBehaviour.transform.Find("Title Text");

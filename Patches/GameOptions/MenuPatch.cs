@@ -591,8 +591,9 @@ namespace TownOfHost
             if (!forceAllTabs && tabGenerated.Contains(tab)) return;
             var template = GetTeamplate();
             if (template == null) return;
-            var LabelBackgroundSprite = UtilsSprite.LoadSprite($"TownOfHost.Resources.TOHK.Label.LabelBackground.png");
-            var LabelBackgroundToolSprite = UtilsSprite.LoadSprite($"TownOfHost.Resources.TOHK.Label.LabelBackgroundTool.png");
+            //設定項目の背景(白い角丸。Update.csで役職の色などに塗る)
+            var LabelBackgroundSprite = UtilsSprite.LoadSprite($"TownOfHost.Resources.IntheMaking.LabelBackground.png");
+            var LabelBackgroundToolSprite = LabelBackgroundSprite;
             var ShowOptionSprite = UtilsSprite.LoadSprite($"TownOfHost.Resources.TOHK.ShowOption.png");
 
             foreach (var option in OptionItem.AllOptions)
