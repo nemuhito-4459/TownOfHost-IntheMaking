@@ -489,7 +489,7 @@ public sealed class Assassin : RoleBase, IImpostor, IUsePhantomButton, IDoubleTr
     public bool CanKill => AddRole is IImpostor impostor ? impostor.CanKill : true;
     public bool IsKiller => AddRole is IImpostor impostor ? impostor.IsKiller : true;
     public bool CanUseKillButton() => AddRole is IImpostor impostor ? impostor.CanUseKillButton() : CanKill;
-    public float CalculateKillCooldown() => AddRole is IImpostor impostor ? impostor.CalculateKillCooldown() : Options.DefaultKillCooldown;
+    public float CalculateKillCooldown() => AddRole is IImpostor impostor ? impostor.CalculateKillCooldown() : ImpostorKillCooldown.Get(CustomRoles.Assassin);
     public bool CanUseSabotageButton() => AddRole is IImpostor impostor ? impostor.CanUseSabotageButton() : true;
     public bool CanUseImpostorVentButton() => AddRole is IImpostor impostor ? impostor.CanUseImpostorVentButton() : true;
     public void OnCheckMurderAsKiller(MurderInfo info) { if (AddRole is IImpostor impostor) impostor.OnCheckMurderAsKiller(info); }

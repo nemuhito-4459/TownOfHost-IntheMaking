@@ -106,7 +106,7 @@ public sealed class Amnesiac : RoleBase, IImpostor
         OptIsWolfBoy = BooleanOptionItem.Create(RoleInfo, 20, Options.AmnesiacIsWolfboy, false, false);
     }
 
-    public float CalculateKillCooldown() => MatchSettingstoSheriff && !Realized ? ShKillCooldown : TownOfHost.Options.DefaultKillCooldown;
+    public float CalculateKillCooldown() => MatchSettingstoSheriff && !Realized ? ShKillCooldown : ImpostorKillCooldown.Get(CustomRoles.Amnesiac);
     public bool CanUseImpostorVentButton() => Realized && CanUseVent;
     public bool CanUseSabotageButton() => Realized && CanUseSabotage;
     public bool CanUseKillButton()

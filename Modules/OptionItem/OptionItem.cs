@@ -288,6 +288,7 @@ namespace TownOfHost
                     case OptionZeroNotation.Infinity: return "∞";
                     case OptionZeroNotation.Hyphen: return "―";
                     case OptionZeroNotation.Off: return coloroff ? Translator.GetString("ColoredOff") : "×";
+                    case OptionZeroNotation.Default: return Translator.GetString("ZeroDefault");
                     default: break;
                 }
             }
@@ -471,6 +472,8 @@ namespace TownOfHost
         None,
         Infinity,
         Hyphen,
-        Off
+        Off,
+        /// <summary>規定値(インポスターのキルクールで、0のとき共通キルクールを使う)</summary>
+        Default
     }
 }

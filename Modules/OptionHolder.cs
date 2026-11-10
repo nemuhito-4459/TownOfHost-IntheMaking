@@ -1192,6 +1192,8 @@ namespace TownOfHost
                     if (info.RoleName is CustomRoles.AlienHijack or CustomRoles.Jackaldoll) continue;
                     SetupRoleOptions(info);
                     info.OptionCreator?.Invoke();
+                    //インポスターは役職ごとのキルクール(0=規定値)を用意する
+                    if (roleTypes is CustomRoleTypes.Impostor) ImpostorKillCooldown.Setup(info);
                 }
             }
         }

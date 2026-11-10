@@ -55,7 +55,13 @@ namespace TownOfHost
 
         // Getter
         public override int GetInt() => (int)Rule.GetValueByIndex(CurrentValue);
-        public override float GetFloat() => Rule.GetValueByIndex(CurrentValue);
+        public override float GetFloat()
+        {
+            var value = Rule.GetValueByIndex(CurrentValue);
+            //0が「規定値」の設定(インポスターのキルクール)は、インポスタータブの共通キルクールを返す
+            if (value == 0f && ZeroNotation is OptionZeroNotation.Default) return ImpostorKillCooldown.DefaultValue;
+            return value;
+        }
         public override string GetString()
         {
             return ApplyFormat(Rule.GetValueByIndex(CurrentValue).ToString());
@@ -82,6 +88,7 @@ namespace TownOfHost
         public void NormalizeRoleSeconds()
         {
             if (ValueFormat != OptionFormat.Seconds) return;
+            if (ZeroNotation is OptionZeroNotation.Default) return;//キルクール(規定値)は UseDefaultKillCooldownAtZero で設定済み
             if (Tab is TabGroup.MainSettings) return;
             if (Rule.MaxValue > 180f && ParentRole is CustomRoles.NotAssigned or CustomRoles.Limiter) return;
 
@@ -93,6 +100,17 @@ namespace TownOfHost
             Rule = newRule;
             if (keepZero) SetZeroNotation(OptionZeroNotation.Infinity);
             ResetDefaultValue(newRule.GetNearestIndex(Math.Min(defaultSeconds, 180f)));
+        }
+
+        /// <summary>
+        /// インポスターのキルクール用: 0～180秒(0.5刻み)、0は「規定値」(共通キルクール)、初期値は規定値
+        /// </summary>
+        public void UseDefaultKillCooldownAtZero()
+        {
+            Rule = new FloatValueRule(0f, 180f, 0.5f);
+            SetValueFormat(OptionFormat.Seconds);
+            SetZeroNotation(OptionZeroNotation.Default);
+            ResetDefaultValue(0);
         }
     }
 }

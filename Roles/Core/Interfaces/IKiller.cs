@@ -23,10 +23,10 @@ public interface IKiller
     public bool CanUseKillButton() => CanKill;
     /// <summary>
     /// キルクールダウンを計算する<br/>
-    /// デフォルト: <see cref="Options.DefaultKillCooldown"/>
+    /// デフォルト: 役職ごとのキルクール設定(<see cref="ImpostorKillCooldown"/>)。0や設定なしなら共通キルクール
     /// </summary>
     /// <returns>キルクールダウン(秒)</returns>
-    public float CalculateKillCooldown() => Options.DefaultKillCooldown;
+    public float CalculateKillCooldown() => this is RoleBase roleBase && roleBase.Player != null ? ImpostorKillCooldown.Get(roleBase.Player.GetCustomRole()) : Options.DefaultKillCooldown;
     /// <summary>
     /// サボタージュボタンを使えるかどうか
     /// </summary>
