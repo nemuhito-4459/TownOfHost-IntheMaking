@@ -24,25 +24,25 @@
   **TownOfHost-K様**<br>
     [Github](https://github.com/KYMario/TownOfHost-K)<br>
     
-  暇な人 KY/けーわい<br>
+  暇な人 KY/けーわい　様<br>
 　　[Youtube](https://www.youtube.com/@MTGC_KY)<br>
 　　[Twitter(X)](https://x.com/ky_mario_ky)<br>
 
-　タイガー<br>
+　タイガー　様<br>
 　　[Youtube](https://www.youtube.com/@torataiga-)<br>
 　　[Twitter(X)](https://x.com/TVppJ90s9G2sPkq)<br>
 
-　夜藍<br>
+　夜藍　様<br>
 　　[Youtube](https://www.youtube.com/@Yoran_Furan)<br>
 　　[Twitter(X)](https://x.com/Yoran_FuranOshi)<br>
 
-　ねむa<br>
+　ねむa　様<br>
 　　[Twitter(X)](https://x.com/nemu_adatoomou)<br>
 
-　はろん<br>
+　はろん　様<br>
 　　[Twitter(X)](https://x.com/HellWeen11)<br>
 
-　りぃりぃ<br>
+　りぃりぃ　様<br>
 　　[Twitter(X)](https://x.com/rixirixi0202)<br>
 
 
