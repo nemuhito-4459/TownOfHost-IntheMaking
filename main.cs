@@ -31,7 +31,7 @@ namespace TownOfHost
         // modの名前 / Mod Name (Default: Town Of Host)
         public static readonly string ModName = "TownOfHost-IntheMaking";
         // modの色 / Mod Color (Default: #00bfff)
-        public static readonly string ModColor = "#00c1ff";
+        public static readonly string ModColor = "#7eff68";//タイトルロゴの緑
         // 公開ルームを許可する / Allow Public Room (Default: true)
         // プライベートフォークの規約により常にfalse(trueに戻さないこと)
         public static readonly bool AllowPublicRoom = false;

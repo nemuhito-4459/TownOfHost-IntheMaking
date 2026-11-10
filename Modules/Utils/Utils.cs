@@ -452,7 +452,7 @@ namespace TownOfHost
                         case SuffixModes.None:
                             break;
                         case SuffixModes.TOH:
-                            name += $"<size=75%>(<{Main.ModColor}>TOH-K v{Main.PluginShowVersion})</color></size>";
+                            name += $"<size=75%>(<{Main.ModColor}>{Main.ModName} v{Main.PluginShowVersion})</color></size>";
                             break;
                         case SuffixModes.Streaming:
                             name += $"<size=75%>(<{Main.ModColor}>{GetString("SuffixMode.Streaming")})</color></size>";
