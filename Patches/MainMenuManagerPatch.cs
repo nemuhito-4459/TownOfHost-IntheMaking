@@ -161,8 +161,9 @@ namespace TownOfHost
             CreateStreameMenu.CloseMenu();
             _ = new LateTask(() =>
             {
-                if (__instance?.ejectMenu?.ejectButton?.gameObject is not null)
-                    __instance?.ejectMenu?.ejectButton?.gameObject?.SetActive(true);
+                // 破棄済みのUnityオブジェクトは ?. で弾けないので == null で判定する
+                if (__instance == null || __instance.ejectMenu == null || __instance.ejectMenu.ejectButton == null) return;
+                __instance.ejectMenu.ejectButton.gameObject.SetActive(true);
             }, 0.5f, "ShowButton", true);
         }
         public static void DestroyButton()

@@ -259,6 +259,23 @@ namespace TownOfHost
 
             try
             {
+                // RoleInfoを持たない役職の色(旧 AddondataInfo.SetRoleColor から移設)
+                roleColors = new Dictionary<CustomRoles, string>()
+                {
+                    {CustomRoles.SKMadmate, "#ff1919"},
+                    {CustomRoles.Emptiness, "#221d26"},
+                    {CustomRoles.HASFox, "#e478ff"},
+                    {CustomRoles.HASTroll, "#00ff00"},
+                    {CustomRoles.TaskPlayerB, "#9adfff"},
+                    {CustomRoles.GM, "#ff5b70"},
+                    {CustomRoles.LastImpostor, "#ff1919"},
+                    {CustomRoles.LastNeutral, "#cccccc"},
+                    {CustomRoles.Lovers, "#ff6be4"},
+                    {CustomRoles.Twins, "#80cf48"},
+                    {CustomRoles.Connecting, "#96514d"},
+                    {CustomRoles.NotAssigned, "#ffffff"},
+                };
+
                 var type = typeof(RoleBase);
                 var roleClassArray =
                 CustomRoleManager.AllRolesClassType = Assembly.GetAssembly(type)
