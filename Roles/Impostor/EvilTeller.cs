@@ -2,20 +2,26 @@ using System.Collections.Generic;
 using AmongUs.GameOptions;
 using UnityEngine;
 
+using TownOfHost.Modules;
 using TownOfHost.Roles.Core;
 using TownOfHost.Roles.Core.Interfaces;
 using Hazel;
+using static TownOfHost.Modules.SelfVoteManager;
 
 namespace TownOfHost.Roles.Impostor;
 
-public sealed class EvilTeller : RoleBase, IImpostor, IUsePhantomButton
+/// <summary>
+/// イビルテラー: 会議中にジャッジの判決(または自投票→投票)で相手を占う。<br/>
+/// 結果は陣営(設定で役職まで)で、占った相手の名前の上にも表示される
+/// </summary>
+public sealed class EvilTeller : RoleBase, IImpostor, ISelfVoter
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(
             typeof(EvilTeller),
             player => new EvilTeller(player),
             CustomRoles.EvilTeller,
-            () => RoleTypes.Phantom,
+            () => RoleTypes.Impostor,
             CustomRoleTypes.Impostor,
             3700,
             SetUpOptionItem,
@@ -29,225 +35,126 @@ public sealed class EvilTeller : RoleBase, IImpostor, IUsePhantomButton
         player
     )
     {
-        TargetInfo = null;
         seentarget.Clear();
-        nowuse = false;
-        fall = false;
-        usekillcool = optusekillcoool.GetBool();
-        cooldown = optcooldown.GetFloat();
         killcooldown = optkillcooldown.GetFloat();
-        telltime = opttelltime.GetFloat();
-        distance = optDistance.GetFloat();
         tellroleteam = opttellroleteam.GetBool();
         tellrole = opttellrole.GetBool();
         maxtellcount = optCanTellCount.GetInt();
     }
-    static OptionItem optcooldown;
     static OptionItem optkillcooldown;
-    static OptionItem opttelltime;
-    static OptionItem optDistance;
     static OptionItem opttellroleteam;
     static OptionItem opttellrole;
-    static OptionItem optusekillcoool;
     static OptionItem optCanTellCount;
-    static float cooldown;
     static float killcooldown;
-    static float telltime;
-    static float distance;
+    /// <summary>true: 役職まで分かる / false: 陣営だけ分かる</summary>
     static bool tellroleteam;
+    /// <summary>true: 占ったときではなく、今の役職で表示する</summary>
     static bool tellrole;
-    static bool usekillcool;
     static int maxtellcount;
-    bool nowuse;
-    bool fall;
+    /// <summary>占った相手と、そのときの役職</summary>
     Dictionary<byte, CustomRoles> seentarget = new();
-    enum OptionName { EvilTellerTellTime, EvilTellerDistance, EvilTellertellrole, EvilTellerCanTellCount }
+    enum OptionName { EvilTellertellrole, EvilTellerCanTellCount }
 
-    private TimerInfo TargetInfo;
-    public class TimerInfo
-    {
-        public byte TargetId;
-        public float Timer;
-        public TimerInfo(byte targetId, float timer)
-        {
-            TargetId = targetId;
-            Timer = timer;
-        }
-    }
     static void SetUpOptionItem()
     {
+        //IDは前と同じ(保存値を引き継ぐ)。クールダウン・占う時間・距離・キルクールのリセットの設定は廃止
         optkillcooldown = FloatOptionItem.Create(RoleInfo, 10, GeneralOption.KillCooldown, OptionBaseCoolTime, 30f, false).SetValueFormat(OptionFormat.Seconds);
-        optcooldown = FloatOptionItem.Create(RoleInfo, 11, GeneralOption.Cooldown, OptionBaseCoolTime, 30f, false).SetValueFormat(OptionFormat.Seconds);
         optCanTellCount = IntegerOptionItem.Create(RoleInfo, 17, OptionName.EvilTellerCanTellCount, new(1, 99, 1), 3, false);
-        opttelltime = FloatOptionItem.Create(RoleInfo, 12, OptionName.EvilTellerTellTime, new(0, 100, 0.5f), 5, false).SetValueFormat(OptionFormat.Seconds);
-        optDistance = FloatOptionItem.Create(RoleInfo, 13, OptionName.EvilTellerDistance, new(1f, 30f, 0.25f), 1.75f, false);
         opttellroleteam = BooleanOptionItem.Create(RoleInfo, 14, "TellRole", false, false);
         opttellrole = BooleanOptionItem.Create(RoleInfo, 15, OptionName.EvilTellertellrole, false, false);
-        optusekillcoool = BooleanOptionItem.Create(RoleInfo, 16, "OptionSetKillcooldown", false, false);
     }
     public float CalculateKillCooldown() => killcooldown;
-    public override void ApplyGameOptions(IGameOptions opt) => AURoleOptions.PhantomCooldown = maxtellcount <= seentarget.Count ? 200f : (fall ? 1 : (nowuse ? telltime : cooldown));
-    bool IUsePhantomButton.IsPhantomRole => maxtellcount > seentarget.Count;
-    public void OnClick(ref bool AdjustKillCooldown, ref bool? ResetCooldown)
+
+    int Remaining => maxtellcount - seentarget.Count;
+
+    #region 会議中の能力(ジャッジの判決 / 自投票→投票)
+    bool ISelfVoter.CanUseVoted() => Canuseability() && Remaining > 0;
+    bool ISelfVoter.IsCantUse() => Remaining <= 0;
+
+    public override bool CheckVoteAsVoter(byte votedForId, PlayerControl voter)
     {
-        AdjustKillCooldown = true;
-        if (maxtellcount <= seentarget.Count) return;
-        ResetCooldown = false;
-        var target = Player.GetKillTarget(true);
-        if (target == null) { ResetCooldown = false; return; }
-        if (target.IsTeammate(Player)) { ResetCooldown = false; return; }
+        if (!Canuseability()) return true;
+        if (!Is(voter) || Remaining <= 0) return true;
 
-        if (seentarget.ContainsKey(target.PlayerId) || TargetInfo != null) { ResetCooldown = false; return; }
-
-        TargetInfo = new(target.PlayerId, 0f);
-        nowuse = true;
-        ResetCooldown = false;
-
-        RpcSetTargetInfo(target.PlayerId);
-        _ = new LateTask(() =>
+        if (CheckSelfVoteMode(Player, votedForId, out var status))
         {
-            Player.RpcResetAbilityCooldown(Sync: true);
-            UtilsNotifyRoles.NotifyRoles(SpecifySeer: Player);
-        }, 0.2f, "", true);
+            if (status is VoteStatus.Self)
+                Utils.SendMessage(string.Format(GetString("SkillMode"), GetString("Mode.Divied"), GetString("Vote.Divied")) + GetString("VoteSkillMode"), Player.PlayerId);
+            if (status is VoteStatus.Skip)
+                Utils.SendMessage(GetString("VoteSkillFin"), Player.PlayerId);
+            if (status is VoteStatus.Vote)
+                Tell(votedForId);
+            SetMode(Player, status is VoteStatus.Self);
+            return false;
+        }
+        return true;
     }
-    public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
-    {
-        seen ??= seer;
-        if (isForMeeting) return "";
-        if (!seer.IsAlive()) return "";
 
-        if (seen.PlayerId == (TargetInfo?.TargetId ?? byte.MaxValue)) return "<color=#ff1919>◆</color>";
-        return "";
+    void Tell(byte targetId)
+    {
+        var target = PlayerCatch.GetPlayerById(targetId);
+        if (target == null || !target.IsAlive()) return;
+        if (target.PlayerId == Player.PlayerId || target.IsTeammate(Player)) return;
+        if (seentarget.ContainsKey(targetId) || Remaining <= 0) return;
+
+        var role = target.GetCustomRole();
+        seentarget[targetId] = role;
+        RpcAddTarget(targetId);
+
+        var result = tellroleteam
+            ? "<b>" + GetString($"{role}").Color(UtilsRoleText.GetRoleColor(role)) + "</b>"
+            : GetString($"{role.GetCustomRoleTypes()}");
+        Utils.SendMessage(string.Format(GetString("Skill.Teller"), UtilsName.GetPlayerColor(target, true), result)
+            + "\n\n" + string.Format(GetString("RemainingCount"), Remaining), Player.PlayerId);
+        Logger.Info($"Player: {Player.name}, Target: {target.name}, Remaining: {Remaining}", "EvilTeller");
+        UtilsNotifyRoles.NotifyRoles(SpecifySeer: Player);
     }
-    public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target) { fall = false; TargetInfo = null; nowuse = false; }
+    #endregion
+
     public override void OverrideDisplayRoleNameAsSeer(PlayerControl seen, ref bool enabled, ref Color roleColor, ref string roleText, ref bool addon)
     {
         if (!seen) return;
         if (!Player.IsAlive()) return;
+        if (!seentarget.TryGetValue(seen.PlayerId, out var role)) return;
 
-        if (seentarget.TryGetValue(seen.PlayerId, out var role))
+        enabled = true;
+        addon = false;
+        if (tellrole) role = seen.GetCustomRole();
+        if (tellroleteam)
         {
-            enabled = true;
-            addon = false;
-            if (tellrole) role = seen.GetCustomRole();
-            if (!tellroleteam)
-            {
-                switch (seen.GetCustomRole().GetCustomRoleTypes())
-                {
-                    case CustomRoleTypes.Crewmate:
-                    case CustomRoleTypes.Madmate:
-                        roleColor = Palette.CrewmateBlue;
-                        roleText = GetString("Crewmate");
-                        break;
-                    case CustomRoleTypes.Impostor:
-                        roleColor = ModColors.ImpostorRed;
-                        roleText = GetString("Impostor");
-                        break;
-                    case CustomRoleTypes.Neutral:
-                        roleColor = ModColors.NeutralGray;
-                        roleText = GetString("Neutral");
-                        break;
-                }
-            }
             roleText = GetString($"{role}");
             roleColor = UtilsRoleText.GetRoleColor(role);
+            return;
         }
-    }
-    public override string GetProgressText(bool comms = false, bool GameLog = false) => maxtellcount <= seentarget.Count ? $"<color=#cccccc>({maxtellcount - seentarget.Count})</color>" : $"<color=#ff1919>({maxtellcount - seentarget.Count})</color>";
-    public override void OnFixedUpdate(PlayerControl player)
-    {
-        if (!AmongUsClient.Instance.AmHost) return;
-
-        if (maxtellcount <= seentarget.Count) return;
-
-        if (GameStates.IsInTask && TargetInfo != null)
+        //陣営だけ
+        switch (role.GetCustomRoleTypes())
         {
-            var et_target = PlayerCatch.GetPlayerById(TargetInfo.TargetId);
-            var et_time = TargetInfo.Timer;
-            if (!et_target.IsAlive())
-            {
-                nowuse = false;
-                fall = true;
-                TargetInfo = null;
-            }
-            else if (telltime <= et_time)
-            {
-                nowuse = false;
-                fall = false;
-                TargetInfo = null;
-                Player.RpcResetAbilityCooldown(Sync: true);
-                if (usekillcool && !fall) Player.SetKillCooldown();
-                seentarget.TryAdd(et_target.PlayerId, et_target.GetCustomRole());
-                RpcAddTarget(et_target.PlayerId);
-
-                UtilsNotifyRoles.NotifyRoles(SpecifySeer: Player, ForceLoop: true);
-            }
-            else
-            {
-                float dis;
-                dis = Vector2.Distance(Player.transform.position, et_target.transform.position);
-                if (dis <= distance)
-                {
-                    TargetInfo.Timer += Time.fixedDeltaTime;
-                }
-                else
-                {
-                    nowuse = false;
-                    TargetInfo = null;
-                    fall = true;
-                    UtilsNotifyRoles.NotifyRoles(SpecifySeer: Player);
-
-                    Logger.Info($"Canceled: {Player.GetNameWithRole().RemoveHtmlTags()}", "CurseMaker");
-                }
-            }
+            case CustomRoleTypes.Crewmate:
+            case CustomRoleTypes.Madmate:
+                roleColor = Palette.CrewmateBlue;
+                roleText = GetString("Crewmate");
+                break;
+            case CustomRoleTypes.Impostor:
+                roleColor = ModColors.ImpostorRed;
+                roleText = GetString("Impostor");
+                break;
+            case CustomRoleTypes.Neutral:
+                roleColor = ModColors.NeutralGray;
+                roleText = GetString("Neutral");
+                break;
         }
     }
-    public override string GetAbilityButtonText() => GetString("EvliTellerAbility");
-    public override bool OverrideAbilityButton(out string text)
-    {
-        text = "EvliTeller_Ability";
-        return true;
-    }
-    public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
-    {
-        seen ??= seer;
-        if (seen.PlayerId != seer.PlayerId || isForMeeting || maxtellcount <= seentarget.Count || !Player.IsAlive()) return "";
-
-        if (isForHud) return GetString("PhantomButtonKilltargetLowertext");
-        return $"<size=50%>{GetString("PhantomButtonKilltargetLowertext")}</size>";
-    }
-
-    public void RpcSetTargetInfo(byte targetId)
-    {
-        using var sender = CreateSender();
-        sender.Writer.WritePacked((int)RPC_Types.SetTargetInfo);
-        sender.Writer.Write(targetId);
-    }
+    public override string GetProgressText(bool comms = false, bool GameLog = false) => Remaining <= 0 ? $"<color=#cccccc>({Remaining})</color>" : $"<color=#ff1919>({Remaining})</color>";
 
     public void RpcAddTarget(byte targetId)
     {
         using var sender = CreateSender();
-        sender.Writer.WritePacked((int)RPC_Types.AddTarget);
         sender.Writer.Write(targetId);
     }
 
     public override void ReceiveRPC(MessageReader reader)
     {
-        switch ((RPC_Types)reader.ReadInt32())
-        {
-            case RPC_Types.SetTargetInfo:
-                TargetInfo = new(reader.ReadByte(), 0f);
-                break;
-            case RPC_Types.AddTarget:
-                var targetId = reader.ReadByte();
-                seentarget.TryAdd(targetId, PlayerCatch.GetPlayerById(targetId).GetCustomRole());
-                break;
-        }
-    }
-
-    enum RPC_Types
-    {
-        SetTargetInfo,
-        AddTarget
+        var targetId = reader.ReadByte();
+        seentarget.TryAdd(targetId, PlayerCatch.GetPlayerById(targetId).GetCustomRole());
     }
 }
