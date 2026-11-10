@@ -494,11 +494,6 @@ namespace TownOfHost
             if (!InfoLong)
                 switch (role)
                 {
-                    case CustomRoles.Mafia:
-                        if (roleClass is not Mafia mafia) break;
-
-                        Prefix = mafia.CanUseKillButton() ? "After" : "Before";
-                        break;
                     case CustomRoles.MadSnitch:
                     case CustomRoles.MadGuardian:
                         text = CustomRoles.Madmate.ToString();

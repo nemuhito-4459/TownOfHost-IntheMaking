@@ -146,7 +146,6 @@ public sealed class MeetingSheriff : RoleBase, ISelfVoter
         var AlienTairo = false;
         var targetroleclass = target.GetRoleClass();
         if ((targetroleclass as Alien)?.CheckSheriffKill(target) == true) AlienTairo = true;
-        if ((targetroleclass as JackalAlien)?.CheckSheriffKill(target) == true) AlienTairo = true;
         if ((targetroleclass as AlienHijack)?.CheckSheriffKill(target) == true) AlienTairo = true;
 
         if ((CanBeKilledBy(target.GetCustomRole()) && !AlienTairo) || (target.IsLovers() && OptionMeetingSheriffCanKillLovers.GetBool()) || (target.Is(CustomRoles.Amanojaku) && OptionMeetingSheriffCanKillNeutrals.GetBool()))
@@ -178,8 +177,7 @@ public sealed class MeetingSheriff : RoleBase, ISelfVoter
         Player.RpcExileV3();
         MyState.DeathReason = target.Is(CustomRoles.Tairou) && Tairou.TairoDeathReason ? CustomDeathReason.Counter :
                             target.Is(CustomRoles.Alien) && Alien.TairoDeathReason ? CustomDeathReason.Counter :
-                            (target.Is(CustomRoles.JackalAlien) && JackalAlien.TairoDeathReason ? CustomDeathReason.Counter :
-                            (target.Is(CustomRoles.AlienHijack) && Alien.TairoDeathReason ? CustomDeathReason.Counter : CustomDeathReason.Misfire));
+                            (target.Is(CustomRoles.AlienHijack) && Alien.TairoDeathReason ? CustomDeathReason.Counter : CustomDeathReason.Misfire);
         MyState.SetDead();
 
         UtilsGameLog.AddGameLog($"MeetingSheriff", $"{UtilsName.GetPlayerColor(Player, true)}(<b>{UtilsRoleText.GetTrueRoleName(Player.PlayerId, false)}</b>) [{Utils.GetVitalText(Player.PlayerId, true)}]");

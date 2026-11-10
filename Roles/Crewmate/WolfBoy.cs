@@ -140,7 +140,6 @@ public sealed class WolfBoy : RoleBase, IKiller, ISchrodingerCatOwner
             var AlienTairo = false;
             var targetroleclass = target.GetRoleClass();
             if ((targetroleclass as Alien)?.CheckSheriffKill(target) == true) AlienTairo = true;
-            if ((targetroleclass as JackalAlien)?.CheckSheriffKill(target) == true) AlienTairo = true;
             if ((targetroleclass as AlienHijack)?.CheckSheriffKill(target) == true) AlienTairo = true;
 
             if (!CanBeKilledBy(target) || AlienTairo)
@@ -149,8 +148,7 @@ public sealed class WolfBoy : RoleBase, IKiller, ISchrodingerCatOwner
                 PlayerState.GetByPlayerId(killer.PlayerId).DeathReason =
                         target.Is(CustomRoles.Tairou) && Tairou.TairoDeathReason ? CustomDeathReason.Counter :
                         target.Is(CustomRoles.Alien) && Alien.TairoDeathReason ? CustomDeathReason.Counter :
-                        (target.Is(CustomRoles.JackalAlien) && JackalAlien.TairoDeathReason ? CustomDeathReason.Counter :
-                        (target.Is(CustomRoles.AlienHijack) && Alien.TairoDeathReason ? CustomDeathReason.Counter : CustomDeathReason.Misfire));
+                        (target.Is(CustomRoles.AlienHijack) && Alien.TairoDeathReason ? CustomDeathReason.Counter : CustomDeathReason.Misfire);
                 killer.RpcMurderPlayer(killer);
                 info.DoKill = false;
                 return;

@@ -691,6 +691,8 @@ namespace TownOfHost
                 .SetValueFormat(OptionFormat.Seconds).SetZeroNotation(OptionZeroNotation.Infinity);
 
             CreateRoleOption(sortedRoleInfo, CustomRoleTypes.Neutral);
+            // Jackaldoll Common Options (役職一覧には出さず、ジャッカル陣営タブの共通設定にする)
+            Roles.Neutral.JackalDoll.SetupCommonOption();
 
             SetupRoleOptions(102800, TabGroup.MainSettings, CustomRoles.NotAssigned, new(1, 1, 1));
             // Madmate Common Options
@@ -1184,7 +1186,7 @@ namespace TownOfHost
                     .ThenBy(role => role.OptionSort.SortNumber);
                 foreach (var info in RoleList)
                 {
-                    if (info.RoleName is CustomRoles.AlienHijack) continue;
+                    if (info.RoleName is CustomRoles.AlienHijack or CustomRoles.Jackaldoll) continue;
                     SetupRoleOptions(info);
                     info.OptionCreator?.Invoke();
                 }

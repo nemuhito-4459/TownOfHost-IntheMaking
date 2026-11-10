@@ -48,6 +48,8 @@ public sealed class JackalWolf : RoleBase, ILNKiller, IUsePhantomButton, IDouble
     static OptionItem OptionJackalCanAlsoBeExposedToJMafia;
     static OptionItem OptionJJackalMafiaCanAlsoBeExposedToJackal;
     static OptionItem OptionJJackalCanKillMafia;
+    //ジャッカルマフィア削除にともない、使っていた設定名をこちらへ移設
+    enum JackalOption { JackalCanAlsoBeExposedToJMafia, JackalMafiaCanAlsoBeExposedToJackal, JackalCanKillMafia }
     private static bool JackalCanAlsoBeExposedToJMafia;
     private static bool JackalMafiaCanAlsoBeExposedToJackal;
     public static bool CanVent;
@@ -81,9 +83,9 @@ public sealed class JackalWolf : RoleBase, ILNKiller, IUsePhantomButton, IDouble
         OptionCanVent = BooleanOptionItem.Create(RoleInfo, 11, GeneralOption.CanVent, true, false);
         OptionCanUseSabotage = BooleanOptionItem.Create(RoleInfo, 12, GeneralOption.CanUseSabotage, false, false);
         OptionHasImpostorVision = BooleanOptionItem.Create(RoleInfo, 13, GeneralOption.ImpostorVision, true, false);
-        OptionJJackalCanKillMafia = BooleanOptionItem.Create(RoleInfo, 14, JackalMafia.JackalOption.JackalCanKillMafia, false, false);
-        OptionJJackalMafiaCanAlsoBeExposedToJackal = BooleanOptionItem.Create(RoleInfo, 15, JackalMafia.JackalOption.JackalMafiaCanAlsoBeExposedToJackal, false, false);
-        OptionJackalCanAlsoBeExposedToJMafia = BooleanOptionItem.Create(RoleInfo, 16, JackalMafia.JackalOption.JackalCanAlsoBeExposedToJMafia, true, false);
+        OptionJJackalCanKillMafia = BooleanOptionItem.Create(RoleInfo, 14, JackalOption.JackalCanKillMafia, false, false);
+        OptionJJackalMafiaCanAlsoBeExposedToJackal = BooleanOptionItem.Create(RoleInfo, 15, JackalOption.JackalMafiaCanAlsoBeExposedToJackal, false, false);
+        OptionJackalCanAlsoBeExposedToJMafia = BooleanOptionItem.Create(RoleInfo, 16, JackalOption.JackalCanAlsoBeExposedToJMafia, true, false);
         ObjectOptionitem.Create(RoleInfo, 24, "AddonOption", true, null).SetOptionName(() => "Sidekick Setting");
     }
     public override void Add()

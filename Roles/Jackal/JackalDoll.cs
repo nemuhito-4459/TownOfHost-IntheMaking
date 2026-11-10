@@ -18,7 +18,7 @@ public sealed class JackalDoll : RoleBase
             () => CanVent.GetBool() ? RoleTypes.Engineer : RoleTypes.Crewmate,
             CustomRoleTypes.Neutral,
             13200,
-            SetupOptionItem,
+            null,//設定は役職一覧に出さず、SetupCommonOptionで共通設定として作る
             "jacd",
             "#00b4eb",
             (1, 4),
@@ -67,36 +67,41 @@ public sealed class JackalDoll : RoleBase
     public static Dictionary<byte, (byte Owner, CustomRoles Ownerrole)> BossAndSidekicks = new();
     public static readonly CustomRoles[] ChangeRoles =
     {
-        CustomRoles.Crewmate, CustomRoles.Madmate , CustomRoles.Jester, CustomRoles.Opportunist,CustomRoles.Turncoat//,CustomRoles.Monochromer
+        CustomRoles.Crewmate, CustomRoles.Madmate , CustomRoles.Jester, CustomRoles.Opportunist
     };
     public static int GetSideKickCount()
     {
         if ((CustomRoles.Jackal.IsEnable() && Jackal.OptionCanMakeSidekick.GetBool())
-        || (CustomRoles.JackalAlien.IsEnable() && JackalAlien.OptionCanMakeSidekick.GetBool())
-        || (CustomRoles.JackalMafia.IsEnable() && JackalMafia.OptionCanMakeSidekick.GetBool())
         || (CustomRoles.JackalWolf.IsEnable() && JackalWolf.OptionHaveRole.GetRole().CanMakeMadmate()))
         {
-            // 0%以上なら確認する。
-            if (Options.GetRoleChance(CustomRoles.Jackaldoll) > 0)
-            {
-                return OptionSideKickMaxmim.GetInt();
-            }
-            // 0%でサイドキックあり得るなら1は返してあげる。
-            return 1;
+            //共通設定の最大人数をそのまま使う
+            return OptionSideKickMaxmim.GetInt();
         }
         else return 0;
     }
-    private static void SetupOptionItem()
+    /// <summary>
+    /// ジャッカルドールの共通設定(マッドメイトの共通設定と同じく、ジャッカル陣営タブに直接並べる)<br/>
+    /// IDは以前の役職設定と同じ(13200+n)なので保存済みの値はそのまま引き継がれる
+    /// </summary>
+    public static void SetupCommonOption()
     {
+        const int id = 13200;
+        var tab = TabGroup.JackalRoles;
         var cRolesString = ChangeRoles.Select(x => x.ToString()).ToArray();
-        OptionSideKickMaxmim = IntegerOptionItem.Create(RoleInfo, 9, Option.SideKickJackaldollMacCount, new(0, 15, 1), 1, false);
-        OptionJackaldieMode = StringOptionItem.Create(RoleInfo, 10, Option.JackaldolldieMode, EnumHelper.GetAllNames<Diemode>(), 0, false);
-        OptionChangeRole = StringOptionItem.Create(RoleInfo, 15, Option.JackaldollRoleChe, cRolesString, 3, false)
-        .SetEnabled(() => OptionJackaldieMode.GetValue() is 2);
-        CanVent = BooleanOptionItem.Create(RoleInfo, 16, GeneralOption.CanVent, false, false);
-        VentCool = FloatOptionItem.Create(RoleInfo, 17, GeneralOption.Cooldown, new(0f, 180f, 0.5f), 0f, false, CanVent).SetValueFormat(OptionFormat.Seconds);
-        VentIntime = FloatOptionItem.Create(RoleInfo, 18, GeneralOption.EngineerInVentCooldown, new(0f, 180f, 0.5f), 0f, false, CanVent).SetZeroNotation(OptionZeroNotation.Infinity).SetValueFormat(OptionFormat.Seconds);
-        CanVentMove = BooleanOptionItem.Create(RoleInfo, 19, "MadmateCanMovedByVent", false, false, CanVent);
+        OptionSideKickMaxmim = IntegerOptionItem.Create(id + 9, Option.SideKickJackaldollMacCount, new(0, 15, 1), 1, tab, false)
+            .SetValueFormat(OptionFormat.Players)
+            .SetHeader(true)
+            .SetColorcode(RoleInfo.RoleColorCode);
+        OptionJackaldieMode = StringOptionItem.Create(id + 10, Option.JackaldolldieMode, EnumHelper.GetAllNames<Diemode>(), 0, tab, false)
+            .SetColorcode(RoleInfo.RoleColorCode);
+        OptionChangeRole = StringOptionItem.Create(id + 15, Option.JackaldollRoleChe, cRolesString, 3, tab, false)
+            .SetParent(OptionJackaldieMode)
+            .SetEnabled(() => OptionJackaldieMode.GetValue() is 2);
+        CanVent = BooleanOptionItem.Create(id + 16, GeneralOption.CanVent, false, tab, false)
+            .SetColorcode(RoleInfo.RoleColorCode);
+        VentCool = FloatOptionItem.Create(id + 17, GeneralOption.Cooldown, new(0f, 180f, 0.5f), 0f, tab, false).SetParent(CanVent).SetValueFormat(OptionFormat.Seconds);
+        VentIntime = FloatOptionItem.Create(id + 18, GeneralOption.EngineerInVentCooldown, new(0f, 180f, 0.5f), 0f, tab, false).SetParent(CanVent).SetZeroNotation(OptionZeroNotation.Infinity).SetValueFormat(OptionFormat.Seconds);
+        CanVentMove = BooleanOptionItem.Create(id + 19, "MadmateCanMovedByVent", false, tab, false).SetParent(CanVent);
     }
     public override bool CanVentMoving(PlayerPhysics physics, int ventId) => CanVentMove.GetBool();
     public override void ApplyGameOptions(IGameOptions opt)
@@ -141,59 +146,6 @@ public sealed class JackalDoll : RoleBase
                 }
             }
         }
-        if (owner.Is(CustomRoles.JackalMafia))
-        {
-            if (JackalMafia.OptionSidekickPromotion.GetBool())
-            {
-                Main.AllPlayerKillCooldown[doll.PlayerId] = JackalMafia.OptionKillCooldown.GetFloat();
-                BossAndSidekicks.Add(doll.PlayerId, (owner.PlayerId, CustomRoles.JackalMafia));
-                (doll.GetRoleClass() as JackalDoll).SetSidekick(owner.PlayerId, CustomRoles.JackalMafia);
-            }
-            if (JackalMafia.OptionSidekickCanSeeOldImpostorTeammates.GetBool())
-            {
-                foreach (var imp in PlayerCatch.AllPlayerFirstTypes.Where(x => x.Value is CustomRoleTypes.Impostor))
-                {
-                    if (state.TargetColorData.ContainsKey(imp.Key)) NameColorManager.Remove(doll.PlayerId, imp.Key);
-                    NameColorManager.Add(doll.PlayerId, imp.Key, "ffffff");
-                }
-            }
-            if (JackalMafia.OptionImpostorCanSeeNameColor.GetBool())
-            {
-                foreach (var imp in PlayerCatch.AllPlayerFirstTypes.Where(x => x.Value is CustomRoleTypes.Impostor))
-                {
-                    var impostorstate = PlayerState.GetByPlayerId(imp.Key);
-                    if (impostorstate.TargetColorData.ContainsKey(doll.PlayerId)) NameColorManager.Remove(imp.Key, doll.PlayerId);
-                    NameColorManager.Add(imp.Key, doll.PlayerId, "ffffff");
-                }
-            }
-        }
-        if (owner.Is(CustomRoles.JackalAlien))
-        {
-            if (JackalAlien.OptionSidekickPromotion.GetBool())
-            {
-                Main.AllPlayerKillCooldown[doll.PlayerId] = JackalAlien.OptionKillCooldown.GetFloat();
-                BossAndSidekicks.Add(doll.PlayerId, (owner.PlayerId, CustomRoles.JackalAlien));
-                (doll.GetRoleClass() as JackalDoll).SetSidekick(owner.PlayerId, CustomRoles.JackalAlien);
-            }
-            if (JackalAlien.OptionSidekickCanSeeOldImpostorTeammates.GetBool())
-            {
-                foreach (var imp in PlayerCatch.AllPlayerFirstTypes.Where(x => x.Value is CustomRoleTypes.Impostor))
-                {
-                    if (state.TargetColorData.ContainsKey(imp.Key)) NameColorManager.Remove(doll.PlayerId, imp.Key);
-                    NameColorManager.Add(doll.PlayerId, imp.Key, "ffffff");
-                }
-            }
-            if (JackalAlien.OptionImpostorCanSeeNameColor.GetBool())
-            {
-                foreach (var imp in PlayerCatch.AllPlayerFirstTypes.Where(x => x.Value is CustomRoleTypes.Impostor))
-                {
-                    var impostorstate = PlayerState.GetByPlayerId(imp.Key);
-                    if (impostorstate.TargetColorData.ContainsKey(doll.PlayerId)) NameColorManager.Remove(imp.Key, doll.PlayerId);
-                    NameColorManager.Add(imp.Key, doll.PlayerId, "ffffff");
-                }
-            }
-        }
-
         doll.RpcSetRole(CanVent.GetBool() ? RoleTypes.Engineer : RoleTypes.Crewmate, true);
 
         foreach (var jackals in PlayerCatch.AllPlayerControls)
