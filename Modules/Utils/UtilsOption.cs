@@ -589,11 +589,6 @@ namespace TownOfHost
             if (player.GetMisidentify(out var missrole))
                 role = missrole;
 
-            if (role is CustomRoles.Amnesiac)
-            {
-                if (roleclas is Amnesiac amnesiac && !amnesiac.Realized)
-                    role = Amnesiac.IsWolf ? CustomRoles.WolfBoy : CustomRoles.Sheriff;
-            }
 
             if (role is CustomRoles.Crewmate or CustomRoles.Impostor)
             {

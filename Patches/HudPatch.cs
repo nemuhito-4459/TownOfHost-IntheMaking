@@ -640,11 +640,6 @@ namespace TownOfHost
             if (player.Is(CustomRoles.Amnesia)) role = player.Is(CustomRoleTypes.Crewmate) ? CustomRoles.Crewmate : CustomRoles.Impostor;
             if (player.GetMisidentify(out var missrole)) role = missrole;
 
-            if (role is CustomRoles.Amnesiac)
-            {
-                if (roleClass is Amnesiac amnesiac && !amnesiac.Realized)
-                    role = Amnesiac.IsWolf ? CustomRoles.WolfBoy : CustomRoles.Sheriff;
-            }
             // 役職説明表示
             if (!role.IsVanilla() || player.IsGhostRole())
             {

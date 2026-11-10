@@ -460,11 +460,6 @@ namespace TownOfHost
                                     ismiss = true;
                                 }
                             }
-                            if (role is CustomRoles.Amnesiac)
-                            {
-                                if (roleClass is Amnesiac amnesiac && !amnesiac.Realized)
-                                    role = Amnesiac.IsWolf ? CustomRoles.WolfBoy : CustomRoles.Sheriff;
-                            }
                             var hRoleTextData = GetRoleColorCode(role);
                             string hRoleInfoTitleString = $"{GetString("RoleInfoTitle")}";
                             string hRoleInfoTitle = $"<{hRoleTextData}>{hRoleInfoTitleString}</color>";
@@ -503,11 +498,6 @@ namespace TownOfHost
                                         {
                                             ismiss = true;
                                             role = missrole;
-                                        }
-                                        if (role is CustomRoles.Amnesiac)
-                                        {
-                                            if (roleClass is Amnesiac amnesiac && !amnesiac.Realized)
-                                                role = Amnesiac.IsWolf ? CustomRoles.WolfBoy : CustomRoles.Sheriff;
                                         }
 
                                         var RoleTextData = GetRoleColorCode(role);
@@ -551,7 +541,6 @@ namespace TownOfHost
                         canceled = true;
                         if (GameStates.InGame && Options.ImpostorHideChat.GetBool() && PlayerControl.LocalPlayer.IsAlive() && (PlayerControl.LocalPlayer.GetCustomRole().IsImpostor() || PlayerControl.LocalPlayer.GetCustomRole() is CustomRoles.Egoist) && !PlayerControl.LocalPlayer.Is(CustomRoles.OneWolf))
                         {
-                            if ((PlayerControl.LocalPlayer.GetRoleClass() as Amnesiac)?.Realized == false) break;
                             var send = "";
                             foreach (var ag in args)
                             {
@@ -562,8 +551,6 @@ namespace TownOfHost
                             Logger.Info($"{PlayerControl.LocalPlayer.Data.GetLogPlayerName()} : {send}", "impostorsChat"); List<PlayerControl> sendplayers = new();
                             foreach (var imp in AllPlayerControls)
                             {
-                                if ((imp.GetRoleClass() as Amnesiac)?.Realized == false && imp.IsAlive()) continue;
-
                                 if ((imp.GetCustomRole().IsImpostor() || imp.GetCustomRole() is CustomRoles.Egoist))
                                 {
                                     sendplayers.Add(imp);
@@ -1290,11 +1277,6 @@ namespace TownOfHost
                             ismiss = true;
                             role = missrole;
                         }
-                        if (role is CustomRoles.Amnesiac)
-                        {
-                            if (roleclass is Amnesiac amnesiac && !amnesiac.Realized)
-                                role = Amnesiac.IsWolf ? CustomRoles.WolfBoy : CustomRoles.Sheriff;
-                        }
                         var RoleTextData = GetRoleColorCode(role);
                         string RoleInfoTitleString = $"{GetString("RoleInfoTitle")}";
                         string RoleInfoTitle = $"<{RoleTextData}>{RoleInfoTitleString}</color>";
@@ -1389,18 +1371,12 @@ namespace TownOfHost
                 case "/ic":
                     if (GameStates.InGame && Options.ImpostorHideChat.GetBool() && player.IsAlive() && (player.GetCustomRole().IsImpostor() || player.GetCustomRole() is CustomRoles.Egoist))
                     {
-                        if ((player.GetRoleClass() as Amnesiac)?.Realized == false)
-                        {
-                            canceled = true;
-                            break;
-                        }
                         string send = "";
                         if (GetHideSendText(ref canceled, ref send) is false) return;
                         Logger.Info($"{player.Data.GetLogPlayerName()} : {send}", "ImpostorChat");
                         List<PlayerControl> sendplayers = new();
                         foreach (var imp in AllPlayerControls)
                         {
-                            if ((imp.GetRoleClass() as Amnesiac)?.Realized == false && imp.IsAlive()) continue;
                             if (imp.PlayerId == player.PlayerId && !Isclient) continue;
                             if ((imp.GetCustomRole().IsImpostor() || imp.GetCustomRole() is CustomRoles.Egoist))
                             {

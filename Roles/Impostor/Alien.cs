@@ -130,7 +130,7 @@ public sealed class Alien : RoleBase, IMeetingTimeAlterable, IImpostor, INekomat
                 // インポスターがいるなら星マークを付ける
                 if (entry.NumImpostors > 0)
                 {
-                    builder.Append(EvilHacker.ImpostorMark);
+                    builder.Append("★".Color(Palette.ImpostorRed));//旧イビルハッカーの印
                 }
                 // 部屋名と合計プレイヤー数を表記
                 builder.Append(DestroyableSingleton<TranslationController>.Instance.GetString(entry.Room));

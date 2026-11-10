@@ -258,9 +258,6 @@ namespace TownOfHost
                             var recrole = (CustomRoles)reader.ReadPackedInt32();
                             switch (recrole)
                             {
-                                case CustomRoles.EvilBlender:
-                                    EvilBlender.ReceivePublickRpc(reader);
-                                    break;
                             }
                         }
                     }

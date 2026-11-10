@@ -80,8 +80,6 @@ namespace TownOfHost
             //=============================================
             //以下、ボタンが押されることが確定したものとする。
             //=============================================
-            ShapeKiller.SetDummyReport(ref __instance, target);
-
             WaitMeeting(__instance, target);
 
             return false;
@@ -121,7 +119,6 @@ namespace TownOfHost
             GameStates.CalledMeeting = true;
             PlayerControlRpcUseZiplinePatch.OnMeeting(reporter, target);
 
-            ShapeKiller.SetDummyReport(ref reporter, target);
             WaitMeeting(reporter, target, Meetinginfo, colorcode);
         }
         public static Dictionary<byte, (float time, DontReportreson reason)> DontReport = new();
