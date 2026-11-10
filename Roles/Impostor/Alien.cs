@@ -21,7 +21,7 @@ namespace TownOfHost.Roles.Impostor;
 // マジシャン(キルボタンぜんぶ吹っ飛ばす...流石に強い気がする)
 // ウィッチ(キルで呪い付与...弱いかなぁ...)
 
-public sealed class Alien : RoleBase, IMeetingTimeAlterable, IImpostor, INekomata, ISelfVoter
+public sealed class Alien : RoleBase, IMeetingTimeAlterable, IImpostor, INekomata
 {
     public static readonly SimpleRoleInfo RoleInfo =
             SimpleRoleInfo.Create(
@@ -59,7 +59,6 @@ public sealed class Alien : RoleBase, IMeetingTimeAlterable, IImpostor, INekomat
     public override void Add()
     {
         IsDead = false;
-        Uetukecount = 0;
         AbductTimer = 255f;
         stopCount = false;
         Aliens.Add(this);
@@ -181,7 +180,6 @@ public sealed class Alien : RoleBase, IMeetingTimeAlterable, IImpostor, INekomat
         if (!Player.IsAlive()) return;
 
         RestartAbduct();
-        UetukeUsed = !OptUetuke.GetBool();
 
         if (!AmongUsClient.Instance.AmHost) return;
 
@@ -775,56 +773,6 @@ public sealed class Alien : RoleBase, IMeetingTimeAlterable, IImpostor, INekomat
     }
     #endregion
 
-    #region 植え付け
-    bool ISelfVoter.CanUseVoted() => Canuseability() && OptUetukeCount.GetInt() > Uetukecount && !UetukeUsed && mode != AlienMode.None && mode != AlienMode.Normal;
-    public override bool CheckVoteAsVoter(byte votedForId, PlayerControl voter)
-    {
-        if (!Canuseability()) return true;
-        if (OptUetukeCount.GetInt() > Uetukecount && Is(voter) && !UetukeUsed && mode != AlienMode.None && mode != AlienMode.Normal)
-        {
-            var target = PlayerCatch.GetPlayerById(votedForId);
-            {
-                if (CheckSelfVoteMode(Player, votedForId, out var status))
-                {
-                    if (status is VoteStatus.Self)
-                        Utils.SendMessage(string.Format(GetString("SkillMode"), GetString("Mode.AlienUetuke"), GetString("Vote.AlienUetuke")) + GetString("VoteSkillMode"), Player.PlayerId);
-                    if (status is VoteStatus.Skip)
-                        Utils.SendMessage(GetString("VoteSkillFin"), Player.PlayerId);
-                    if (status is VoteStatus.Vote)
-                        Uetuke(votedForId);
-                    SetMode(Player, status is VoteStatus.Self);
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-    void Uetuke(byte toid)
-    {
-        var pc = PlayerCatch.GetPlayerById(toid);
-        if (pc.GetCustomRole().IsImpostor() && !pc.Is(CustomRoles.AlienHijack))
-        {
-            var Troleclass = pc.GetRoleClass();
-            var role = pc.GetCustomRole();
-
-            Uetukecount++;
-            UetukeUsed = true;
-            pc.RpcSetCustomRole(CustomRoles.AlienHijack, true, null);
-
-            _ = new LateTask(() =>
-            {
-                if (pc.GetRoleClass() is AlienHijack alienHijack)
-                {
-                    alienHijack.mode = mode;
-                    alienHijack.MaenoRole = Troleclass;
-                    alienHijack.MaenoCRole = role;
-                    alienHijack.RpcSyncAlienMode();
-                }
-            }, 4, "AlienUetule", true);
-        }
-    }
-
-    #endregion
     #region Other
     public override bool NotifyRolesCheckOtherName => true;
     void ResetDarkenState()
@@ -1013,7 +961,6 @@ public sealed class Alien : RoleBase, IMeetingTimeAlterable, IImpostor, INekomat
         RateInsider = OptionModeInsider.GetInt();
         RatePenguin = OptionModePenguin.GetInt();
         RateComebaker = OptionModeComebaker.GetInt();
-        UetukeUsed = !OptUetuke.GetBool();
 
         TimeThiefDecreaseMeetingTime = OptionTimeThiefDecreaseMeetingTime.GetInt();
         NotifierCance = OptionNotifierProbability.GetInt();
@@ -1150,12 +1097,6 @@ public sealed class Alien : RoleBase, IMeetingTimeAlterable, IImpostor, INekomat
     static OptionItem FirstAbility;
     static OptionItem OptionAlienHideAbility;
     static bool AlienHideAbility;
-    //植え付け
-    static OptionItem OptUetuke;
-    static OptionItem OptUetukeCount;
-    public static OptionItem OptUetuketukeTrun;
-    int Uetukecount;
-    bool UetukeUsed;
     enum OptionName
     {
         AlienHideAbility, AlienFirstAbility,
@@ -1176,16 +1117,11 @@ public sealed class Alien : RoleBase, IMeetingTimeAlterable, IImpostor, INekomat
         AlienCInsider,
         AlienCPenguin, PenguinAbductTimerLimit, PenguinMeetingKill,
         AlienCComebacker,
-        AlienUetuke, AlienUetukeCount, AlienUetukeTrun
     }
     static void SetupOptionItem()//NowMax : 52
     {
         FirstAbility = BooleanOptionItem.Create(RoleInfo, 7, OptionName.AlienFirstAbility, false, false);
         OptionAlienHideAbility = BooleanOptionItem.Create(RoleInfo, 9, OptionName.AlienHideAbility, false, false);
-        ObjectOptionitem.Create(RoleInfo, 52, "AlienOption", true, null).SetOptionName(() => "Planting Setting");
-        OptUetuke = BooleanOptionItem.Create(RoleInfo, 46, OptionName.AlienUetuke, false, false).SetTooltip(() => GetString("AlienUetukeInfo"));
-        OptUetukeCount = IntegerOptionItem.Create(RoleInfo, 47, OptionName.AlienUetukeCount, new(1, 20, 1), 1, false, OptUetuke);
-        OptUetuketukeTrun = IntegerOptionItem.Create(RoleInfo, 48, OptionName.AlienUetukeTrun, new(1, 20, 1), 2, false, OptUetuke);
         ObjectOptionitem.Create(RoleInfo, 51, "AlienOption", true, null).SetOptionName(() => "Alien Setting");
         OptionModeVampire = FloatOptionItem.Create(RoleInfo, 10, OptionName.AlienCVampire, new(0, 100, 5), 100, false).SetValueFormat(OptionFormat.Percent);
         SpeedDown = BooleanOptionItem.Create(RoleInfo, 40, OptionName.VampireSpeedDown, true, false, OptionModeVampire);

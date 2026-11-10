@@ -174,7 +174,6 @@ public sealed class Sheriff : RoleBase, IKiller, ISchrodingerCatOwner
             var AlienTairo = false;
             var targetroleclass = target.GetRoleClass();
             if ((targetroleclass as Alien)?.CheckSheriffKill(target) == true) AlienTairo = true;
-            if ((targetroleclass as AlienHijack)?.CheckSheriffKill(target) == true) AlienTairo = true;
 
             if (!CanBeKilledBy(target) || AlienTairo)
             {
@@ -182,7 +181,7 @@ public sealed class Sheriff : RoleBase, IKiller, ISchrodingerCatOwner
                 PlayerState.GetByPlayerId(killer.PlayerId).DeathReason =
                             target.Is(CustomRoles.Tairou) && Tairou.TairoDeathReason ? CustomDeathReason.Counter :
                             target.Is(CustomRoles.Alien) && Alien.TairoDeathReason ? CustomDeathReason.Counter :
-                            (target.Is(CustomRoles.AlienHijack) && Alien.TairoDeathReason ? CustomDeathReason.Counter : CustomDeathReason.Misfire);
+                            CustomDeathReason.Misfire;
                 killer.RpcMurderPlayer(killer);
                 Flug3 = Utils.IsActive(Main.SabotageType) && Main.SabotageType.IsCriticalSabotage() ? 1 : 0;
                 UtilsGameLog.AddGameLog("Sheriff", string.Format(GetString("SheriffMissLog"), UtilsName.GetPlayerColor(target.PlayerId)));

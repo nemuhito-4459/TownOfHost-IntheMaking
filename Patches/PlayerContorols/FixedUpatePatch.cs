@@ -336,8 +336,7 @@ namespace TownOfHost
 
                             if (target.Is(CustomRoles.Workhorse))
                             {
-                                if (((seerRole as Alien)?.mode == Alien.AlienMode.ProgressKiller && Alien.ProgressWorkhorseseen)
-                                || ((seerRole as AlienHijack)?.mode == Alien.AlienMode.ProgressKiller && Alien.ProgressWorkhorseseen))
+                                if (((seerRole as Alien)?.mode == Alien.AlienMode.ProgressKiller && Alien.ProgressWorkhorseseen))
                                 {
                                     Mark.Append($"<#0000ff>♦</color>");
                                 }
