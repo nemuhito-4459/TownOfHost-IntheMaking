@@ -137,9 +137,9 @@ namespace TownOfHost
             {
                 if (!AmongUsClient.Instance) return;
                 if (__instance == null) return;
-                //プライベートフォークの規約により、もし公開ルームになっていたら非公開に戻す
-                if (AmongUsClient.Instance.AmHost && AmongUsClient.Instance.IsGamePublic)
-                    AmongUsClient.Instance.ChangeGamePublic(false);
+                //プライベートフォークの規約により、公開/非公開の切り替えボタンは表示しない
+                if (__instance.HostPublicButton != null) __instance.HostPublicButton.gameObject.SetActive(false);
+                if (__instance.HostPrivateButton != null) __instance.HostPrivateButton.gameObject.SetActive(false);
                 string warningMessage = "";
                 if (AmongUsClient.Instance.AmHost)
                 {
