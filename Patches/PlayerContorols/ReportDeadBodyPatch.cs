@@ -325,6 +325,8 @@ namespace TownOfHost
 
             //サボ関係多分なしに～
             //押したのなら強制で始める
+            //会議中の能力をジャッジの判決で使う役職を、会議が始まる前にジャッジにしておく
+            JudgeAbilityManager.PrepareMeeting();
             _ = new LateTask(() => UtilsOption.SyncAllSettings(), 0.2f, "", true);
             _ = new LateTask(() =>
             {

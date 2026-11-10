@@ -155,6 +155,8 @@ namespace TownOfHost.Modules
                 Logger.Error($"stateがnullやで", "Pl.BuildGameOptions");
                 return opt;
             }
+            //ジャッジ方式の会議能力: その人だけジャッジのタスク条件を0%にする(すぐ判決を使える)
+            if (JudgeAbilityManager.IsJudge(player.PlayerId)) AURoleOptions.JudgeTaskRequirementPercentage = 0f;
             if (CurrentGameMode == CustomGameMode.TaskBattle)
             {
                 opt.SetFloat(FloatOptionNames.CrewLightMod, 5f);

@@ -40,7 +40,7 @@ public sealed class MadTeller : RoleBase, IKillFlashSeeable, IDeathReasonSeeable
         srole = OptionRole.GetBool();
         canSeeKillFlash = Options.MadmateCanSeeKillFlash.GetBool();
         canSeeDeathReason = Options.MadmateCanSeeDeathReason.GetBool();
-        Votemode = (AbilityVoteMode)OptionVoteMode.GetValue();
+        Votemode = AbilityVoteMode.SelfVote;//普通の投票で使う設定は廃止
         onemeetingmaximum = Option1MeetingMaximum.GetFloat();
         MyTaskState.NeedTaskCount = OptionTaskTrigger.GetInt();
         IsAbilityUseVote = OptionAbilityUseVote.GetBool();
@@ -51,7 +51,6 @@ public sealed class MadTeller : RoleBase, IKillFlashSeeable, IDeathReasonSeeable
     private static OptionItem Optioncollect;
     private static OptionItem OptionMaximum;
     private static OptionItem OptionRole;
-    private static OptionItem OptionVoteMode;
     static OptionItem OptionAbilityUseVote; static bool IsAbilityUseVote;
     private static OptionItem Option1MeetingMaximum;
     public bool? CheckKillFlash(MurderInfo info) => canSeeKillFlash;
@@ -79,7 +78,6 @@ public sealed class MadTeller : RoleBase, IKillFlashSeeable, IDeathReasonSeeable
             .SetValueFormat(OptionFormat.Percent);
         OptionMaximum = IntegerOptionItem.Create(RoleInfo, 11, Option.TellMaximum, new(1, 99, 1), 1, false)
             .SetValueFormat(OptionFormat.Times);
-        OptionVoteMode = StringOptionItem.Create(RoleInfo, 12, Option.AbilityVotemode, EnumHelper.GetAllNames<AbilityVoteMode>(), 1, false);
         OptionAbilityUseVote = BooleanOptionItem.Create(RoleInfo, 16, Option.AbilityUseVote, false, false);
         OptionRole = BooleanOptionItem.Create(RoleInfo, 13, Option.TellRole, true, false);
         Option1MeetingMaximum = IntegerOptionItem.Create(RoleInfo, 14, GeneralOption.MeetingMaxTime, new(0, 99, 1), 0, false)

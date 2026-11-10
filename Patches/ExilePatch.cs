@@ -146,6 +146,8 @@ namespace TownOfHost
         }
         static void WrapUpFinalizer(NetworkedPlayerInfo exiled)
         {
+            //ジャッジにしていた人を元の役職に戻す
+            JudgeAbilityManager.OnMeetingEnd();
             //WrapUpPostfixで例外が発生しても、この部分だけは確実に実行されます。
             if (AmongUsClient.Instance.AmHost)
             {

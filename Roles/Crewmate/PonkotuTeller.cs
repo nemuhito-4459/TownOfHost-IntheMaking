@@ -40,7 +40,7 @@ public sealed class PonkotuTeller : RoleBase, ISelfVoter
         TellRole = OptionRole.GetBool();
         rolename = Optionrolename.GetBool();
         cantaskcount = Optioncantaskcount.GetFloat();
-        Votemode = (AbilityVoteMode)OptionVoteMode.GetValue();
+        Votemode = AbilityVoteMode.SelfVote;//普通の投票で使う設定は廃止
         onemeetingmaximum = Option1MeetingMaximum.GetFloat();
         Awakened = !OptAwakening.GetBool() || cantaskcount < 1;
         IsAbilityUseVote = OptionAbilityUseVote.GetBool();
@@ -49,7 +49,7 @@ public sealed class PonkotuTeller : RoleBase, ISelfVoter
             rolename = FortuneTeller.Optionrolename.GetBool();
             TellRole = FortuneTeller.OptionRole.GetBool();
             cantaskcount = FortuneTeller.OptionCanTaskcount.GetFloat();
-            Votemode = (AbilityVoteMode)FortuneTeller.OptionVoteMode.GetValue();
+            Votemode = AbilityVoteMode.SelfVote;//普通の投票で使う設定は廃止
             onemeetingmaximum = FortuneTeller.Option1MeetingMaximum.GetFloat();
             Awakened = !FortuneTeller.OptAwakening.GetBool();
             Max = FortuneTeller.OptionMaximum.GetFloat();
@@ -63,7 +63,6 @@ public sealed class PonkotuTeller : RoleBase, ISelfVoter
     private static OptionItem Optioncollect;
     private static OptionItem OptionMaximum;
     private static OptionItem OptionRole;
-    private static OptionItem OptionVoteMode;
     static OptionItem OptionAbilityUseVote; static bool IsAbilityUseVote;
     private static OptionItem Optioncantaskcount;
     private static OptionItem Option1MeetingMaximum;
@@ -105,7 +104,6 @@ public sealed class PonkotuTeller : RoleBase, ISelfVoter
         OptionMaximum = IntegerOptionItem.Create(RoleInfo, 11, Option.TellMaximum, new(1, 99, 1), 1, false, OptionNonAlignFortuneTeller)
             .SetValueFormat(OptionFormat.Times);
         OptionAbilityUseVote = BooleanOptionItem.Create(RoleInfo, 21, Option.AbilityUseVote, false, false);
-        OptionVoteMode = StringOptionItem.Create(RoleInfo, 12, Option.AbilityVotemode, EnumHelper.GetAllNames<AbilityVoteMode>(), 1, false, OptionNonAlignFortuneTeller);
         Optionrolename = BooleanOptionItem.Create(RoleInfo, 19, Option.TellerCanSeeRolename, true, false, OptionNonAlignFortuneTeller);
         OptionRole = BooleanOptionItem.Create(RoleInfo, 13, Option.TellRole, true, false, OptionNonAlignFortuneTeller);
         Optioncantaskcount = IntegerOptionItem.Create(RoleInfo, 14, GeneralOption.cantaskcount, new(0, 99, 1), 5, false, OptionNonAlignFortuneTeller);

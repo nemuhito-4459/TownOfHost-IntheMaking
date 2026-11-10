@@ -97,6 +97,12 @@ public static class MeetingHudPatch
             Logger.Info($"{judgePlayerId} => {targetPlayerId} , {overruleNonce}", "SetJudge");
             var voter = PlayerCatch.GetPlayerById(judgePlayerId);
             var votefor = PlayerCatch.GetPlayerById(targetPlayerId);
+            //ジャッジ方式の会議能力なら、判決の相手に能力を使って、本来の判決は取り消す
+            if (JudgeAbilityManager.TryUse(voter, votefor))
+            {
+                __instance.RpcClearVote(voter.PlayerId);
+                return false;
+            }
             var roleclass = voter.GetRoleClass();
             var ExilePlayerid = byte.MaxValue;
 

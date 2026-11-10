@@ -38,7 +38,7 @@ public sealed class FortuneTeller : RoleBase, ISelfVoter
         count = 0;
         MeetingUsedcount = 0;
         Awakened = !OptAwakening.GetBool() || OptionCanTaskcount.GetInt() < 1;
-        Votemode = (AbilityVoteMode)OptionVoteMode.GetValue();
+        Votemode = AbilityVoteMode.SelfVote;//普通の投票で使う設定は廃止
         rolename = Optionrolename.GetBool();
         srole = OptionRole.GetBool();
         cantaskcount = OptionCanTaskcount.GetFloat();
@@ -48,7 +48,6 @@ public sealed class FortuneTeller : RoleBase, ISelfVoter
     }
 
     public static OptionItem OptionMaximum;
-    public static OptionItem OptionVoteMode;
     public static OptionItem OptionAbilityUseVote; static bool IsAbilityUseVote;
     public static OptionItem Optionrolename;
     public static OptionItem OptionRole;
@@ -78,7 +77,6 @@ public sealed class FortuneTeller : RoleBase, ISelfVoter
     {
         OptionMaximum = IntegerOptionItem.Create(RoleInfo, 10, Option.TellMaximum, new(1, 99, 1), 1, false)
             .SetValueFormat(OptionFormat.Times);
-        OptionVoteMode = StringOptionItem.Create(RoleInfo, 11, Option.AbilityVotemode, EnumHelper.GetAllNames<AbilityVoteMode>(), 1, false);
         OptionAbilityUseVote = BooleanOptionItem.Create(RoleInfo, 17, Option.AbilityUseVote, false, false);
         Optionrolename = BooleanOptionItem.Create(RoleInfo, 12, Option.TellerCanSeeRolename, true, false);
         OptionRole = BooleanOptionItem.Create(RoleInfo, 13, Option.TellRole, true, false);
