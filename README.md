@@ -1,6 +1,6 @@
 # TOHKのプライベートフォークです
-絶対にビルドしたファイルは配布しません<br>
-TOHKに問い合わせないで<br>
+ビルドしたファイルは配布しません<br>
+絶対に何があってもこのMODによって発生したバグ等はTOHKに問い合わせないでください<br>
 
 # Discord
 問い合わせはディスコへ<br>
@@ -36,7 +36,7 @@ TOHKに問い合わせないで<br>
 
 
 # クレジット
-TownOfHost-K様が記載しているクレジットの引用（一部変更）です。<br>
+＜TownOfHost-K様が記載しているクレジットの引用（一部変更）です＞<br>
 
 [Town Of Host](https://github.com/tukasa0001/TownOfHost)<br>
 　TownOfHost-K様のFork元の本家です。
@@ -74,6 +74,7 @@ TOR_GM_Haoming_Edition<br>
 
 [ExtremeRoles](https://github.com/yukieiji/ExtremeRoles)<br>
 　アサシンとマーリンの参考/移植をさせていただきました。<br>
+
 
 [Mod Credit]<br>
  This mod is not affiliated with Among Us or Innersloth LLC, and the content contained therein is not endorsed or otherwise sponsored by Innersloth LLC. Portions of the materials contained herein are property of Innersloth LLC. © Innersloth LLC.
