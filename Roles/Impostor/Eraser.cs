@@ -150,8 +150,6 @@ public sealed class Eraser : RoleBase, IImpostor, IUsePhantomButton
             {
                 Erasedtargets.Add(player.PlayerId);
                 player.RpcSetCustomRole(SuddenDeathMode.NowSuddenDeathMode || (Player.Is(CustomRoles.JackalWolf) && player.Is(CustomRoleTypes.Impostor)) ? CustomRoles.Impostor : CustomRoles.Crewmate, true, null);
-                Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[0]);
-                if (role.IsNeutral()) Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[1]);
             }
             var addons = player.GetPlayerState().SubRoles;
             if (CanDelAddon) addons.Do(x => player.GetPlayerState().RemoveSubRole(x));
@@ -229,14 +227,5 @@ public sealed class Eraser : RoleBase, IImpostor, IUsePhantomButton
     {
         ErasePlayer,
         UseAbility,
-    }
-    public static Dictionary<int, Achievement> achievements = new();
-    [Attributes.PluginModuleInitializer]
-    public static void Load()
-    {
-        var n1 = new Achievement(RoleInfo, 0, 1, 0, 0);
-        var l1 = new Achievement(RoleInfo, 1, 1, 0, 1);
-        achievements.Add(0, n1);
-        achievements.Add(1, l1);
     }
 }

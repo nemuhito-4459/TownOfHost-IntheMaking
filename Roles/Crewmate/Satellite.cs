@@ -221,13 +221,5 @@ public sealed class Satellite : RoleBase, ISelfVoter
     }
     public override void CheckWinner(GameOverReason reason)
     {
-        Achievements.RpcCompleteAchievement(Player.PlayerId, 1, achievements[0], UsedSkillCount);
-    }
-    public static Dictionary<int, Achievement> achievements = new();
-    [Attributes.PluginModuleInitializer]
-    public static void Load()
-    {
-        var n1 = new Achievement(RoleInfo, 0, 5, 0, 0);
-        achievements.Add(0, n1);
     }
 }

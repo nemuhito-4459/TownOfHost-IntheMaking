@@ -180,7 +180,6 @@ public sealed class Strawdoll : RoleBase, IKiller, IUsePhantomButton
             MyState.DeathReason = CustomDeathReason.Spell;
             Player.RpcMurderPlayer(Player);
             SendRPC();
-            Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[1]);
         }
     }
     public override bool OnCheckMurderAsTarget(MurderInfo info)
@@ -300,18 +299,5 @@ public sealed class Strawdoll : RoleBase, IKiller, IUsePhantomButton
     }
     public override void CheckWinner(GameOverReason reason)
     {
-        Achievements.RpcCompleteAchievement(Player.PlayerId, 1, achievements[0], killedcount);
-        Achievements.RpcCompleteAchievement(Player.PlayerId, 1, achievements[2], killedcount);
-    }
-    public static Dictionary<int, Achievement> achievements = new();
-    [Attributes.PluginModuleInitializer]
-    public static void Load()
-    {
-        var n1 = new Achievement(RoleInfo, 0, 3, 0, 0);
-        var n2 = new Achievement(RoleInfo, 1, 1, 0, 0);
-        var l1 = new Achievement(RoleInfo, 2, 30, 0, 1);
-        achievements.Add(0, n1);
-        achievements.Add(1, n2);
-        achievements.Add(2, l1);
     }
 }

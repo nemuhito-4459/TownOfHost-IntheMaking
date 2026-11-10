@@ -197,7 +197,6 @@ public sealed class Fortuner : RoleBase, IKiller
             if (role is not CustomRoles.NotAssigned || roletext != "")
             {
                 if (roletext == "") roletext += UtilsRoleText.GetRoleColorAndtext(role);
-                if (role.IsDebuffAddon()) Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[1]);
                 _ = new LateTask(() =>
                 {
                     var send = string.Format(GetString("Fortune_Meg".RemoveHtmlTags()), roletext);
@@ -205,11 +204,6 @@ public sealed class Fortuner : RoleBase, IKiller
                     MeetingHudPatch.StartPatch.meetingsends.Add((player.PlayerId, send, ""));
                 }, 5.5f, "forsendmeg", null);
             }
-        }
-        if (giveplayerid.Count > 0)
-        {
-            Achievements.RpcCompleteAchievement(Player.PlayerId, 1, achievements[0], giveplayerid.Count);
-            Achievements.RpcCompleteAchievement(Player.PlayerId, 1, achievements[2], giveplayerid.Count);
         }
         giveplayerid.Clear();
 
@@ -247,16 +241,5 @@ public sealed class Fortuner : RoleBase, IKiller
     {
         text = "Fortuner_Ability";
         return true;
-    }
-    public static Dictionary<int, Achievement> achievements = new();
-    [Attributes.PluginModuleInitializer]
-    public static void Load()
-    {
-        var n1 = new Achievement(RoleInfo, 0, 3, 0, 0);
-        var n2 = new Achievement(RoleInfo, 1, 1, 0, 0);
-        var l1 = new Achievement(RoleInfo, 2, 20, 0, 1);
-        achievements.Add(0, n1);
-        achievements.Add(1, n2);
-        achievements.Add(2, l1);
     }
 }

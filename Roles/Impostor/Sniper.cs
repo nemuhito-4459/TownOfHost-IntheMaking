@@ -282,17 +282,12 @@ public sealed class Sniper : RoleBase, IImpostor
             //一番正確な対象がターゲット
             var snipedTarget = targets.OrderBy(c => c.Value).First().Key;
 
-            Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[1]);
-            if (25 <= Vector2.Distance(snipedTarget.GetTruePosition(), Player.GetTruePosition()))
-                Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[2]);
 
             if (CustomRoleManager.OnCheckMurder(
                 Player, snipedTarget,       // sniperがsnipedTargetを打ち抜く
                 snipedTarget, snipedTarget, true, Killpower: 1 // 表示上はsnipedTargetの自爆
             ))
             {
-                if (snipedTarget.IsTeammate(Player))
-                    Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[3]);
             }
 
             //あたった通知
@@ -322,10 +317,6 @@ public sealed class Sniper : RoleBase, IImpostor
                     }
                 },
                 0.5f, "Sniper shot Notify");
-        }
-        else
-        {
-            Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[0]);
         }
         _ = new LateTask(() =>
         {
@@ -430,17 +421,5 @@ public sealed class Sniper : RoleBase, IImpostor
     public override string GetAbilityButtonText()
     {
         return GetString(BulletCount <= 0 ? "DefaultShapeshiftText" : "SniperSnipeButtonText");
-    }
-    public static Dictionary<int, Achievement> achievements = new();
-    [Attributes.PluginModuleInitializer]
-    public static void Load()
-    {
-        var n1 = new Achievement(RoleInfo, 0, 1, 0, 0);
-        var l1 = new Achievement(RoleInfo, 1, 1, 0, 1);
-        var sp1 = new Achievement(RoleInfo, 2, 1, 0, 2);
-        var l2 = new Achievement(RoleInfo, 3, 1, 0, 1, true);
-        achievements.Add(0, n1);
-        achievements.Add(1, l1);
-        achievements.Add(2, l2);
     }
 }

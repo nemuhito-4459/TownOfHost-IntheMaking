@@ -196,8 +196,6 @@ public sealed class Sheriff : RoleBase, IKiller, ISchrodingerCatOwner
             }
 
             killer.ResetKillCooldown();
-            Achievements.RpcCompleteAchievement(Player.PlayerId, 0, SheriffAchievement.achievements[0]);
-            Achievements.RpcCompleteAchievement(Player.PlayerId, 1, SheriffAchievement.achievements[1]);
         }
         return;
     }
@@ -259,7 +257,6 @@ public sealed class Sheriff : RoleBase, IKiller, ISchrodingerCatOwner
                     (LifeSupp = systems[SystemTypes.LifeSupp].TryCast<LifeSuppSystemType>()) != null &&
                     LifeSupp.Countdown <= 15f)
                 {
-                    Achievements.RpcCompleteAchievement(Player.PlayerId, 0, SheriffAchievement.achievements[2]);
                 }
                 ISystemType sys = null;
                 if (systems.ContainsKey(SystemTypes.Reactor)) sys = systems[SystemTypes.Reactor];
@@ -270,24 +267,8 @@ public sealed class Sheriff : RoleBase, IKiller, ISchrodingerCatOwner
                 (critical = sys.TryCast<ICriticalSabotage>()) != null &&
                 critical.Countdown <= 15f)
                 {
-                    Achievements.RpcCompleteAchievement(Player.PlayerId, 0, SheriffAchievement.achievements[2]);
                 }
             }
         }
-    }
-}
-
-class SheriffAchievement
-{
-    public static Dictionary<int, Achievement> achievements = new();
-    [Attributes.PluginModuleInitializer]
-    public static void Load()
-    {
-        var n1 = new Achievement(Sheriff.RoleInfo, 0, 1, 0, 0);
-        var l2 = new Achievement(Sheriff.RoleInfo, 1, 10, 0, 1);
-        var sp3 = new Achievement(Sheriff.RoleInfo, 2, 1, 0, 3, true);
-        achievements.Add(0, n1);
-        achievements.Add(1, l2);
-        achievements.Add(2, sp3);
     }
 }

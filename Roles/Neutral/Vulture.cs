@@ -121,7 +121,6 @@ public sealed class Vulture : RoleBase, IKillFlashSeeable, IAdditionalWinner
             staticEatedPlayers.Add(target.PlayerId);
             DiePlayerPos.Where(poss => poss.Key == target.PlayerId).Do(poss => GetArrow.Remove(Player.PlayerId, poss.Value));
             RpcEatPlayer(target.PlayerId);
-            Achievements.RpcCompleteAchievement(Player.PlayerId, 1, achievements[0]);
 
             //勝利の確認
             if (OptWinEatcount <= EatCount)
@@ -139,10 +138,6 @@ public sealed class Vulture : RoleBase, IKillFlashSeeable, IAdditionalWinner
                 var dummyshapetarget = PlayerCatch.AllPlayerControls.Where(pc => pc.PlayerId != Player.PlayerId).OrderBy(x => Guid.NewGuid()).FirstOrDefault(PlayerControl.LocalPlayer);
                 Player.RpcShapeshift(dummyshapetarget, true);
                 _ = new LateTask(() => Player.RpcShapeshift(Player, false), 1.5f + Main.LagTime, "", true);
-            }
-            if (turneat > 2)
-            {
-                Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[1]);
             }
 
             return true;
@@ -304,14 +299,5 @@ public sealed class Vulture : RoleBase, IKillFlashSeeable, IAdditionalWinner
         EatPlayer,
         AddDiePlayerPos,
         ClearDiePlayerPos
-    }
-    public static Dictionary<int, Achievement> achievements = new();
-    [Attributes.PluginModuleInitializer]
-    public static void Load()
-    {
-        var n1 = new Achievement(RoleInfo, 0, 10, 0, 0);
-        var sp1 = new Achievement(RoleInfo, 1, 1, 0, 2, true);
-        achievements.Add(0, n1);
-        achievements.Add(1, sp1);
     }
 }

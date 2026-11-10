@@ -174,7 +174,6 @@ public sealed class MadAvenger : RoleBase, IKillFlashSeeable, IDeathReasonSeeabl
                         Guessd.Add(pc);
                         Player.RpcProtectedMurderPlayer();
                         Utils.SendMessage(GetString("Skill.MadAvengersuccess"), Player.PlayerId, title: " <color=#ff1919>" + GetString("MadAvengerMeeting"));
-                        if (Guessd.Count is 1) Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[0]);
 
                         foreach (var go in PlayerCatch.AllPlayerControls.Where(pc => pc != null && !pc.IsAlive()))
                         {
@@ -209,9 +208,6 @@ public sealed class MadAvenger : RoleBase, IKillFlashSeeable, IDeathReasonSeeabl
                                         else
                                             RPC.PlaySoundRPC(pc.PlayerId, Sounds.KillSound);
                                     }
-                                    Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[1]);
-                                    if (3 <= Guessd.Count && 10 <= killcount)
-                                        Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[2]);
                                     CustomWinnerHolder.ResetAndSetAndChWinner(CustomWinner.Impostor, Player.PlayerId, hantrole: CustomRoles.MadAvenger);
                                 }, 15f, "Kakumeiseikou");
                                 return true;
@@ -247,15 +243,4 @@ public sealed class MadAvenger : RoleBase, IKillFlashSeeable, IDeathReasonSeeabl
 
     public override string GetProgressText(bool comms = false, bool GameLog = false) => !GameLog && OptionCanseeimpostorCount.GetBool() ? $"({PlayerCatch.AliveImpostorCount})" : "";
 
-    public static Dictionary<int, Achievement> achievements = new();
-    [Attributes.PluginModuleInitializer]
-    public static void Load()
-    {
-        var l1 = new Achievement(RoleInfo, 0, 1, 0, 0);
-        var sp1 = new Achievement(RoleInfo, 1, 1, 0, 2);
-        var sp2 = new Achievement(RoleInfo, 2, 1, 0, 3, true);
-        achievements.Add(0, l1);
-        achievements.Add(1, sp1);
-        achievements.Add(2, sp2);
-    }
 }

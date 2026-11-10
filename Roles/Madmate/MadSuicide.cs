@@ -149,14 +149,6 @@ public sealed class MadSuicide : RoleBase, IKiller, IUsePhantomButton, IKillFlas
     }
     public override void OnExileWrapUp(NetworkedPlayerInfo exiled, ref bool DecidedWinner)
     {
-        if (flug && exiled is not null) Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[0]);
     }
     bool flug;
-    public static System.Collections.Generic.Dictionary<int, Achievement> achievements = new();
-    [Attributes.PluginModuleInitializer]
-    public static void Load()
-    {
-        var n1 = new Achievement(RoleInfo, 0, 1, 0, 1);
-        achievements.Add(0, n1);
-    }
 }

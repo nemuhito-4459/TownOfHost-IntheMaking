@@ -41,18 +41,7 @@ namespace TownOfHost.Roles.Ghost
                     _ = new LateTask(() => pc.MyPhysics.RpcBootFromVent(vent.Id), 0.2f, "DemonicVenter3");
                     _ = new LateTask(() => pc.RpcSnapToForced(pos), 0.6f, "DemonicVenter3");
                 }
-                Achievements.RpcCompleteAchievement(pc.PlayerId, 1, achievements[0]);
-                Achievements.RpcCompleteAchievement(pc.PlayerId, 1, achievements[1]);
             }
-        }
-        public static Dictionary<int, Achievement> achievements = new();
-        [Attributes.PluginModuleInitializer]
-        public static void Load()
-        {
-            var n1 = new Achievement(CustomRoles.DemonicVenter, Id + 0, 5, 0, 0);
-            var l1 = new Achievement(CustomRoles.DemonicVenter, Id + 1, 50, 0, 1);
-            achievements.Add(0, n1);
-            achievements.Add(1, l1);
         }
     }
 }

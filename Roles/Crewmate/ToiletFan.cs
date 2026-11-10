@@ -68,21 +68,10 @@ public sealed class ToiletFan : RoleBase
         switch (flug)
         {
             case 1:
-                Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[0]);
                 break;
             case 2:
-                Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[1]);
                 break;
             default: break;
         }
-    }
-    public static System.Collections.Generic.Dictionary<int, Achievement> achievements = new();
-    [Attributes.PluginModuleInitializer]
-    public static void Load()
-    {
-        var n1 = new Achievement(RoleInfo, 0, 1, 0, 0);
-        var n2 = new Achievement(RoleInfo, 1, 1, 0, 0);
-        achievements.Add(0, n1);
-        achievements.Add(1, n2);
     }
 }

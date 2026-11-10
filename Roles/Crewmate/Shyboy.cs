@@ -166,10 +166,6 @@ public sealed class Shyboy : RoleBase
                             }
                         }
                     }
-                    if (3 <= bombcount)
-                    {
-                        Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[3]);
-                    }
                 }
             }
         }
@@ -184,24 +180,5 @@ public sealed class Shyboy : RoleBase
     }
     public override void CheckWinner(GameOverReason reason)
     {
-        if (Player.IsAlive())
-        {
-            Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[0]);
-            if (Shytime <= 3 && Notshy <= 5)
-            {
-                Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[1]);
-            }
-        }
-    }
-    public static System.Collections.Generic.Dictionary<int, Achievement> achievements = new();
-    [Attributes.PluginModuleInitializer]
-    public static void Load()
-    {
-        var n1 = new Achievement(RoleInfo, 0, 1, 0, 0);
-        var sp1 = new Achievement(RoleInfo, 1, 1, 2, 2);
-        var l1 = new Achievement(RoleInfo, 2, 1, 1, 2, true);
-        achievements.Add(0, n1);
-        achievements.Add(1, sp1);
-        achievements.Add(2, l1);
     }
 }

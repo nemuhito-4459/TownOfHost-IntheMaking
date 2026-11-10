@@ -44,11 +44,4 @@ public sealed class Viper : RoleBase, IImpostor
         text = GetString(StringNames.ViperAbility);
         return true;
     }
-    public static Dictionary<int, Achievement> achievements = new();
-    [Attributes.PluginModuleInitializer]
-    public static void Load()
-    {
-        var n1 = new Achievement(RoleInfo, 0, 10, 0, 0);
-        achievements.Add(0, n1);
-    }
 }

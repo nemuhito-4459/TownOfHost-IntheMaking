@@ -236,8 +236,6 @@ public sealed class EvilBlender : RoleBase, IImpostor, IUsePhantomButton
                 if (pc.inVent) pc.MyPhysics.RpcBootFromVent(VentilationSystemUpdateSystemPatch.NowVentId.TryGetValue(pc.PlayerId, out var ventid) ? ventid : 0);
                 CustomRoleManager.OnCheckMurder(Player, pc, pc, pc, true, true, 10, CustomDeathReason.Suffocation);
                 i++;
-                if (i == 3) Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[0]);
-                if (pc.PlayerId == Player.PlayerId) Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[2]);
                 continue;
             }
         }
@@ -329,7 +327,6 @@ public sealed class EvilBlender : RoleBase, IImpostor, IUsePhantomButton
     }
     void IKiller.OnMurderPlayerAsKiller(MurderInfo info)
     {
-        if (UseingId == Player.PlayerId) Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[1]);
     }
     public override string GetAbilityButtonText()
     {
@@ -339,16 +336,5 @@ public sealed class EvilBlender : RoleBase, IImpostor, IUsePhantomButton
     {
         text = "EvilBlender_AbilityButton";
         return true;
-    }
-    public static Dictionary<int, Achievement> achievements = new();
-    [Attributes.PluginModuleInitializer]
-    public static void Load()
-    {
-        var n1 = new Achievement(RoleInfo, 0, 1, 0, 0);
-        var n2 = new Achievement(RoleInfo, 1, 1, 0, 0);
-        var l1 = new Achievement(RoleInfo, 2, 1, 0, 1);
-        achievements.Add(0, n1);
-        achievements.Add(1, n2);
-        achievements.Add(2, l1);
     }
 }

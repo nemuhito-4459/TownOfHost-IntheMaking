@@ -195,19 +195,5 @@ public sealed class Banker : RoleBase, IKiller, IAdditionalWinner
     }
     public override void CheckWinner(GameOverReason reason)
     {
-        Achievements.RpcCompleteAchievement(Player.PlayerId, 1, achievements[0], ac_coins.addcoin);
-        Achievements.RpcCompleteAchievement(Player.PlayerId, 1, achievements[1], ac_coins.addcoin);
-        Achievements.RpcCompleteAchievement(Player.PlayerId, 1, achievements[2], ac_coins.removecoin);
-    }
-    public static System.Collections.Generic.Dictionary<int, Achievement> achievements = new();
-    [Attributes.PluginModuleInitializer]
-    public static void Load()
-    {
-        var n1 = new Achievement(RoleInfo, 0, 100, 0, 0);
-        var l1 = new Achievement(RoleInfo, 1, 1000, 0, 1);
-        var sp1 = new Achievement(RoleInfo, 2, 1000, 0, 2, true);
-        achievements.Add(0, n1);
-        achievements.Add(1, l1);
-        achievements.Add(2, sp1);
     }
 }

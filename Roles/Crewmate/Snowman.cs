@@ -111,7 +111,6 @@ public sealed class Snowman : RoleBase
             Logger.Info($"減少率:{Proportion} 歩数:{NowWalkCount} , 現在の視野{NowVision}", "Snowman");
             Player.MarkDirtySettings();
             callcount++;
-            if (callcount == 20) Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[0]);
         }
     }
     public override void ApplyGameOptions(IGameOptions opt)
@@ -120,15 +119,5 @@ public sealed class Snowman : RoleBase
     }
     public override void CheckWinner(GameOverReason reason)
     {
-        if (callcount <= 2) Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[1]);
-    }
-    public static System.Collections.Generic.Dictionary<int, Achievement> achievements = new();
-    [Attributes.PluginModuleInitializer]
-    public static void Load()
-    {
-        var n1 = new Achievement(RoleInfo, 0, 1, 0, 0);
-        var l1 = new Achievement(RoleInfo, 1, 1, 0, 1);
-        achievements.Add(0, n1);
-        achievements.Add(1, l1);
     }
 }

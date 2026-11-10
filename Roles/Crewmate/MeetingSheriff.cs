@@ -172,7 +172,6 @@ public sealed class MeetingSheriff : RoleBase, ISelfVoter
 
             MeetingVoteManager.ResetVoteManager(target.PlayerId);
             if (target != PlayerControl.LocalPlayer) Player.RpcMeetingKill(target);
-            Achievements.RpcCompleteAchievement(Player.PlayerId, 1, achievements[0]);
             onemeetingkill++;
             return;
         }
@@ -218,21 +217,10 @@ public sealed class MeetingSheriff : RoleBase, ISelfVoter
     {
         if (exiled == null || exiled?.Object == null)
         {
-            if (3 <= onemeetingkill) Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[1]);
             return;
         }
         if (exiled.Object.GetCustomRole().IsCrewmate() is false) onemeetingkill++;
 
-        if (3 <= onemeetingkill) Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[1]);
-    }
-    public static System.Collections.Generic.Dictionary<int, Achievement> achievements = new();
-    [Attributes.PluginModuleInitializer]
-    public static void Load()
-    {
-        var n1 = new Achievement(RoleInfo, 0, 5, 0, 0);
-        var l1 = new Achievement(RoleInfo, 1, 1, 0, 1);
-        achievements.Add(0, n1);
-        achievements.Add(1, l1);
     }
 }
 //コード多分改良できるけど動いてるからヨシ。(´・ω・｀)

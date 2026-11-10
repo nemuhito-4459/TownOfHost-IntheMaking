@@ -198,17 +198,6 @@ namespace TownOfHost.Roles.Crewmate
         }
         public override void CheckWinner(GameOverReason reason)
         {
-            if (5 <= n1count.Count) Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[0]);
-            Achievements.RpcCompleteAchievement(Player.PlayerId, 1, achievements[1], l1count);
-        }
-        public static Dictionary<int, Achievement> achievements = new();
-        [Attributes.PluginModuleInitializer]
-        public static void Load()
-        {
-            var n1 = new Achievement(RoleInfo, 0, 1, 0, 0);
-            var l1 = new Achievement(RoleInfo, 1, 100, 0, 1);
-            achievements.Add(0, n1);
-            achievements.Add(1, l1);
         }
     }
 }

@@ -118,8 +118,6 @@ class Penguin : RoleBase, IImpostor
         Player.RpcResetAbilityCooldown(Sync: true);
         SendRPC();
         movecount = 0;
-        if (100 < movecount)
-            Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[1]);
     }
     public void OnCheckMurderAsKiller(MurderInfo info)
     {
@@ -249,7 +247,6 @@ class Penguin : RoleBase, IImpostor
                         sender.SendMessage();
                     }, 0.3f, "PenguinMurder");
                     RemoveVictim();
-                    Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[0]);
                 }
             }
             // はしごの上にいるプレイヤーにはSnapToRPCが効かずホストだけ挙動が変わるため，一律でテレポートを行わない
@@ -288,11 +285,6 @@ class Penguin : RoleBase, IImpostor
     }
     public override void OnMurderPlayerAsTarget(MurderInfo info)
     {
-        if (AbductVictim != null)
-        {
-            if (info.AttemptKiller.PlayerId == AbductVictim.PlayerId)
-                Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[2]);
-        }
     }
     public static bool OnEnterVentOthers(PlayerPhysics physics, int ventId)
     {
@@ -316,15 +308,4 @@ class Penguin : RoleBase, IImpostor
     }
     Vector2 oldpos;
     float movecount;
-    public static Dictionary<int, Achievement> achievements = new();
-    [Attributes.PluginModuleInitializer]
-    public static void Load()
-    {
-        var n1 = new Achievement(RoleInfo, 0, 1, 0, 0);
-        var l1 = new Achievement(RoleInfo, 1, 1, 0, 1);
-        var l2 = new Achievement(RoleInfo, 2, 1, 0, 1);
-        achievements.Add(0, n1);
-        achievements.Add(1, l1);
-        achievements.Add(2, l2);
-    }
 }

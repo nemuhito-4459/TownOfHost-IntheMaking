@@ -232,10 +232,6 @@ public sealed class SchrodingerCat : RoleBase, IAdditionalWinner, IDeathReasonSe
             logger.Warn($"不明な猫の勝利チェック: {Team}");
             return false;
         }
-        if (won.Value && Player.IsAlive())
-        {
-            Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[0]);
-        }
         return won.Value;
     }
     public void RpcSetTeam(TeamType team)
@@ -287,16 +283,6 @@ public sealed class SchrodingerCat : RoleBase, IAdditionalWinner, IDeathReasonSe
             && Main.SabotageType is SystemTypes.Reactor or SystemTypes.Laboratory
             && CustomWinnerHolder.winners.Contains(CustomWinner.Impostor))
         {
-            Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[1]);
         }
-    }
-    public static Dictionary<int, Achievement> achievements = new();
-    [Attributes.PluginModuleInitializer]
-    public static void Load()
-    {
-        var n1 = new Achievement(RoleInfo, 0, 1, 0, 0);
-        var sp = new Achievement(RoleInfo, 1, 1, 0, 2, true);
-        achievements.Add(0, n1);
-        achievements.Add(1, sp);
     }
 }

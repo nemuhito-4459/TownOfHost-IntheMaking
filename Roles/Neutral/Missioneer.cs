@@ -429,9 +429,6 @@ public sealed class Missioneer : RoleBase, IKiller, ISelfVoter, IAdditionalWinne
         SendRPC();
         Player.RpcProtectedMurderPlayer();
         RPC.PlaySoundRPC(Player.PlayerId, Sounds.TaskComplete);
-        Achievements.RpcCompleteAchievement(Player.PlayerId, 1, achievements[0]);
-        Achievements.RpcCompleteAchievement(Player.PlayerId, 1, achievements[1]);
-        Achievements.RpcCompleteAchievement(Player.PlayerId, 1, achievements[2]);
         UtilsNotifyRoles.NotifyRoles(OnlyMeName: true, SpecifySeer: [Player]);
     }
 
@@ -504,15 +501,4 @@ public sealed class Missioneer : RoleBase, IKiller, ISelfVoter, IAdditionalWinne
     }
 
     public bool CheckWin(ref CustomRoles winnerRole) => AddWin && Player.IsAlive();
-    public static Dictionary<int, Achievement> achievements = new();
-    [Attributes.PluginModuleInitializer]
-    public static void Load()
-    {
-        var n1 = new Achievement(RoleInfo, 0, 3, 0, 0);
-        var n2 = new Achievement(RoleInfo, 1, 15, 0, 2);
-        var l1 = new Achievement(RoleInfo, 2, 50, 0, 2, true);
-        achievements.Add(0, n1);
-        achievements.Add(1, n1);
-        achievements.Add(2, l1);
-    }
 }

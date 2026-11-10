@@ -236,20 +236,6 @@ namespace TownOfHost.Roles.Impostor
         public override void CheckWinner(GameOverReason reason)
         {
             if (Limit) return;
-            if (Player.IsWinner(CustomWinner.Impostor)) Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[2]);
-        }
-        public static Dictionary<int, Achievement> achievements = new();
-        [Attributes.PluginModuleInitializer]
-        public static void Load()
-        {
-            var n1 = new Achievement(RoleInfo, 0, 1, 0, 0);
-            var n2 = new Achievement(RoleInfo, 1, 1, 0, 0);
-            var sp1 = new Achievement(RoleInfo, 2, 1, 0, 2, true);
-            var sp2 = new Achievement(RoleInfo, 3, 1, 0, 3, true);
-            achievements.Add(0, n1);
-            achievements.Add(1, n2);
-            achievements.Add(2, sp1);
-            achievements.Add(3, sp2);
         }
     }
 }

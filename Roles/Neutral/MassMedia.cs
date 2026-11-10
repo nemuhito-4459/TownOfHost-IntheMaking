@@ -186,7 +186,6 @@ public sealed class MassMedia : RoleBase, IKiller, IKillFlashSeeable
             if (Is(repo) && Player.Is(CustomRoles.MassMedia))
             {
                 GuessMode = true;
-                Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[0]);
             }
             else if (OptionCanGuessOtherReport.GetBool())
             {
@@ -252,12 +251,10 @@ public sealed class MassMedia : RoleBase, IKiller, IKillFlashSeeable
                 //勝利判定
                 Win = true;
                 MeetingVoteManager.Instance.ClearAndExile(Player.PlayerId, Player.PlayerId);
-                Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[2]);
                 return true;
             }
             else
             {
-                Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[1]);
                 //違うなら消えてもらおうか。
                 MeetingVoteManager.Instance.ClearAndExile(Player.PlayerId, Player.PlayerId);
                 MeetingHudPatch.TryAddAfterMeetingDeathPlayers(CustomDeathReason.Misfire, Player.PlayerId);
@@ -352,16 +349,5 @@ public sealed class MassMedia : RoleBase, IKiller, IKillFlashSeeable
 
         Targetid = newTargetId;
         TargetPosition = newTargetPosition;
-    }
-    public static Dictionary<int, Achievement> achievements = new();
-    [Attributes.PluginModuleInitializer]
-    public static void Load()
-    {
-        var n1 = new Achievement(RoleInfo, 0, 1, 0, 0);
-        var l1 = new Achievement(RoleInfo, 1, 1, 0, 1);
-        var sp1 = new Achievement(RoleInfo, 2, 1, 0, 2);
-        achievements.Add(0, n1);
-        achievements.Add(1, l1);
-        achievements.Add(2, sp1);
     }
 }

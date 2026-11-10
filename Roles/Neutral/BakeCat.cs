@@ -269,15 +269,6 @@ namespace TownOfHost.Roles.Neutral
                 logger.Warn($"不明な猫の勝利チェック: {Team}");
                 return false;
             }
-            if (won.Value && Team is not TeamType.Crew and not TeamType.None)
-            {
-                Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[0]);
-            }
-            if (3 <= MyState.GetKillCount()) Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[1]);
-            if (won.Value && Team is not TeamType.None && (Killer?.IsAlive() is false))
-            {
-                Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[2]);
-            }
             return won.Value;
         }
         public void RpcSetTeam(TeamType team)
@@ -322,16 +313,5 @@ namespace TownOfHost.Roles.Neutral
         public bool CanUseKillButton() => Team != TeamType.None && CanKill;
         public float CalculateKillCooldown() => OptionKillCooldown.GetFloat();
 
-        public static System.Collections.Generic.Dictionary<int, Achievement> achievements = new();
-        [Attributes.PluginModuleInitializer]
-        public static void Load()
-        {
-            var n1 = new Achievement(RoleInfo, 0, 1, 0, 0);
-            var l1 = new Achievement(RoleInfo, 1, 1, 0, 1);
-            var sp1 = new Achievement(RoleInfo, 2, 1, 0, 2, true);
-            achievements.Add(0, n1);
-            achievements.Add(1, l1);
-            achievements.Add(2, sp1);
-        }
     }
 }

@@ -184,7 +184,6 @@ public sealed class Turncoat : RoleBase, IKiller
     }
     public void Win()
     {
-        Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[0]);
         CustomWinnerHolder.AdditionalWinnerRoles.Add(CustomRoles.Turncoat);
         CustomWinnerHolder.WinnerIds.Add(Player.PlayerId);
     }
@@ -250,19 +249,5 @@ public sealed class Turncoat : RoleBase, IKiller
     => IsRepoter = reporter.PlayerId == Player.PlayerId;
     public override void OnExileWrapUp(NetworkedPlayerInfo exiled, ref bool DecidedWinner)
     {
-        if (exiled is not null && IsRepoter)
-        {
-            if (exiled.PlayerId == targetid)
-                Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[1]);
-        }
-    }
-    public static System.Collections.Generic.Dictionary<int, Achievement> achievements = new();
-    [Attributes.PluginModuleInitializer]
-    public static void Load()
-    {
-        var n1 = new Achievement(RoleInfo, 0, 1, 0, 0);
-        var l1 = new Achievement(RoleInfo, 1, 1, 0, 1);
-        achievements.Add(0, n1);
-        achievements.Add(1, l1);
     }
 }

@@ -157,7 +157,6 @@ public sealed class UnFortuner : RoleBase, IImpostor, IUsePhantomButton
             if (role is not CustomRoles.NotAssigned || roletext != "")
             {
                 if (roletext == "") roletext += UtilsRoleText.GetRoleColorAndtext(role);
-                if (role.IsDebuffAddon()) Achievements.RpcCompleteAchievement(Player.PlayerId, 0, Fortuner.achievements[1]);
                 _ = new LateTask(() =>
                 {
                     var send = string.Format(GetString("Fortune_Meg".RemoveHtmlTags()), roletext);
@@ -165,11 +164,6 @@ public sealed class UnFortuner : RoleBase, IImpostor, IUsePhantomButton
                     MeetingHudPatch.StartPatch.meetingsends.Add((player.PlayerId, send, ""));
                 }, 5.5f, "forsendmeg", null);
             }
-        }
-        if (giveplayerid.Count > 0)
-        {
-            Achievements.RpcCompleteAchievement(Player.PlayerId, 1, Fortuner.achievements[0], giveplayerid.Count);
-            Achievements.RpcCompleteAchievement(Player.PlayerId, 1, Fortuner.achievements[2], giveplayerid.Count);
         }
         giveplayerid.Clear();
 

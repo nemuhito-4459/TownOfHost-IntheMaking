@@ -147,7 +147,6 @@ namespace TownOfHost.Roles.Neutral
             }
             CanSideKick = false;
             SendRPC();
-            if (target.Is(CustomRoleTypes.Impostor)) Achievements.RpcCompleteAchievement(Player.PlayerId, 0, Jackal.achievements[1]);
             Player.RpcProtectedMurderPlayer(target);
             target.RpcProtectedMurderPlayer(Player);
             target.RpcProtectedMurderPlayer(target);
@@ -220,14 +219,12 @@ namespace TownOfHost.Roles.Neutral
         }
         public override void CheckWinner(GameOverReason reason)
         {
-            if (3 <= MyState.GetKillCount()) Achievements.RpcCompleteAchievement(Player.PlayerId, 0, Jackal.achievements[0]);
             if (Player.IsWinner(CustomWinner.Jackal) && !Player.IsLovers())
             {
                 foreach (var j in PlayerCatch.AllPlayerControls.Where(pc => pc.Is(CountTypes.Jackal)))
                 {
                     if (j.GetPlayerState().GetKillCount() > 0) return;
                 }
-                Achievements.RpcCompleteAchievement(Player.PlayerId, 0, Jackal.achievements[2]);
             }
         }
     }

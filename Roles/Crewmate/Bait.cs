@@ -79,14 +79,6 @@ public sealed class Bait : RoleBase
     }
     public override void OnExileWrapUp(NetworkedPlayerInfo exiled, ref bool DecidedWinner)
     {
-        if ((exiled?.PlayerId ?? byte.MaxValue) == killerid && killerid is not byte.MaxValue) Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[0]);
         killerid = byte.MaxValue;
-    }
-    public static Dictionary<int, Achievement> achievements = new();
-    [Attributes.PluginModuleInitializer]
-    public static void Load()
-    {
-        var l1 = new Achievement(RoleInfo, 0, 1, 0, 1);
-        achievements.Add(0, l1);
     }
 }

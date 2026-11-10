@@ -284,8 +284,6 @@ public sealed class Fox : RoleBase, ISystemTypeUpdateHook, IRoomTasker
                     {
                         CustomWinnerHolder.NeutralWinnerIds.Add(Player.PlayerId);
                         reason = GameOverReason.ImpostorsByKill;
-                        Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[0]);
-                        if (isnotice is false && 5 <= UtilsGameLog.day && IsActiveNotice) Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[2]);
                         return true;
                     }
                     break;
@@ -301,8 +299,6 @@ public sealed class Fox : RoleBase, ISystemTypeUpdateHook, IRoomTasker
             {
                 CustomWinnerHolder.NeutralWinnerIds.Add(Player.PlayerId);
                 reason = GameOverReason.ImpostorsByKill;
-                Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[0]);
-                if (isnotice is false && 5 <= UtilsGameLog.day && IsActiveNotice) Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[2]);
                 return true;
             }
         }
@@ -425,7 +421,6 @@ public sealed class Fox : RoleBase, ISystemTypeUpdateHook, IRoomTasker
             }
             MeetingVoteManager.ResetVoteManager(Player.PlayerId);
             Player.RpcMeetingKill(Player);
-            Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[1]);
         }
         return CustomRoles.NotAssigned;
     }
@@ -461,15 +456,4 @@ public sealed class Fox : RoleBase, ISystemTypeUpdateHook, IRoomTasker
         FoxTellDie
     }
     bool isnotice;
-    public static Dictionary<int, Achievement> achievements = new();
-    [Attributes.PluginModuleInitializer]
-    public static void Load()
-    {
-        var n1 = new Achievement(RoleInfo, 0, 1, 0, 0);
-        var n2 = new Achievement(RoleInfo, 1, 1, 0, 0);
-        var sp1 = new Achievement(RoleInfo, 2, 1, 0, 2, true);
-        achievements.Add(0, n1);
-        achievements.Add(1, n2);
-        achievements.Add(2, sp1);
-    }
 }

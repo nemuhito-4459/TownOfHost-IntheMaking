@@ -92,7 +92,6 @@ public sealed class Stealth : RoleBase, IImpostor, IUsePhantomButton
         {
             if (optionAddDarkenRoom.GetBool() && adddarkenroom?.Count is not null and not 0)
             {
-                if (3 <= (adddarkenroom?.Count ?? 0)) Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[1]);
                 return PlayerCatch.AllAlivePlayerControls.Where(player => player != Player && players.Contains(player.PlayerId));
             }
             return null;
@@ -101,7 +100,6 @@ public sealed class Stealth : RoleBase, IImpostor, IUsePhantomButton
         var roomName = room.RoomId;
         RpcDarken(roomName);
 
-        if (2 <= (adddarkenroom?.Count ?? 0)) Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[1]);
         var darkenplayer = PlayerCatch.AllAlivePlayerControls.Where(player => player != Player && player.Collider.IsTouching(roomArea));
 
         if (optionAddDarkenRoom.GetBool() && adddarkenroom?.Count is not null and not 0)
@@ -130,7 +128,6 @@ public sealed class Stealth : RoleBase, IImpostor, IUsePhantomButton
             PlayerState.GetByPlayerId(player.PlayerId).IsBlackOut = true;
             player.MarkDirtySettings();
         }
-        if (0 < playersToDarken.Count()) Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[0]);
     }
     public override void OnFixedUpdate(PlayerControl player)
     {
@@ -227,14 +224,5 @@ public sealed class Stealth : RoleBase, IImpostor, IUsePhantomButton
 
         if (isForHud) return GetString("StealthLowerInfo");
         return $"<size=50%>{GetString("StealthLowerInfo")}</size>";
-    }
-    public static Dictionary<int, Achievement> achievements = new();
-    [Attributes.PluginModuleInitializer]
-    public static void Load()
-    {
-        var n1 = new Achievement(RoleInfo, 0, 1, 0, 0);
-        var l1 = new Achievement(RoleInfo, 1, 1, 0, 1);
-        achievements.Add(0, n1);
-        achievements.Add(1, l1);
     }
 }

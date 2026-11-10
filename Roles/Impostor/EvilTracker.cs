@@ -382,14 +382,5 @@ public sealed class EvilTracker : RoleBase, IImpostor, IKillFlashSeeable, ISidek
     }
     void IKiller.OnMurderPlayerAsKiller(MurderInfo info)
     {
-        if (info.AppearanceTarget.PlayerId == TargetId)
-            Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[0]);
-    }
-    public static Dictionary<int, Achievement> achievements = new();
-    [Attributes.PluginModuleInitializer]
-    public static void Load()
-    {
-        var n1 = new Achievement(RoleInfo, 0, 1, 0, 0);
-        achievements.Add(0, n1);
     }
 }

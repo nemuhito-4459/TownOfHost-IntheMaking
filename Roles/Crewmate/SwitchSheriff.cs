@@ -227,8 +227,6 @@ public sealed class SwitchSheriff : RoleBase, IKiller, ISchrodingerCatOwner
             SendRPC();
             //Player.SetKillCooldown(nowcool);
             killer.RpcResetAbilityCooldown(/*Sync: true*/);
-            Achievements.RpcCompleteAchievement(Player.PlayerId, 0, SheriffAchievement.achievements[0]);
-            Achievements.RpcCompleteAchievement(Player.PlayerId, 1, SheriffAchievement.achievements[1]);
         }
         return;
     }
@@ -253,7 +251,6 @@ public sealed class SwitchSheriff : RoleBase, IKiller, ISchrodingerCatOwner
                     (LifeSupp = systems[SystemTypes.LifeSupp].TryCast<LifeSuppSystemType>()) != null &&
                     LifeSupp.Countdown <= 15f)
                 {
-                    Achievements.RpcCompleteAchievement(Player.PlayerId, 0, SheriffAchievement.achievements[2]);
                 }
                 ISystemType sys = null;
                 if (systems.ContainsKey(SystemTypes.Reactor)) sys = systems[SystemTypes.Reactor];
@@ -264,7 +261,6 @@ public sealed class SwitchSheriff : RoleBase, IKiller, ISchrodingerCatOwner
                 (critical = sys.TryCast<ICriticalSabotage>()) != null &&
                 critical.Countdown <= 15f)
                 {
-                    Achievements.RpcCompleteAchievement(Player.PlayerId, 0, SheriffAchievement.achievements[2]);
                 }
             }
         }

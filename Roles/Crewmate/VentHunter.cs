@@ -145,9 +145,6 @@ public sealed class VentHunter : RoleBase
         if (!pc.IsAlive()) return;
         if (CustomRoleManager.OnCheckMurder(Player, pc, pc, pc, true, false, deathReason: CustomDeathReason.Trap))
             turnkillcount++;
-        Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[0]);
-        if (turnkillcount is 2)
-            Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[1]);
     }
 
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
@@ -177,14 +174,5 @@ public sealed class VentHunter : RoleBase
     {
         text = "VentHunter_Ability";
         return true;
-    }
-    public static Dictionary<int, Achievement> achievements = new();
-    [Attributes.PluginModuleInitializer]
-    public static void Load()
-    {
-        var n1 = new Achievement(RoleInfo, 0, 1, 0, 0);
-        var sp1 = new Achievement(RoleInfo, 1, 1, 0, 2);
-        achievements.Add(0, n1);
-        achievements.Add(1, sp1);
     }
 }

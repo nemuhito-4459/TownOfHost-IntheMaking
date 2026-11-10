@@ -60,7 +60,6 @@ public sealed class Trapper : RoleBase
         ReportDeadBodyPatch.CanReport[killer.PlayerId] = false;
         killer.MarkDirtySettings();
         IsTraping = true;
-        Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[0]);
         _ = new LateTask(() =>
         {
             IsTraping = false;
@@ -84,16 +83,5 @@ public sealed class Trapper : RoleBase
     }
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
-        if (IsTraping && (target?.PlayerId ?? byte.MaxValue) == Player.PlayerId)
-            Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[1]);
-    }
-    public static System.Collections.Generic.Dictionary<int, Achievement> achievements = new();
-    [Attributes.PluginModuleInitializer]
-    public static void Load()
-    {
-        var n1 = new Achievement(RoleInfo, 0, 1, 0, 0);
-        var l1 = new Achievement(RoleInfo, 1, 1, 0, 1);
-        achievements.Add(0, n1);
-        achievements.Add(1, l1);
     }
 }

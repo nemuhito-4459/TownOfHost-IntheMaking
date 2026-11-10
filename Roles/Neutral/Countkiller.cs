@@ -116,8 +116,6 @@ public sealed class CountKiller : RoleBase, ILNKiller, ISchrodingerCatOwner, IAd
             {
                 Win();
                 WinFlag = true;
-                if (OptionAddWin.GetBool())
-                    Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[0]);
             }
 
             if (OptionAddWin.GetBool() && OptionAddWinToSoloWin.GetBool() && KillCount >= GetSecondStageVictoryCount())
@@ -143,7 +141,6 @@ public sealed class CountKiller : RoleBase, ILNKiller, ISchrodingerCatOwner, IAd
     {
         if (CustomWinnerHolder.ResetAndSetAndChWinner(CustomWinner.CountKiller, Player.PlayerId))
         {
-            Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[1]);
             CustomWinnerHolder.NeutralWinnerIds.Add(Player.PlayerId);
         }
     }
@@ -152,13 +149,4 @@ public sealed class CountKiller : RoleBase, ILNKiller, ISchrodingerCatOwner, IAd
     public override string GetProgressText(bool comms = false, bool gamelog = false)
     => Utils.ColorString(RoleInfo.RoleColor, $"({KillCount}/{GetFinalVictoryCount()})");
     public bool CheckWin(ref CustomRoles winnerRole) => OptionAddWin.GetBool() && WinFlag;
-    public static System.Collections.Generic.Dictionary<int, Achievement> achievements = new();
-    [Attributes.PluginModuleInitializer]
-    public static void Load()
-    {
-        var n1 = new Achievement(RoleInfo, 0, 1, 0, 0);
-        var l1 = new Achievement(RoleInfo, 1, 1, 0, 1);
-        achievements.Add(0, n1);
-        achievements.Add(1, l1);
-    }
 }

@@ -107,16 +107,5 @@ public sealed class Comebacker : RoleBase
     }
     public override void CheckWinner(GameOverReason reason)
     {
-        Achievements.RpcCompleteAchievement(Player.PlayerId, 1, achievements[0], ventcount);
-        Achievements.RpcCompleteAchievement(Player.PlayerId, 1, achievements[1], pos);
-    }
-    public static Dictionary<int, Achievement> achievements = new();
-    [Attributes.PluginModuleInitializer]
-    public static void Load()
-    {
-        var n1 = new Achievement(RoleInfo, 0, 10, 0, 0);
-        var n2 = new Achievement(RoleInfo, 1, 500, 0, 2, true);
-        achievements.Add(0, n1);
-        achievements.Add(1, n2);
     }
 }

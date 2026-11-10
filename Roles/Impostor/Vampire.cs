@@ -163,8 +163,6 @@ namespace TownOfHost.Roles.Impostor
                     Logger.Info($"Vampireに噛まれている{target.name}を自爆させました。", "Vampire");
                     if (!isButton && vampire.IsAlive())
                         RPC.PlaySoundRPC(vampire.PlayerId, Sounds.KillSound);
-                    Achievements.RpcCompleteAchievement(Player.PlayerId, 1, achievements[0]);
-                    Achievements.RpcCompleteAchievement(Player.PlayerId, 1, achievements[1]);
                 }
                 else Logger.Info($"Vampireに噛まれた{target.name}にキルが通りませんでした。", "Vampire");
             }
@@ -179,18 +177,6 @@ namespace TownOfHost.Roles.Impostor
             if ((roleclass as Alien)?.mode is Alien.AlienMode.Vampire ||
                 (roleclass as JackalAlien)?.mode is Alien.AlienMode.Vampire ||
                 roleclass is Vampire)
-                Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[2]);
-        }
-        public static Dictionary<int, Achievement> achievements = new();
-        [Attributes.PluginModuleInitializer]
-        public static void Load()
-        {
-            var n1 = new Achievement(RoleInfo, 0, 3, 0, 0);
-            var l1 = new Achievement(RoleInfo, 1, 30, 0, 1);
-            var sp1 = new Achievement(RoleInfo, 2, 1, 0, 3, true);
-            achievements.Add(0, n1);
-            achievements.Add(1, l1);
-            achievements.Add(2, sp1);
         }
     }
 }

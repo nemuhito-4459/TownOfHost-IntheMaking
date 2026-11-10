@@ -156,7 +156,6 @@ namespace TownOfHost.Roles.Neutral
                 if (CustomRoleManager.OnCheckMurder(Grim, target, target, target, true, true, Killpower: 2, deathReason: CustomDeathReason.Grim))
                 {
                     if (!isButton && Grim.IsAlive()) RPC.PlaySoundRPC(Grim.PlayerId, Sounds.KillSound);
-                    Achievements.RpcCompleteAchievement(Player.PlayerId, 1, achievements[0]);
                 }
             }
         }
@@ -217,19 +216,6 @@ namespace TownOfHost.Roles.Neutral
         }
         public override void CheckWinner(GameOverReason reason)
         {
-            if (Player.IsWinner(CustomWinner.GrimReaper))
-            {
-                Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[1]);
-            }
-        }
-        public static Dictionary<int, Achievement> achievements = new();
-        [Attributes.PluginModuleInitializer]
-        public static void Load()
-        {
-            var l1 = new Achievement(RoleInfo, 0, 10, 0, 0);
-            var n2 = new Achievement(RoleInfo, 1, 1, 0, 1);
-            achievements.Add(0, l1);
-            achievements.Add(1, n2);
         }
     }
 }

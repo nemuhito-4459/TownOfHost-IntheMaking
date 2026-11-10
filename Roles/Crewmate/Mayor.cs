@@ -147,7 +147,6 @@ public sealed class Mayor : RoleBase
         }
         if (votefor == exiled.PlayerId)
         {
-            Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[0]);
             if (sp1flug == 1 && exiled.Object.GetCustomRole().IsCrewmate() is false)
             {
                 sp1flug = 2;
@@ -156,10 +155,6 @@ public sealed class Mayor : RoleBase
     }
     public override void CheckWinner(GameOverReason reason)
     {
-        if (sp1flug == 2 && Player.IsWinner(CustomWinner.Crewmate))
-        {
-            Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[2]);
-        }
     }
     public override string GetAbilityButtonText()
     {
@@ -170,14 +165,5 @@ public sealed class Mayor : RoleBase
     {
         text = "Mayor_Ability";
         return HasPortableButton;
-    }
-    public static System.Collections.Generic.Dictionary<int, Achievement> achievements = new();
-    [Attributes.PluginModuleInitializer]
-    public static void Load()
-    {
-        var n1 = new Achievement(RoleInfo, 0, 1, 0, 0);
-        var sp1 = new Achievement(RoleInfo, 1, 1, 0, 2, true);
-        achievements.Add(0, n1);
-        achievements.Add(1, sp1);
     }
 }

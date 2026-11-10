@@ -213,7 +213,6 @@ public sealed class AmateurTeller : RoleBase, ISelfVoter
         if (Targets.Contains(seen.PlayerId))
         {
             addon = false;
-            if (seen.GetCustomRole().IsCrewmate() is false) Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[0]);
             if (!canseerole)
             {
                 enabled = true;
@@ -269,16 +268,5 @@ public sealed class AmateurTeller : RoleBase, ISelfVoter
     }
     public override void OnMurderPlayerAsTarget(MurderInfo info)
     {
-        if (info.AppearanceTarget.PlayerId == Player.PlayerId && info.AppearanceKiller.PlayerId == UseTarget)
-            Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[1]);
-    }
-    public static Dictionary<int, Achievement> achievements = new();
-    [Attributes.PluginModuleInitializer]
-    public static void Load()
-    {
-        var n1 = new Achievement(RoleInfo, 0, 1, 0, 0);
-        var l1 = new Achievement(RoleInfo, 1, 1, 0, 2, true);
-        achievements.Add(0, n1);
-        achievements.Add(1, l1);
     }
 }

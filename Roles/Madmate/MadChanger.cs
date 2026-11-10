@@ -122,16 +122,5 @@ public sealed class MadChanger : RoleBase, IKiller, IKillFlashSeeable, IDeathRea
     }
     public override void CheckWinner(GameOverReason reason)
     {
-        Achievements.RpcCompleteAchievement(Player.PlayerId, 1, achievements[0], usecount);
-        Achievements.RpcCompleteAchievement(Player.PlayerId, 1, achievements[1], usecount);
-    }
-    public static System.Collections.Generic.Dictionary<int, Achievement> achievements = new();
-    [Attributes.PluginModuleInitializer]
-    public static void Load()
-    {
-        var n1 = new Achievement(RoleInfo, 0, 5, 0, 0);
-        var l1 = new Achievement(RoleInfo, 1, 30, 0, 1);
-        achievements.Add(0, n1);
-        achievements.Add(1, l1);
     }
 }

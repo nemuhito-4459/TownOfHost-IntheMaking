@@ -225,7 +225,6 @@ public sealed class Inspector : RoleBase, ISelfVoter
                     Utils.SendMessage(sb.ToString(), Player.PlayerId, $"<{RoleInfo.RoleColorCode}>{GetString("Inspector.Title")}</color>")
                     , 3, "InspectorSend", true);
             }
-            Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[0]);
         }
         deadtimer = 0;
         Isdie = false;
@@ -286,15 +285,5 @@ public sealed class Inspector : RoleBase, ISelfVoter
     public override void OnExileWrapUp(NetworkedPlayerInfo exiled, ref bool DecidedWinner)
     {
         if (exiled is null || exiled?.PlayerId == byte.MaxValue) return;
-        if (exiled.PlayerId == killer) Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[1]);
-    }
-    public static System.Collections.Generic.Dictionary<int, Achievement> achievements = new();
-    [Attributes.PluginModuleInitializer]
-    public static void Load()
-    {
-        var n1 = new Achievement(RoleInfo, 0, 1, 0, 0);
-        var l2 = new Achievement(RoleInfo, 1, 1, 0, 1);
-        achievements.Add(0, n1);
-        achievements.Add(1, l2);
     }
 }

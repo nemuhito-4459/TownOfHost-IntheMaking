@@ -204,7 +204,6 @@ public sealed class CurseMaker : RoleBase, IKiller, IUsePhantomButton
             var state = PlayerState.GetByPlayerId(Cursedid.Key);
             CustomRoleManager.OnCheckMurder(Player, target, target, target, true, true, 10, CustomDeathReason.Spell);
         }
-        if (5 <= i) Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[0]);
 
         CanWin = true;
         _ = new LateTask(() => CanWin = false, 2f, "ResetCanWin");
@@ -254,7 +253,6 @@ public sealed class CurseMaker : RoleBase, IKiller, IUsePhantomButton
                     {
                         CustomWinnerHolder.WinnerIds.Add(curseMaker.Player.PlayerId);
                         CustomWinnerHolder.NeutralWinnerIds.Add(curseMaker.Player.PlayerId);
-                        Achievements.RpcCompleteAchievement(curseMaker.Player.PlayerId, 0, achievements[1]);
                     }
                 }
             }
@@ -305,13 +303,4 @@ public sealed class CurseMaker : RoleBase, IKiller, IUsePhantomButton
         Check
     }
 
-    public static Dictionary<int, Achievement> achievements = new();
-    [Attributes.PluginModuleInitializer]
-    public static void Load()
-    {
-        var l1 = new Achievement(RoleInfo, 0, 1, 0, 1);
-        var l2 = new Achievement(RoleInfo, 1, 1, 0, 1);
-        achievements.Add(0, l1);
-        achievements.Add(1, l2);
-    }
 }

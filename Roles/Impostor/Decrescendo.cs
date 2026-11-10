@@ -141,19 +141,5 @@ public sealed class Decrescendo : RoleBase, IImpostor
     public override void CheckWinner(GameOverReason reason)
     {
         var deccount = OptionDecKillcount.GetInt() - KillCount;
-        if (0 <= deccount) Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[0]);
-        if (1 <= deccount) Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[0]);
-        if (3 <= deccount) Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[0]);
-    }
-    public static System.Collections.Generic.Dictionary<int, Achievement> achievements = new();
-    [Attributes.PluginModuleInitializer]
-    public static void Load()
-    {
-        var n1 = new Achievement(RoleInfo, 0, 1, 0, 0);
-        var l1 = new Achievement(RoleInfo, 1, 1, 0, 1);
-        var sp1 = new Achievement(RoleInfo, 2, 1, 0, 2);
-        achievements.Add(0, n1);
-        achievements.Add(1, l1);
-        achievements.Add(2, sp1);
     }
 }

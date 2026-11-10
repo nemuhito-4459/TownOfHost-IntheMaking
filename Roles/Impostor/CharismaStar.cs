@@ -175,8 +175,6 @@ public sealed class CharismaStar : RoleBase, IImpostor, IUsePhantomButton, IDoub
             target.MyPhysics.RpcBootFromVent(GetNearestVent().Id);
             count++;
         }
-        if (count == PlayerCatch.AllAlivePlayersCount) Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[0]);
-        if (count is 2) Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[1]);
 
         // 能力使用後のリセット
         gatherChoosePlayers.Clear();
@@ -239,14 +237,5 @@ public sealed class CharismaStar : RoleBase, IImpostor, IUsePhantomButton, IDoub
             gatherLimitCount = reader.ReadInt32();
             gatherChoosePlayers.Clear();
         }
-    }
-    public static Dictionary<int, Achievement> achievements = new();
-    [Attributes.PluginModuleInitializer]
-    public static void Load()
-    {
-        var n1 = new Achievement(RoleInfo, 0, 1, 0, 0);
-        var n2 = new Achievement(RoleInfo, 1, 1, 0, 0);
-        achievements.Add(0, n1);
-        achievements.Add(1, n2);
     }
 }

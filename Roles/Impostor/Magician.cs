@@ -198,10 +198,6 @@ public sealed class Magician : RoleBase, IImpostor, IUsePhantomButton
             {
                 target.RpcExileV3();
             }
-            if (Eraser.Erasedtargets.Contains(target.PlayerId))
-            {
-                Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[2]);
-            }
             magiccount++;
             state.DeathReason = CustomDeathReason.Magic;
             state.SetDead();
@@ -307,19 +303,6 @@ public sealed class Magician : RoleBase, IImpostor, IUsePhantomButton
 
     public override void CheckWinner(GameOverReason reason)
     {
-        Achievements.RpcCompleteAchievement(Player.PlayerId, 1, achievements[0], magiccount);
-        Achievements.RpcCompleteAchievement(Player.PlayerId, 1, achievements[1], magiccount);
     }
     int magiccount;
-    public static Dictionary<int, Achievement> achievements = new();
-    [Attributes.PluginModuleInitializer]
-    public static void Load()
-    {
-        var n1 = new Achievement(RoleInfo, 0, 3, 0, 0);
-        var l1 = new Achievement(RoleInfo, 1, 15, 0, 1);
-        var sp1 = new Achievement(RoleInfo, 2, 1, 0, 2, true);
-        achievements.Add(0, n1);
-        achievements.Add(1, l1);
-        achievements.Add(2, sp1);
-    }
 }

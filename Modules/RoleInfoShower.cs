@@ -76,13 +76,6 @@ class RoleInfoShower
                         RoleSprite.transform.localScale = new(0.28f, 0.5f, 1f);
                         RoleSprite.transform.localPosition = new Vector3(1.7369f, 1.2444f, -1f);
                         RoleSprite.gameObject.SetActive(false);
-                        var achievementtext = TMPTemplate.Create("achievement"
-                        , "", Color.white, 2, TextAlignmentOptions.TopLeft, true, CustomBackground.transform);
-                        achievementtext.transform.localPosition = new(-0.4f, 2.55f, -50);
-                        achievementtext.transform.localScale = new(0.5f, 1f, 1);
-                        //実績機能は削除済みなので、実績の数は表示しない
-                        achievementtext.text = "";
-
                         var pilldown = Object.Instantiate(mouseMoveToggle, CustomBackground.transform);
                         pilldown.transform.localPosition = new(1.6f, 2.5f, -100f);
                         pilldown.transform.localScale = new(0.5f, 0.9f, 1f);
@@ -114,7 +107,6 @@ class RoleInfoShower
                             if (IsShowRoleInfo)
                             {
                                 pilldown.gameObject.SetActive(true);
-                                achievementtext.gameObject.SetActive(true);
                             }
                             CallEsc();
                         }));
@@ -201,7 +193,6 @@ class RoleInfoShower
                             passiveButton.OnClick = new();
                             passiveButton.OnClick.AddListener(new System.Action(() =>
                             {
-                                achievementtext.gameObject.SetActive(false);
                                 pilldown.gameObject.SetActive(false);
                                 tabbuttons.Do(button => button.gameObject.SetActive(false));
                                 var marksprite = UtilsSprite.LoadSprite($"TownOfHost.Resources.TOHK.Label.{customrole}.png");

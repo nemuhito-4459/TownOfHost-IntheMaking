@@ -192,7 +192,6 @@ public sealed class Analyzer : RoleBase
     }
     public override void AfterMeetingTasks()
     {
-        if (3 <= sendtype.Count) Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[1]);
         sendtype = [];
         turnusecount = 0;
         ResetVent();
@@ -344,15 +343,5 @@ public sealed class Analyzer : RoleBase
             Awakened = true;
         }
         return true;
-    }
-    public override void CheckWinner(GameOverReason reason) => Achievements.RpcCompleteAchievement(Player.PlayerId, 1, achievements[0], Usecount);
-    public static Dictionary<int, Achievement> achievements = new();
-    [Attributes.PluginModuleInitializer]
-    public static void Load()
-    {
-        var n1 = new Achievement(RoleInfo, 0, 3, 0, 0);
-        var l1 = new Achievement(RoleInfo, 1, 1, 0, 1);
-        achievements.Add(0, n1);
-        achievements.Add(1, l1);
     }
 }

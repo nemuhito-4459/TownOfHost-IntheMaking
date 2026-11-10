@@ -165,7 +165,6 @@ public sealed class Mare : RoleBase, IImpostor
         NowKillCoolDown = NomalKillCooldown;
         if (Utils.IsActive(SystemTypes.Electrical))
             flugn1++;
-        if (flugn1 is 2) Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[0]);
     }
     public override void AfterSabotage(SystemTypes systemType)
     {
@@ -174,8 +173,6 @@ public sealed class Mare : RoleBase, IImpostor
     }
     public override void OnExileWrapUp(NetworkedPlayerInfo exiled, ref bool DecidedWinner)
     {
-        if (flugl1 && Player.PlayerId == (exiled?.PlayerId ?? byte.MaxValue))
-            Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[1]);
         flugl1 = false;
     }
     public override void AfterMeetingTasks()
@@ -185,13 +182,4 @@ public sealed class Mare : RoleBase, IImpostor
     }
     int flugn1;
     bool flugl1;
-    public static System.Collections.Generic.Dictionary<int, Achievement> achievements = new();
-    [Attributes.PluginModuleInitializer]
-    public static void Load()
-    {
-        var n1 = new Achievement(RoleInfo, 0, 1, 0, 0);
-        var l1 = new Achievement(RoleInfo, 1, 1, 0, 1);
-        achievements.Add(0, n1);
-        achievements.Add(1, l1);
-    }
 }
