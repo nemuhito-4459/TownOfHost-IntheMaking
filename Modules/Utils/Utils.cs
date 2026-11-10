@@ -931,7 +931,6 @@ namespace TownOfHost
             Roles.Neutral.JackalDoll.NowSideKickCount = 0;
             Balancer.Id = 255;
             Main.DisableTaskPlayerList = new();
-            Stolener.Killers.Clear();
             Options.firstturnmeeting = Options.FirstTurnMeeting.GetBool() && Options.CurrentGameMode is CustomGameMode.Standard;
             CoEnterVentPatch.OldOnEnterVent = new();
 

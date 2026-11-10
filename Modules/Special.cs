@@ -46,9 +46,7 @@ static class Event
     }
     public static Dictionary<CustomRoles, Func<bool>> EventRoles = new()
     {
-        {CustomRoles.Altair,() => Tanabata},
-        {CustomRoles.Vega,() => Tanabata},
-        {CustomRoles.Cakeshop , () => NowRoleEvent}
+        //期間限定役職は全部削除したので空。今後追加するときはここに登録する
     };
 
     public static Dictionary<(CustomRoles role, bool isApiData), bool> cachedEventFlags = new(EventRoles.Count);

@@ -171,51 +171,6 @@ namespace TownOfHost
             VersionMenu = null;
         }
     }
-    public class ModNews
-    {
-        public int Number;
-        public int BeforeNumber;
-        public string Title;
-        public string SubTitle;
-        public string ShortTitle;
-        public string Text;
-        public string Date;
-
-        public Announcement ToAnnouncement()
-        {
-            var result = new Announcement
-            {
-                Number = Number,
-                Title = Title,
-                SubTitle = SubTitle,
-                ShortTitle = ShortTitle,
-                Text = Text,
-                Language = (uint)DataManager.Settings.Language.CurrentLanguage,
-                Date = Date,
-                Id = "ModNews"
-            };
-
-            return result;
-        }
-    }
-    public class JsonModNews
-    {
-        public JsonModNews(int Number, string Title, string SubTitle, string ShortTitle,
-            string Text, string Date)
-        {
-            var news = new ModNews
-            {
-                Number = Number,
-                Title = Title,
-                SubTitle = SubTitle,
-                ShortTitle = ShortTitle,
-                Text = Text,
-                Date = Date
-            };
-            ModNewsHistory.JsonAndAllModNews.Add(news);
-        }
-    }
-
     [HarmonyPatch(typeof(EjectMainMenu), nameof(EjectMainMenu.EjectCrewmate))]
     class EjectMainMenuEjectCrewmatePatch
     {
