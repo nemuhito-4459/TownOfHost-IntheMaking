@@ -297,9 +297,6 @@ namespace TownOfHost
 
                 ErrorNumber = 7;
                 var templateTabButton = ModSettingsTab.AllButton;
-                {
-                    Object.Destroy(templateTabButton.buttonText.gameObject);
-                }
 
                 ModSettingsTab.roleTabs = new();
                 tabButtons = new();
@@ -317,12 +314,27 @@ namespace TownOfHost
                     var tabButton = Object.Instantiate(templateTabButton, templateTabButton.transform.parent);
                     tabButton.name = tab.ToString();
                     tabButton.transform.position = templateTabButton.transform.position + new Vector3((0.762f * i * 0.8f) + (0.762f * i * 0.2f), 0, -300f);
-                    tabButton.inactiveSprites.GetComponent<SpriteRenderer>().sprite = UtilsSprite.LoadSprite($"TownOfHost.Resources.TOHK.Tab.TabIcon_{tab}.png", 60);
-                    tabButton.activeSprites.GetComponent<SpriteRenderer>().sprite = UtilsSprite.LoadSprite($"TownOfHost.Resources.TOHK.Tab.TabIcon_S_{tab}.png", 120);
-                    tabButton.selectedSprites.GetComponent<SpriteRenderer>().sprite = UtilsSprite.LoadSprite($"TownOfHost.Resources.TOHK.Tab.TabIcon_{tab}.png", 120);
+                    var tabIcon = UtilsSprite.LoadSprite($"TownOfHost.Resources.TOHK.Tab.TabIcon_{tab}.png", 60);
+                    if (tabIcon != null)
+                    {
+                        Object.Destroy(tabButton.buttonText.gameObject);
+                        tabButton.inactiveSprites.GetComponent<SpriteRenderer>().sprite = tabIcon;
+                        SetSpriteIfExists(tabButton.activeSprites.GetComponent<SpriteRenderer>(), UtilsSprite.LoadSprite($"TownOfHost.Resources.TOHK.Tab.TabIcon_S_{tab}.png", 120));
+                        SetSpriteIfExists(tabButton.selectedSprites.GetComponent<SpriteRenderer>(), UtilsSprite.LoadSprite($"TownOfHost.Resources.TOHK.Tab.TabIcon_{tab}.png", 120));
+                    }
+                    else
+                    {
+                        //アイコン画像が無いときはタブ名を文字で表示する
+                        tabButton.buttonText.DestroyTranslator();
+                        tabButton.buttonText.enableAutoSizing = true;
+                        tabButton.buttonText.fontSizeMin = 0.5f;
+                        tabButton.buttonText.fontSizeMax = tabButton.buttonText.fontSize;
+                        tabButton.buttonText.text = GetString("TabGroup." + tab);
+                    }
 
                     tabButtons.Add(tabButton);
                 }
+                Object.Destroy(templateTabButton.buttonText.gameObject);
                 ErrorNumber = 8;
 
                 foreach (var role in EnumHelper.GetAllValues<CustomRoles>())
@@ -352,12 +364,12 @@ namespace TownOfHost
                             var tabButton = tabButtons[i];
                             if (tab != n) menus[n].SetActive(false);
                             tabButton.SelectButton(false);
-                            tabButton.selectedSprites.GetComponent<SpriteRenderer>().sprite = UtilsSprite.LoadSprite($"TownOfHost.Resources.TOHK.Tab.TabIcon_{n}.png", 120);
+                            SetSpriteIfExists(tabButton.selectedSprites.GetComponent<SpriteRenderer>(), UtilsSprite.LoadSprite($"TownOfHost.Resources.TOHK.Tab.TabIcon_{n}.png", 120));
                         }
                         crmenus[NowRoleTab].SetActive(false);
                         NowRoleTab = CustomRoles.NotAssigned;
                         tabButton.SelectButton(true);
-                        tabButton.selectedSprites.GetComponent<SpriteRenderer>().sprite = UtilsSprite.LoadSprite($"TownOfHost.Resources.TOHK.Tab.TabIcon_S_{tab}.png", 120);
+                        SetSpriteIfExists(tabButton.selectedSprites.GetComponent<SpriteRenderer>(), UtilsSprite.LoadSprite($"TownOfHost.Resources.TOHK.Tab.TabIcon_S_{tab}.png", 120));
                         menus[tab].SetActive(true);
                         var tabTitle = ModSettingsTab.quotaHeader;
                         CategoryHeaderEditRole[] tabSubTitle = tabTitle.transform.parent.GetComponentsInChildren<CategoryHeaderEditRole>();
@@ -569,6 +581,11 @@ namespace TownOfHost
             }
         }
 
+        /// <summary>画像が読み込めたときだけ差し替える(読み込めないときは元の画像のまま)</summary>
+        static void SetSpriteIfExists(SpriteRenderer renderer, Sprite sprite)
+        {
+            if (renderer != null && sprite != null) renderer.sprite = sprite;
+        }
         public static void CreateOptions(TabGroup tab, Dictionary<TabGroup, GameObject> menus, Dictionary<CustomRoles, GameObject> crmenus, Transform tabtransfrom, bool forceAllTabs = false)
         {
             if (!forceAllTabs && tabGenerated.Contains(tab)) return;
@@ -616,7 +633,7 @@ namespace TownOfHost
                         stringOption.Value = stringOption.oldValue = option.CurrentValue;
                         stringOption.ValueText.text = "読み込み中..";
                         stringOption.name = option.Name;
-                        stringOption.LabelBackground.sprite = option.Tooltip.Invoke() == "" ? LabelBackgroundSprite : LabelBackgroundToolSprite;
+                        SetSpriteIfExists(stringOption.LabelBackground, option.Tooltip.Invoke() == "" ? LabelBackgroundSprite : LabelBackgroundToolSprite);
                         if (option.HideValue)
                         {
                             stringOption.PlusBtn.transform.localPosition = new Vector3(100, 100, 100);
@@ -695,7 +712,7 @@ namespace TownOfHost
                         stringOption.ValueText.text = "読み込み中..";
                         stringOption.name = option.Name;
 
-                        stringOption.LabelBackground.sprite = option.Tooltip.Invoke() == "" ? LabelBackgroundSprite : LabelBackgroundToolSprite;
+                        SetSpriteIfExists(stringOption.LabelBackground, option.Tooltip.Invoke() == "" ? LabelBackgroundSprite : LabelBackgroundToolSprite);
 
                         if (option.IsHeader)
                         {
@@ -768,7 +785,7 @@ namespace TownOfHost
                             button.gameObject.name = $"{option.Name}OptionButton";
                             button.transform.localPosition = new Vector3(-2.46f, 0.0446f, -2);
                             button.transform.localScale = new Vector3(1.44f, 1.14f, 1f);
-                            button.activeSprites.GetComponent<SpriteRenderer>().sprite = option.Tooltip.Invoke() == "" ? LabelBackgroundSprite : LabelBackgroundToolSprite;
+                            SetSpriteIfExists(button.activeSprites.GetComponent<SpriteRenderer>(), option.Tooltip.Invoke() == "" ? LabelBackgroundSprite : LabelBackgroundToolSprite);
                             button.activeSprites.GetComponent<SpriteRenderer>().color = UtilsRoleText.GetRoleColor(option.CustomRole).ShadeColor(0.2f).SetAlpha(0.35f);
 
                             button.OnClick.AddListener((System.Action)(() =>
@@ -879,8 +896,9 @@ namespace TownOfHost
                                 var Showoptionbutton = Object.Instantiate(stringOption.MinusBtn, stringOption.transform);
                                 {
                                     Showoptionbutton.gameObject.name = $"{option.Name}-SetOption";
-                                    Showoptionbutton.transform.FindChild("Text_TMP").GetComponent<TMPro.TextMeshPro>().text = "";
-                                    Showoptionbutton.buttonSprite.sprite = ShowOptionSprite;
+                                    //画像が無いときは文字で代用する
+                                    Showoptionbutton.transform.FindChild("Text_TMP").GetComponent<TMPro.TextMeshPro>().text = ShowOptionSprite == null ? ">" : "";
+                                    SetSpriteIfExists(Showoptionbutton.buttonSprite, ShowOptionSprite);
 
                                     Showoptionbutton.OnClick = new();
                                     Showoptionbutton.OnClick.AddListener((System.Action)(() =>

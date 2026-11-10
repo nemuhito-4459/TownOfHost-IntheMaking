@@ -371,9 +371,10 @@ namespace TownOfHost
                         {
                             if (isalive)
                             {
-                                if (roleClass.OverrideAbilityButton(out string abname) == true && Main.CustomSprite.Value)
+                                //画像が無い役職はバニラのボタン画像のままにする
+                                if (roleClass.OverrideAbilityButton(out string abname) == true && Main.CustomSprite.Value && CustomButton.Get(abname) is Sprite abilitySprite)
                                 {
-                                    player.Data.Role.Ability.Image = CustomButton.Get(abname);
+                                    player.Data.Role.Ability.Image = abilitySprite;
 
                                     player.Data.Role.Ability.name = "ModRoleAbilityButton";
                                     player.Data.Role.InitializeAbilityButton();
@@ -390,9 +391,9 @@ namespace TownOfHost
                             // Memo
                             // キルボタン非表示してから当てれば大丈夫
                             // キルボタンがバグってもなんかスイッチシェリフのキルボだけ大丈夫なことが多い。
-                            if ((roleClass as IKiller)?.OverrideKillButton(out string name) == true && Main.CustomSprite.Value)
+                            if ((roleClass as IKiller)?.OverrideKillButton(out string name) == true && Main.CustomSprite.Value && CustomButton.Get(name) is Sprite killSprite)
                             {
-                                __instance.KillButton.ChangeGraphic(CustomButton.Get(name));
+                                __instance.KillButton.ChangeGraphic(killSprite);
                                 //__instance.KillButton.graphic.sprite = CustomButton.Get(name);
                             }
                             else if (MotoKillButton)
@@ -400,9 +401,9 @@ namespace TownOfHost
                                 __instance.KillButton.graphic.sprite = MotoKillButton;
                             }
 
-                            if ((roleClass as IKiller)?.OverrideImpVentButton(out string name2) == true && Main.CustomSprite.Value)
+                            if ((roleClass as IKiller)?.OverrideImpVentButton(out string name2) == true && Main.CustomSprite.Value && CustomButton.Get(name2) is Sprite ventSprite)
                             {
-                                __instance.ImpostorVentButton.graphic.sprite = CustomButton.Get(name2);
+                                __instance.ImpostorVentButton.graphic.sprite = ventSprite;
                             }
                             else if (ImpVentButton)
                             {
