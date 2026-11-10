@@ -37,7 +37,9 @@ namespace TownOfHost
         public static bool IsImpostorTeam(this CustomRoles role) => role.IsImpostor() || role.IsMadmate();
         /// <summary>ジャッカル陣営の役職か(設定画面でジャッカルタブに分けるのに使う)</summary>
         public static bool IsJackalTeam(this CustomRoles role)
-            => role is CustomRoles.Jackal or CustomRoles.JackalAlien or CustomRoles.JackalMafia or CustomRoles.JackalWolf or CustomRoles.Jackaldoll;
+            => role is CustomRoles.Jackal or CustomRoles.JackalMafia or CustomRoles.Jackaldoll || role.IsJackalImpostor();
+        /// <summary>インポスター役職の能力を持つジャッカル(ジャッカルウルフ・ジャッカル〇〇)か</summary>
+        public static bool IsJackalImpostor(this CustomRoles role) => Roles.Neutral.JackalImpostorBase.IsJackalImpostor(role);
         public static bool IsNeutral(this CustomRoles role)
         {
             if (role is CustomRoles.MadBetrayer) return MadBetrayer.IsMadmate() is false;

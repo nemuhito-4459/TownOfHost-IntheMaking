@@ -72,7 +72,7 @@ public sealed class JackalDoll : RoleBase
     public static int GetSideKickCount()
     {
         if ((CustomRoles.Jackal.IsEnable() && Jackal.OptionCanMakeSidekick.GetBool())
-        || (CustomRoles.JackalWolf.IsEnable() && JackalWolf.OptionHaveRole.GetRole().CanMakeMadmate()))
+        || JackalImpostorBase.AnyEnabledCanSidekick())
         {
             //共通設定の最大人数をそのまま使う
             return OptionSideKickMaxmim.GetInt();
@@ -185,7 +185,7 @@ public sealed class JackalDoll : RoleBase
 
         var id = ExiledPlayerInfo?.PlayerId ?? byte.MaxValue;
 
-        if (PlayerCatch.AllAlivePlayerControls.Any(x => (x.Is(CustomRoles.Jackal) || x.Is(CustomRoles.JackalMafia) || x.Is(CustomRoles.JackalAlien) || x.Is(CustomRoles.JackalWolf) || BossAndSidekicks.ContainsKey(x.PlayerId)) && x.PlayerId != id)) return;
+        if (PlayerCatch.AllAlivePlayerControls.Any(x => (x.Is(CustomRoles.Jackal) || x.Is(CustomRoles.JackalMafia) || x.GetCustomRole().IsJackalImpostor() || BossAndSidekicks.ContainsKey(x.PlayerId)) && x.PlayerId != id)) return;
 
         foreach (var Jd in PlayerCatch.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.Jackaldoll) && !BossAndSidekicks.ContainsKey(x.PlayerId)))
         {

@@ -41,7 +41,11 @@ namespace TownOfHost
         /// 自動追加したキルクール設定の値(0なら規定値)。自前の設定を持つ役職・インポスター以外は規定値を返す
         /// </summary>
         public static float Get(CustomRoles role)
-            => AddedOptions.TryGetValue(role, out var option) ? option.GetFloat() : DefaultValue;
+        {
+            //ジャッカル〇〇は、持っているインポスター役職のキルクール設定を使う
+            if (Roles.Neutral.JackalImpostorBase.IsJackalImpostor(role)) role = Roles.Neutral.JackalImpostorBase.GetBaseRole(role);
+            return AddedOptions.TryGetValue(role, out var option) ? option.GetFloat() : DefaultValue;
+        }
 
         /// <summary>規定値(インポスタータブの共通キルクール)</summary>
         public static float DefaultValue => FactionCommonOptions.KillCooldown?.GetFloat() ?? Options.DefaultKillCooldown;

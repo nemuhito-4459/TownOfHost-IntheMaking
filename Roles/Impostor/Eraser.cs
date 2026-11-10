@@ -149,7 +149,7 @@ public sealed class Eraser : RoleBase, IImpostor, IUsePhantomButton
             if (AmongUsClient.Instance.AmHost)
             {
                 Erasedtargets.Add(player.PlayerId);
-                player.RpcSetCustomRole(SuddenDeathMode.NowSuddenDeathMode || (Player.Is(CustomRoles.JackalWolf) && player.Is(CustomRoleTypes.Impostor)) ? CustomRoles.Impostor : CustomRoles.Crewmate, true, null);
+                player.RpcSetCustomRole(SuddenDeathMode.NowSuddenDeathMode || (Player.GetCustomRole().IsJackalImpostor() && player.Is(CustomRoleTypes.Impostor)) ? CustomRoles.Impostor : CustomRoles.Crewmate, true, null);
             }
             var addons = player.GetPlayerState().SubRoles;
             if (CanDelAddon) addons.Do(x => player.GetPlayerState().RemoveSubRole(x));

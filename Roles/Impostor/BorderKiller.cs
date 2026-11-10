@@ -50,7 +50,7 @@ public sealed class BorderKiller : RoleBase, IImpostor
 
     public override void CheckWinner(GameOverReason reason)
     {
-        bool IsJacw = Player.Is(CustomRoles.JackalWolf);
+        bool IsJacw = Player.GetCustomRole().IsJackalImpostor();
         //目標キルカウント ＞ 現在のキルカウント
         if (OptionMissionKillcount.GetInt() > MyState.GetKillCount(false) && Player.IsWinner(IsJacw ? CustomWinner.Jackal : CustomWinner.Impostor))
         {

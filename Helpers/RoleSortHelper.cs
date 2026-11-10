@@ -43,11 +43,22 @@ namespace TownOfHost
         public static string GetSortKey(CustomRoles role)
         {
             if (cache.TryGetValue(role, out var key)) return key;
-            if (!Readings.TryGetValue(role, out var reading))
-                reading = Translator.GetString(role.ToString(), SupportedLangs.Japanese);
+            var reading = GetReading(role);
             key = Normalize(reading);
             cache[role] = key;
             return key;
+        }
+
+        /// <summary>読み(ひらがな・カタカナ)。ジャッカル〇〇は「じゃっかる」+元の役職の読み</summary>
+        static string GetReading(CustomRoles role)
+        {
+            if (Readings.TryGetValue(role, out var reading)) return reading;
+            if (role is not CustomRoles.JackalWolf && Roles.Neutral.JackalImpostorBase.IsJackalImpostor(role))
+            {
+                var baseRole = Roles.Neutral.JackalImpostorBase.GetBaseRole(role);
+                if (baseRole is not CustomRoles.NotAssigned and not CustomRoles.Impostor) return "じゃっかる" + GetReading(baseRole);
+            }
+            return Translator.GetString(role.ToString(), SupportedLangs.Japanese);
         }
 
         /// <summary>

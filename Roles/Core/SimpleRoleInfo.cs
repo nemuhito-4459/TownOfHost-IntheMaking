@@ -24,6 +24,7 @@ public enum From
     TownOfUs,
     TownOfHost,
     TownOfHost_K,//TownOfHost-K で作られた役職
+    TownOfHost_IntheMaking,//このMODで作った役職
     TownOfHost_Y,
     TownOfHost_for_E,
     TownOfHost_E,
@@ -130,7 +131,8 @@ public class SimpleRoleInfo
                 _ => tab
             };
         //ジャッカル陣営はニュートラルとは別のタブに出す
-        if (tab == TabGroup.NeutralRoles && roleName.IsJackalTeam())
+        //(この時点ではまだ登録前なので、ジャッカル〇〇はクラスで判定する)
+        if (tab == TabGroup.NeutralRoles && (roleName.IsJackalTeam() || classType.IsSubclassOf(typeof(Roles.Neutral.JackalImpostorBase))))
             tab = TabGroup.JackalRoles;
         Tab = tab;
 

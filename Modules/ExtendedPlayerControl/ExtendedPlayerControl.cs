@@ -424,7 +424,7 @@ namespace TownOfHost
         }
         public static bool IsNeutralKiller(this CustomRoles role)
         {
-            return
+            return role.IsJackalImpostor() ||
                 role is
                 CustomRoles.Egoist or
                 CustomRoles.Banker or

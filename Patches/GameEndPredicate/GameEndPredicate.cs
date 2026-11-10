@@ -53,13 +53,13 @@ public abstract class GameEndPredicate
                     case CustomRoles.Jackal:
                     case CustomRoles.JackalMafia:
                     case CustomRoles.JackalAlien:
-                    case CustomRoles.JackalWolf:
+                    case CustomRoles jackalImpostor when jackalImpostor.IsJackalImpostor():
                         CustomWinnerHolder.ResetAndSetAndChWinner(CustomWinner.Jackal, byte.MaxValue);
                         CustomWinnerHolder.WinnerRoles.Add(CustomRoles.Jackal);
                         CustomWinnerHolder.WinnerRoles.Add(CustomRoles.JackalMafia);
                         CustomWinnerHolder.WinnerRoles.Add(CustomRoles.JackalAlien);
                         CustomWinnerHolder.WinnerRoles.Add(CustomRoles.Jackaldoll);
-                        CustomWinnerHolder.WinnerRoles.Add(CustomRoles.JackalWolf);
+                        Roles.Neutral.JackalImpostorBase.AddWinnerRoles();//ジャッカルウルフ・ジャッカル〇〇
                         if (Options.OptionSabotageFinAllKill.GetBool())
                             PlayerCatch.AllAlivePlayerControls.Do(pc =>
                             {
@@ -165,13 +165,13 @@ public abstract class GameEndPredicate
                     case CustomRoles.Jackal:
                     case CustomRoles.JackalMafia:
                     case CustomRoles.JackalAlien:
-                    case CustomRoles.JackalWolf:
+                    case CustomRoles jackalImpostor when jackalImpostor.IsJackalImpostor():
                         CustomWinnerHolder.ResetAndSetAndChWinner(CustomWinner.Jackal, byte.MaxValue);
                         CustomWinnerHolder.WinnerRoles.Add(CustomRoles.Jackal);
                         CustomWinnerHolder.WinnerRoles.Add(CustomRoles.JackalMafia);
                         CustomWinnerHolder.WinnerRoles.Add(CustomRoles.JackalAlien);
                         CustomWinnerHolder.WinnerRoles.Add(CustomRoles.Jackaldoll);
-                        CustomWinnerHolder.WinnerRoles.Add(CustomRoles.JackalWolf);
+                        Roles.Neutral.JackalImpostorBase.AddWinnerRoles();//ジャッカルウルフ・ジャッカル〇〇
                         if (Options.OptionSabotageFinAllKill.GetBool())
                             PlayerCatch.AllAlivePlayerControls.Do(pc =>
                             {

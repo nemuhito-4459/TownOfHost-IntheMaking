@@ -244,7 +244,7 @@ namespace TownOfHost
             {
                 if (date.Key.IsEnable() || date.Key is CustomRoles.Impostor or CustomRoles.Crewmate ||
                 (date.Key is CustomRoles.MadonnaLovers && CustomRoles.Madonna.IsEnable()) ||
-                (date.Key is CustomRoles.Jackal) && (CustomRoles.JackalAlien.IsEnable() || CustomRoles.JackalMafia.IsEnable() || CustomRoles.JackalWolf.IsEnable()))
+                (date.Key is CustomRoles.Jackal) && (CustomRoles.JackalMafia.IsEnable() || Roles.Neutral.JackalImpostorBase.AnyEnabled()))
                 {
                     sort.Add(date.Key, date.Value.OptionWin.GetInt());
                 }
@@ -883,6 +883,7 @@ namespace TownOfHost
                 case From.TownOfUs: Fromtext += $"<#daa520>{from}</color>"; break;
                 case From.TownOfHost: Fromtext += $"<#00bfff>{from}</color>"; break;
                 case From.TownOfHost_K: Fromtext += "<#00c1ff>TownOfHost-K</color>"; break;
+                case From.TownOfHost_IntheMaking: Fromtext += $"<{Main.ModColor}>{Main.ModName}</color>"; break;
                 case From.TownOfHost_Y: Fromtext += $"<#dddd00>TownOfHost_Y</color>"; break;
                 case From.TownOfHost_for_E: Fromtext += $"<#18e744>TownOfHost for E</color>"; break;
                 case From.TownOfHost_E: Fromtext += $"<#ffc0cb>TownOfHost E</color>"; break;

@@ -192,7 +192,7 @@ namespace TownOfHost
                                 CustomWinnerHolder.WinnerRoles.Add(CustomRoles.Jackal);
                                 CustomWinnerHolder.WinnerRoles.Add(CustomRoles.JackalMafia);
                                 CustomWinnerHolder.WinnerRoles.Add(CustomRoles.JackalAlien);
-                                CustomWinnerHolder.WinnerRoles.Add(CustomRoles.JackalWolf);
+                                Roles.Neutral.JackalImpostorBase.AddWinnerRoles();//ジャッカルウルフ・ジャッカル〇〇
                                 CustomWinnerHolder.WinnerRoles.Add(CustomRoles.Jackaldoll);
                                 GameManager.Instance.RpcEndGame(GameOverReason.ImpostorsByKill, false);
                                 break;
@@ -575,7 +575,7 @@ namespace TownOfHost
                     case "/jc":
                         if (Assassin.NowUse) break;
                         canceled = true;
-                        if (GameStates.InGame && Options.ImpostorHideChat.GetBool() && PlayerControl.LocalPlayer.IsAlive() && PlayerControl.LocalPlayer.GetCustomRole() is CustomRoles.Jackal or CustomRoles.Jackaldoll or CustomRoles.JackalMafia or CustomRoles.JackalAlien or CustomRoles.JackalWolf)
+                        if (GameStates.InGame && Options.ImpostorHideChat.GetBool() && PlayerControl.LocalPlayer.IsAlive() && PlayerControl.LocalPlayer.GetCustomRole().IsJackalTeam())
                         {
                             var send = "";
                             foreach (var ag in args)
@@ -587,7 +587,7 @@ namespace TownOfHost
                             Logger.Info($"{PlayerControl.LocalPlayer.Data.GetLogPlayerName()} : {send}", "jackalChat");
                             foreach (var jac in PlayerCatch.AllPlayerControls)
                             {
-                                if (jac && ((jac?.GetCustomRole() is CustomRoles.Jackal or CustomRoles.Jackaldoll or CustomRoles.JackalMafia or CustomRoles.JackalAlien or CustomRoles.JackalWolf) || !jac.IsAlive()))
+                                if (jac && ((jac.GetCustomRole().IsJackalTeam()) || !jac.IsAlive()))
                                 {
                                     SendMessage(send.Mark(ModColors.JackalColor), jac.PlayerId,
                                     ColorString(ModColors.JackalColor, $"Φ{PlayerControl.LocalPlayer.GetPlayerColor()}Φ"));
@@ -1408,14 +1408,14 @@ namespace TownOfHost
                 case "/jacct":
                 case "/jc":
                     if (Assassin.NowUse) break;
-                    if (GameStates.InGame && Options.JackalHideChat.GetBool() && player.IsAlive() && player.GetCustomRole() is CustomRoles.Jackal or CustomRoles.Jackaldoll or CustomRoles.JackalMafia or CustomRoles.JackalAlien or CustomRoles.JackalWolf)
+                    if (GameStates.InGame && Options.JackalHideChat.GetBool() && player.IsAlive() && player.GetCustomRole().IsJackalTeam())
                     {
                         string send = "";
                         if (GetHideSendText(ref canceled, ref send) is false) return;
                         Logger.Info($"{player.Data.GetLogPlayerName()} : {send}", "JackalChat");
                         foreach (var jac in AllPlayerControls)
                         {
-                            if (jac && ((jac.GetCustomRole() is CustomRoles.Jackal or CustomRoles.Jackaldoll or CustomRoles.JackalMafia or CustomRoles.JackalAlien or CustomRoles.JackalWolf) || (!jac.IsAlive())))
+                            if (jac && ((jac.GetCustomRole().IsJackalTeam()) || (!jac.IsAlive())))
                             {
                                 if (jac.PlayerId == player.PlayerId && !Isclient) continue;
                                 if (AmongUsClient.Instance.AmHost)
