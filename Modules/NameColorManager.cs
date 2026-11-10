@@ -23,14 +23,6 @@ namespace TownOfHost
                 if (KnowTargetRoleColor(seer, target, isMeeting))
                     colorCode = target.GetRoleColorCode();
             }
-            // 会議中はブラッドラストの赤を隠す（インポとバレるのを防ぐ）
-            if (isMeeting && target.Is(CustomRoles.Bloodlust) && target.GetRoleClass() is Bloodlust blMeeting && blMeeting.IsNameExposed
-                && (colorCode == "#ff1919" || string.Equals(colorCode, "ff1919", StringComparison.OrdinalIgnoreCase)))
-            {
-                colorCode = "";
-                if (KnowTargetRoleColor(seer, target, isMeeting))
-                    colorCode = target.GetRoleColorCode();
-            }
             string openTag = "", closeTag = "";
             if (!SuddenDeathMode.NowSuddenDeathMode)
             {
@@ -49,14 +41,10 @@ namespace TownOfHost
                 var targetRole = target.GetCustomRole();
                 if (seer != target && seerRole.IsImpostor() && targetRole.IsImpostor())
                 {
-                    var skipTeammateRecolor = target.GetRoleClass() is Bloodlust bloodlustExposed && bloodlustExposed.IsNameExposed;
-                    if (!skipTeammateRecolor)
-                    {
-                        if (targetRole.GetRoleInfo()?.IsCantSeeTeammates == true)
-                            colorCode = Roles.Vanilla.Impostor.RoleInfo.RoleColorCode;
-                        if (seerRole.GetRoleInfo()?.IsCantSeeTeammates == true || seer.Is(CustomRoles.OneWolf) || target.Is(CustomRoles.OneWolf))
-                            colorCode = "#ffffff"; //white
-                    }
+                    if (targetRole.GetRoleInfo()?.IsCantSeeTeammates == true)
+                        colorCode = Roles.Vanilla.Impostor.RoleInfo.RoleColorCode;
+                    if (seerRole.GetRoleInfo()?.IsCantSeeTeammates == true || seer.Is(CustomRoles.OneWolf) || target.Is(CustomRoles.OneWolf))
+                        colorCode = "#ffffff"; //white
                 }
             }
             //会議中で決まってない場合は白

@@ -68,7 +68,7 @@ namespace TownOfHost
                     }
 
                     //梯子バグ対応策。
-                    if (isAlive && !((roleclass as Jumper)?.Jumping == true) && timer is 5)
+                    if (isAlive && timer is 5)
                     {
                         var nowpos = __instance.GetTruePosition();
                         if (state.LastKillPosition != new Vector2(100, 100))

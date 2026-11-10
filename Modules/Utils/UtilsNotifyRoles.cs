@@ -356,8 +356,7 @@ namespace TownOfHost
                             if (((IsActive(SystemTypes.Comms) && Options.CommsCamouflage.GetBool())
                             || (role is CustomRoles.Monochromer && seerisAlive)
                             //|| Camouflager.NowUse
-                            || (SuddenDeathMode.SuddenCannotSeeName && !TemporaryName))
-                            && (!((targetrole as Jumper)?.Jumping == true)))
+                            || (SuddenDeathMode.SuddenCannotSeeName && !TemporaryName)))
                             {
                                 TargetPlayerName = $"<size=0>{TargetPlayerName}</size> ";
                                 name = $"<size=0>{name}</size>";
@@ -365,7 +364,7 @@ namespace TownOfHost
                             //全てのテキストを合成します。
                             var lineheight = string.Format("<line-height={0}%>", "85");
                             string TargetName = $"{lineheight}{TargetRoleText}{(TemporaryName ? name : TargetPlayerName)}{((TemporaryName && nomarker) ? "" : TargetDeathReason + TargetMark + TargetSuffix)}";
-                            if (!seerisAlive && !((targetrole as Jumper)?.Jumping == true) && !targetisalive)
+                            if (!seerisAlive && !targetisalive)
                                 TargetName = $"<size=65%><line-height=-18%>\n<line-height=85%>{TargetRoleText.RemoveSizeTags()}<line-height=-17%>\n</line-height>{(TemporaryName ? name.RemoveSizeTags() : TargetPlayerName.RemoveSizeTags())}{((TemporaryName && nomarker) ? "" : TargetDeathReason.RemoveSizeTags() + TargetMark.ToString().RemoveSizeTags() + TargetSuffix.ToString().RemoveSizeTags())}";
 
                             TargetName = TargetName.RemoveDeltext("color=#", "#");
