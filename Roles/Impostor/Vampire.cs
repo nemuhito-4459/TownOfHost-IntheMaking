@@ -171,12 +171,5 @@ namespace TownOfHost.Roles.Impostor
                 Logger.Info($"Vampireに噛まれている{target.name}はすでに死んでいました。", "Vampire.KillBitten");
             }
         }
-        public override void OnMurderPlayerAsTarget(MurderInfo info)
-        {
-            var roleclass = info.AttemptKiller.GetRoleClass();
-            if ((roleclass as Alien)?.mode is Alien.AlienMode.Vampire ||
-                (roleclass as JackalAlien)?.mode is Alien.AlienMode.Vampire ||
-                roleclass is Vampire)
-        }
     }
 }
