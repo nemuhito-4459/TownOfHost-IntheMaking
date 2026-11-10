@@ -20,18 +20,13 @@ namespace TownOfHost
         private static SimpleButton discordButton;
         private static SimpleButton StatisticsButton;
         private static GameObject Statistics_ScrollStuff;
-        public static SimpleButton UpdateButton { get; private set; }
-        public static SimpleButton UpdateDetailsButton { get; private set; }
         private static SimpleButton gitHubButton;
         private static SimpleButton TwitterXButton;
         private static SimpleButton TOHkBOTButton;
         private static SimpleButton RoleInfoButton;
         //private static SimpleButton VersionChangeButton;
-        private static SimpleButton betaversionchange;
         public static TextMeshPro Statistics_TMP;
         public static GameObject VersionMenu;
-        public static GameObject betaVersionMenu;
-        public static AnnouncementPopUp UpdateDetailsPopup;
 
         [HarmonyPatch(nameof(MainMenuManager.Start)), HarmonyPostfix, HarmonyPriority(Priority.Normal)]
         public static void StartPostfix(MainMenuManager __instance)
@@ -137,111 +132,6 @@ namespace TownOfHost
                 Statistics_ScrollStuff.gameObject.SetActive(false);
             }
 
-            //Updateボタンを生成
-            if (SimpleButton.IsNullOrDestroyed(UpdateButton))
-            {
-                UpdateButton = CreateButton(
-                    "UpdateButton",
-                    new(0f, -1.7f, 1f),
-                    new(0, 202, 255, byte.MaxValue),
-                    new(60, 255, 255, byte.MaxValue),
-                    () =>
-                    {
-                        //if (!Main.AllowPublicRoom)
-                        //{
-                        UpdateButton.Button.gameObject.SetActive(false);
-                        ModUpdater.StartUpdate(ModUpdater.downloadUrl);
-                        //}
-                        /*else
-                        {
-                            UpdateButton.Button.gameObject.SetActive(false);
-                            ModUpdater.GoGithub();
-                        }*/
-                    },
-                    $"{Translator.GetString("updateButton")}\n{ModUpdater.latestTitle}",
-                    new(2.5f, 1f),
-                    isActive: false);
-            }
-            // アップデート(詳細)ボタンを生成
-            if (SimpleButton.IsNullOrDestroyed(UpdateDetailsButton))
-            {
-                UpdateDetailsButton = CreateButton(
-                    "UpdateDetailsButton",
-                    new(1.3f, -1.9f, 1f),
-                    new(153, 153, 153, byte.MaxValue),
-                    new(209, 209, 209, byte.MaxValue),
-                    () =>
-                    {
-                        if (UpdateDetailsPopup == null)
-                        {
-                            UpdateDetailsPopup = Object.Instantiate(__instance.announcementPopUp);
-                        }
-                        UpdateDetailsPopup.name = "Update Detail";
-                        UpdateDetailsPopup.gameObject.SetActive(true);
-                        UpdateDetailsPopup.AnnouncementListSlider.SetActive(false);
-                        UpdateDetailsPopup.Title.text = "TOH-K " + ModUpdater.latestTitle;
-                        UpdateDetailsPopup.AnnouncementBodyText.text = Regex.Replace(ModUpdater.body.Replace("#", "").Replace("**", ""), @"\[(.*?)\]\(.*?\)", "$1");
-                        UpdateDetailsPopup.DateString.text = "Latest Release";
-                        UpdateDetailsPopup.SubTitle.text = "";
-                        UpdateDetailsPopup.ListScroller.gameObject.SetActive(false);
-                    },
-                    "▽",
-                    new(0.5f, 0.5f),
-                    isActive: false,
-                    toolTip: "UpdateDetailsButtonInfo");
-            }
-            //同じバージョンの 安定ver,デバッグバージョンの切り替えの奴
-            if (SimpleButton.IsNullOrDestroyed(betaversionchange))
-            {
-                betaversionchange = CreateButton(
-                    "betaversionchange",
-                    new(-2.3f, -2.6963f, 1f),
-                    new(0, 255, 183, byte.MaxValue),
-                    new(60, 255, 183, byte.MaxValue),
-                    () =>
-                    {
-                        CredentialsPatch.TohkLogo.gameObject.SetActive(false);
-                        __instance.screenTint.enabled = true;
-                        if (betaVersionMenu != null)
-                        {
-                            betaVersionMenu.SetActive(true);
-                            return;
-                        }
-                        betaVersionMenu = new GameObject("verPanel");
-                        betaVersionMenu.transform.parent = __instance.gameModeButtons.transform.parent;
-                        betaVersionMenu.transform.localPosition = new(-0.0964f, 0.1378f, 1f);
-                        betaVersionMenu.SetActive(true);
-                        ModUpdater.CheckRelease(all: true).GetAwaiter().GetResult();
-                        int i = 0;
-                        if (ModUpdater.snapshots.Count == 0) return;
-
-                        foreach (var release in ModUpdater.snapshots)
-                        {
-                            int column = i % 4;
-                            int row = i / 4;
-                            // X 座標と Y 座標を計算
-                            float x = -1.6891f + (1.6891f * column);
-                            float y = 0.8709f - (0.3927f * row);
-                            var button2 = new SimpleButton(
-                            betaVersionMenu.transform,
-                            release.TagName,
-                            new(x, y, 1f),
-                            release.TagName.Contains("S") ? new(0, 255, 183, byte.MaxValue) : new(0, 202, 255, byte.MaxValue),
-                            release.TagName.Contains("S") ? new(60, 255, 183, byte.MaxValue) : new(60, 255, 255, byte.MaxValue),
-                            () =>
-                            {
-                                if (release.DownloadUrl != null)
-                                    ModUpdater.StartUpdate(release.DownloadUrl, release.OpenURL);
-                            },
-                            "v" + release.TagName.TrimStart('v').Trim('S').Trim('s') + (release.DownloadUrl == null ? "(ERROR)" : ""));
-                            i++;
-                            button2.Button.OnMouseOver.AddListener((Action)(() => ToolTip.Show(button2.Button, release.Info, null)));
-                            button2.Button.OnMouseOut.AddListener((Action)ToolTip.Hide);
-                        }
-                    },
-                    Translator.GetString("versionchangebutton"));
-                betaversionchange.FontSize = 2;
-            }
             CreateStreameMenu.CreateMenu(__instance);
 
             // フリープレイの無効化
@@ -311,20 +201,6 @@ namespace TownOfHost
             return button;
         }
 
-        [HarmonyPatch(nameof(MainMenuManager.OpenFindGame))]
-        [HarmonyPrefix]
-        public static bool ClickFindGame()
-        {
-            return !(VersionInfoManager.version == null || VersionInfoManager.allversion.DisableMM
-            || (VersionInfoManager.allversion != null && VersionInfoManager.allversion.DisableMM));
-        }
-        [HarmonyPatch(nameof(MainMenuManager.OpenEnterCodeMenu))]
-        [HarmonyPrefix]
-        public static bool ClickOpenEnterCodeMenu()
-        {
-            return !(VersionInfoManager.version != null && VersionInfoManager.version.DisableRoomJoin == true
-            && VersionInfoManager.allversion != null && VersionInfoManager.allversion.DisableRoomJoin == true);
-        }
         [HarmonyPatch(nameof(MainMenuManager.ClickBackOnline))]
         [HarmonyPostfix]
         public static void ClickBackOnline(MainMenuManager __instance)
@@ -351,20 +227,11 @@ namespace TownOfHost
             var createbuttongameobject = GameObject.Find("MainMenuManager/MainUI/AspectScaler/RightPanel/MaskedBlackScreen/OnlineButtons/AspectSize/Scaler/Create Lobby Button");
             var createbutton = createbuttongameobject.transform.GetComponent<PassiveButton>();
 
-            var version = VersionInfoManager.version;
-            var allVersion = VersionInfoManager.allversion;
-
             if (Findbuttongo)
             {
                 // var disable = version == null || version.DisableMM || (allVersion != null && allVersion.DisableMM);
                 //Findbuttongo.SetActive(!disable);
                 Findbuttongo.SetActive(false);
-            }
-            if (Codebutton && ((VersionInfoManager.version != null && VersionInfoManager.version.DisableRoomJoin == true) ||
-            VersionInfoManager.allversion != null && VersionInfoManager.allversion.DisableRoomJoin == true))
-            {
-                var buttonCollider = Codebutton.GetComponent<BoxCollider2D>();
-                buttonCollider.offset = new(100f, 100f);
             }
             if (Main.IsAndroid())
             {
@@ -377,8 +244,6 @@ namespace TownOfHost
             }
             if (VersionMenu != null)
                 VersionMenu.SetActive(false);
-            if (betaVersionMenu != null)
-                betaVersionMenu.SetActive(false);
             if (Statistics_TMP?.gameObject != null)
                 Statistics_TMP?.gameObject.SetActive(false);
             if (Statistics_ScrollStuff?.gameObject != null)
@@ -390,9 +255,7 @@ namespace TownOfHost
                 var TMPobjct = GameObject.Find("MainMenuManager/MainUI/AspectScaler/RightPanel/MaskedBlackScreen/OnlineButtons/AspectSize/CrossplayWarning/CrossPlayText/Text_TMP");
 
                 var TMP = TMPobjct.transform.GetComponent<TextMeshPro>();
-                var cantJoin = VersionInfoManager.version != null && VersionInfoManager.version.DisableRoomJoin == true;
-                cantJoin |= VersionInfoManager.allversion != null && VersionInfoManager.allversion.DisableRoomJoin == true;
-                var text = Main.IsAndroid() ? Translator.GetString("CantAndroidCreateGame") : cantJoin ? Translator.GetString("CantPublickAndJoin") : "";
+                var text = Main.IsAndroid() ? Translator.GetString("CantAndroidCreateGame") : "";
                 TMP.SetText(text);
                 _ = new LateTask(() => TMP.SetText(text), 0.05f, "Set", true);
                 if (text == "") warning.SetActive(false);
@@ -408,8 +271,6 @@ namespace TownOfHost
             }
             if (VersionMenu != null)
                 VersionMenu.SetActive(false);
-            if (betaVersionMenu != null)
-                betaVersionMenu.SetActive(false);
             if (Statistics_TMP != null)
                 Statistics_TMP?.gameObject.SetActive(false);
             if (Statistics_ScrollStuff != null)
@@ -424,7 +285,6 @@ namespace TownOfHost
         public static void DestroyButton()
         {
             VersionMenu = null;
-            betaVersionMenu = null;
         }
     }
     public class ModNews

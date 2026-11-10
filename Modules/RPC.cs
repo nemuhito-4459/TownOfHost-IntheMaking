@@ -248,11 +248,7 @@ namespace TownOfHost
                     if (CustomRoleManager.GetByPlayerId(assassinId) is not Roles.Impostor.Assassin assassinRole) break;
                     assassinRole.ReceiveStateRPC(reader);
                     break;
-                case CustomRPC.GetAchievement:
-                    byte id = reader.ReadByte();
-                    int flug = reader.ReadInt32();
-                    int achiid = reader.ReadInt32();
-                    Achievements.RpcCompleteAchievement(id, flug, achiid);
+                case CustomRPC.GetAchievement://実績機能は削除済み(RPC番号ずれ防止のため列挙子だけ残す)
                     break;
                 case CustomRPC.PublicRoleSync:
                     {

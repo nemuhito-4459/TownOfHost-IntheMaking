@@ -90,7 +90,6 @@ namespace TownOfHost
                 button.OnClick = new();
 
                 DownloadButton = button;
-                ModUpdater.CheckRelease(all: true).GetAwaiter().GetResult();
             }
 
             if (UnloadAndJoinButton.IsDestroyedOrNull())
@@ -211,17 +210,6 @@ namespace TownOfHost
                     VersionText.fontSize =
                     VersionText.fontSizeMin = 1f;
                     VersionText.text = $"{string.Format(Translator.GetString("Warning.MismatchedHostVersion"), $"<color={Main.ModColor}>{hostVersion.forkId}v{hostVersion.version}</color>")}";
-                    var version = ModUpdater.releases.FirstOrDefault(x => hostVersion.version.ToString() == x.TagName.TrimStart('v')?.Trim('S')?.Trim('s'));
-                    if (hostVersion.forkId == Main.ForkId && version != null)
-                    {
-                        DownloadButton.OnClick = new();
-                        DownloadButton.OnClick.AddListener((Action)(() =>
-                        {
-                            ModScreen?.gameObject.SetActive(false);
-                            ModUpdater.StartUpdate(version.DownloadUrl);
-                        }));
-                        DownloadButton?.SetButtonEnableState(true);
-                    }
                 }
             }
             else

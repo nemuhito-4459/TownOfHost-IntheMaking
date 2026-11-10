@@ -33,8 +33,6 @@ namespace TownOfHost
                 var message = "";
                 if (!Main.IsPublicAvailableOnThisVersion) message = GetString("PublicNotAvailableOnThisVersion");
                 if (!VersionChecker.IsSupported) message = GetString("UnsupportedVersion");
-                if (ModUpdater.isBroken) message = GetString("ModBrokenMessage");
-                if (ModUpdater.hasUpdate) message = GetString("CanNotJoinPublicRoomNoLatest");
                 Logger.Info(message, "MakePublicPatch");
                 Logger.seeingame(message);
                 return false;
@@ -119,8 +117,7 @@ namespace TownOfHost
             if (ServerManager.Instance?.CurrentRegion?.Name == null) return;
 
             var nowserver = ServerManager.Instance.CurrentRegion.Name;
-            if ((Main.IsAndroid() && !Main.IsCs()) || nowserver is "ExROfficialTokyo" || nowserver.Contains("Nebula on the Ship JP") || nowserver.Contains("<color=#ffa500>Super</color>")
-            || (VersionInfoManager.BlockVanillaSaver && !Main.IsCs()))
+            if ((Main.IsAndroid() && !Main.IsCs()) || nowserver is "ExROfficialTokyo" || nowserver.Contains("Nebula on the Ship JP") || nowserver.Contains("<color=#ffa500>Super</color>"))
             {
                 obj.transform.localPosition = new Vector3(100f, 100f, 100f);
             }

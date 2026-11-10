@@ -147,8 +147,6 @@ namespace TownOfHost
 
             Camouflage.PlayerSkins.Clear();
             Statistics.Update();
-            CheckGetNomalAchievement.OnGameEnd();
-            Achievements.UpdateAchievement();
         }
     }
     [HarmonyPatch(typeof(EndGameManager), nameof(EndGameManager.SetEverythingUp))]
@@ -215,21 +213,12 @@ namespace TownOfHost
                 () =>
                 {
                     var setToActive = !roleSummary.gameObject.activeSelf;
-                    if (setToActive is false)
-                    {
-                        if (roleSummary.text.Contains("<size=0>★</size>"))
-                        {
-                            roleSummary.text = Achievements.GetAllAchievement();
-                            showHideButton.Label.text = GetString("HideResults");
-                            return;
-                        }
-                    }
-                    roleSummary.text = sb.ToString() + "<size=0>★</size>";
+                    roleSummary.text = sb.ToString();
                     roleSummary.gameObject.SetActive(setToActive);
                     Main.ShowResults.Value = setToActive;
-                    showHideButton.Label.text = GetString(setToActive ? "ShowAward" : "ShowResults");
+                    showHideButton.Label.text = GetString(setToActive ? "HideResults" : "ShowResults");
                 },
-                GetString(showInitially ? "ShowAward" : "ShowResults"))
+                GetString(showInitially ? "HideResults" : "ShowResults"))
             {
                 Scale = new(1.5f, 0.5f),
                 FontSize = 2f,
@@ -273,7 +262,7 @@ namespace TownOfHost
             }
             roleSummary = TMPTemplate.Create(
                 "RoleSummaryText",
-                sb.ToString() + "<size=0>★</size>",
+                sb.ToString(),
                 Color.white,
                 1.25f,
                 TextAlignmentOptions.TopLeft,

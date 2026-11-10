@@ -416,8 +416,7 @@ namespace TownOfHost
                 var sendtext = text;
                 if (sendtext.RemoveHtmlTags().RemoveDeltext("\n") != "")
                 {
-                    if (!VersionInfoManager.GetCustomFlag(1))
-                        sendtext = UnderlineRegex.Replace(text, m => $"<u><line-height=1.5em>{m.Groups[1].Value}</line-height></u>");
+                    sendtext = UnderlineRegex.Replace(text, m => $"<u><line-height=1.5em>{m.Groups[1].Value}</line-height></u>");
                     if (isTowSend && title == "") Main.MessagesToSend.Add(($" ", sendTo, $"{fir}{sendtext}"));
                     else Main.MessagesToSend.Add(($" ", sendTo, $"{fir}{title}\n{sendtext}"));
                 }

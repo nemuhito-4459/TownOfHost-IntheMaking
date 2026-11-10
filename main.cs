@@ -294,9 +294,7 @@ namespace TownOfHost
             Harmony.PatchAll(Assembly.GetExecutingAssembly());
             Application.quitting += new Action(UtilsOutputLog.SaveNowLog);
             Application.quitting += new Action(SaveStatistics.Save);
-            Application.quitting += new Action(AchievementSaver.Save);
             Statistics.NowStatistics = SaveStatistics.Load();
-            AchievementSaver.Load();
         }
 
         public static bool IsCs()

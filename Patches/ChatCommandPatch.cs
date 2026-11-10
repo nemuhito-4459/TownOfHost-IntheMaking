@@ -231,10 +231,6 @@ namespace TownOfHost
                         subArgs = args.Length < 2 ? "" : args[1];
                         ShowKillLog(IsMonochrome: subArgs is "m" or "mo");
                         break;
-                    case "/ach":
-                    case "/achievements":
-                        ShowAchievement(PlayerControl.LocalPlayer.PlayerId);
-                        break;
                     case "/r":
                     case "/rename":
                         canceled = true;
@@ -1329,11 +1325,6 @@ namespace TownOfHost
                     canceled = true;
                     subArgs = args.Length < 2 ? "" : args[1];
                     ShowKillLog(player.PlayerId, IsMonochrome: subArgs is "m" or "mo");
-                    break;
-                case "/ach":
-                case "/achievement":
-                    canceled = true;
-                    ShowAchievement(player.PlayerId);
                     break;
                 case "/n":
                 case "/now":

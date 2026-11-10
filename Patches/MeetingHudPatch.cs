@@ -141,7 +141,6 @@ public static class MeetingHudPatch
             InnerNetClientPatch.DontTouch = false;
             GameStates.AlreadyDied |= !PlayerCatch.IsAllAlive;
             PlayerCatch.OldAlivePlayerControles.Clear();
-            CheckGetNomalAchievement.OnMeeting();
             foreach (var pc in PlayerCatch.AllPlayerControls)
             {
                 //pc.GetPlayerState().IsBlackOut = false;

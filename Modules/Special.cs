@@ -40,35 +40,8 @@ static class Event
             return cachedData;
 
         bool result = check.Invoke();
-        if (!useApiData || (VersionInfoManager.version?.Events == null && VersionInfoManager.allversion?.Events == null))
-        {
-            //apiが使えない状態orフラグがfalseの場合はローカルの状態を使用
-            cachedEventFlags[(role, false)] = result;
-            return result;
-        }
-
-        var roleId = (int)role;
-        var events = VersionInfoManager.version?.Events;
-        var allverevents = VersionInfoManager.allversion?.Events;
-
-        //全イベント情報をチェック
-        if (events != null)
-        {
-            foreach (var data in events)
-            {
-                if (result) continue;
-                result |= data.RoleId == roleId && data.Period.IsActive;
-            }
-        }
-        if (allverevents != null)
-        {
-            foreach (var data in allverevents)
-            {
-                if (result) continue;
-                result |= data.RoleId == roleId && data.Period.IsActive;
-            }
-        }
-        cachedEventFlags[(role, true)] = result;
+        //元のTOHKのサーバーからイベント情報を取る機能は削除したので、常にローカルの状態を使用
+        cachedEventFlags[(role, useApiData)] = result;
         return result;
     }
     public static Dictionary<CustomRoles, Func<bool>> EventRoles = new()
