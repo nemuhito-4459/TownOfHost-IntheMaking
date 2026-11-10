@@ -58,7 +58,6 @@ public sealed class JackalWolf : JackalImpostorBase
     {
         OptionHaveRole = FilterOptionItem.Create(RoleInfo, 17, OptionName.AssassinHaveRole, 0, false, null, true, false, false, false, false, () => InvalidRoles());
         SetupJackalOptions(RoleInfo);
-        ObjectOptionitem.Create(RoleInfo, 24, "AddonOption", true, null).SetOptionName(() => "Sidekick Setting");
     }
     protected override CustomRoles GetHaveRole() => OptionHaveRole.GetBool() ? OptionHaveRole.GetRole() : CustomRoles.Impostor;
     //役職名に持っている役職が入っていないので、後ろに小さく出す

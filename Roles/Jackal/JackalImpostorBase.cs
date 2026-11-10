@@ -15,7 +15,7 @@ namespace TownOfHost.Roles.Neutral;
 /// 能力の設定は元のインポスター役職の設定をそのまま使う。ジャッカルとしての設定(ベント・サボ・視界など)は役職ごと。<br/>
 /// 新しく作るときは、このクラスを継承して RoleInfo と GetHaveRole() を書き、CustomRoles に名前を足すだけ。
 /// </summary>
-public abstract class JackalImpostorBase : RoleBase, ILNKiller, IUsePhantomButton, IDoubleTrigger, IKillFlashSeeable, ISidekickable, ISchrodingerCatOwner, ISelfVoter
+public abstract class JackalImpostorBase : RoleBase, ILNKiller, IUsePhantomButton, IDoubleTrigger, IKillFlashSeeable, ISchrodingerCatOwner, ISelfVoter
 {
     /// <summary>ジャッカルとしての設定(役職ごと)</summary>
     public class JackalOptions
@@ -81,13 +81,6 @@ public abstract class JackalImpostorBase : RoleBase, ILNKiller, IUsePhantomButto
     {
         foreach (var info in CustomRoleManager.AllRolesInfo.Values)
             if (IsJackalImpostor(info.RoleName) && info.RoleName.IsPresent()) return true;
-        return false;
-    }
-    /// <summary>サイドキック(変身でジャッカルドールを作る)ができる役職が有効か</summary>
-    public static bool AnyEnabledCanSidekick()
-    {
-        foreach (var info in CustomRoleManager.AllRolesInfo.Values)
-            if (IsJackalImpostor(info.RoleName) && info.RoleName.IsEnable() && GetBaseRole(info.RoleName).CanMakeMadmate()) return true;
         return false;
     }
     #endregion

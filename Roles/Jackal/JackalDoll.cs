@@ -71,8 +71,8 @@ public sealed class JackalDoll : RoleBase
     };
     public static int GetSideKickCount()
     {
-        if ((CustomRoles.Jackal.IsEnable() && Jackal.OptionCanMakeSidekick.GetBool())
-        || JackalImpostorBase.AnyEnabledCanSidekick())
+        //サイドキックはジャッカルだけの能力
+        if (CustomRoles.Jackal.IsEnable() && Jackal.OptionCanMakeSidekick.GetBool())
         {
             //共通設定の最大人数をそのまま使う
             return OptionSideKickMaxmim.GetInt();
