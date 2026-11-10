@@ -42,11 +42,6 @@ public sealed class Bakery : RoleBase
         foreach (var pc in PlayerCatch.AllPlayerControls)
         {
             if (pc.GetCustomRole() is CustomRoles.Bakery) bakerycount++;
-            if (pc.GetCustomRole() is CustomRoles.AllArounder && AllArounder.RandomBakery.GetBool())
-            {
-                IsOnlyNomalMessage = true;
-                break;
-            }
         }
         if (bakerycount > 1) IsOnlyNomalMessage = true;
     }
@@ -132,10 +127,6 @@ public sealed class Bakery : RoleBase
     {
         var bakerys = PlayerCatch.AllAlivePlayerControls.Where(pc =>
         {
-            if (pc.GetRoleClass() is AllArounder allArounder)
-            {
-                return allArounder.NowRole is AllArounder.NowMode.Bakery && allArounder.CanUseAbility();
-            }
             return pc.GetCustomRole() is CustomRoles.Bakery;
         });
         if (bakerys.Count() <= 0) return "";

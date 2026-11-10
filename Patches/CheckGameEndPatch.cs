@@ -89,8 +89,7 @@ namespace TownOfHost
                         case CustomWinner.Crewmate:
                             PlayerCatch.AllPlayerControls
                                 .Where(pc => pc.Is(CustomRoleTypes.Crewmate) && !pc.GetCustomRole().IsLovers()
-                                && !pc.Is(CustomRoles.Amanojaku) && !pc.Is(CustomRoles.Jackaldoll) && !pc.Is(CustomRoles.SKMadmate)
-                                && ((pc.Is(CustomRoles.Staff) && (pc.GetRoleClass() as Staff).EndedTaskInAlive) || !pc.Is(CustomRoles.Staff)))
+                                && !pc.Is(CustomRoles.Amanojaku) && !pc.Is(CustomRoles.Jackaldoll) && !pc.Is(CustomRoles.SKMadmate))
                                 .Do(pc => CustomWinnerHolder.WinnerIds.Add(pc.PlayerId));
                             //if (Monochromer.CheckWin(reason)) break;
                             foreach (var pc in PlayerCatch.AllPlayerControls)
