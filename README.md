@@ -45,7 +45,7 @@
 
 
 # クレジット
-＜TownOfHost-K様が記載しているクレジットの引用（一部変更）＞
+＜TownOfHost-K様が記載しているクレジットの引用（一部変更）＞<br>
 ※このフォークでは、ここに書かれている役職・機能の一部を削除しています<br>
 
 [Town Of Host](https://github.com/tukasa0001/TownOfHost)<br>
