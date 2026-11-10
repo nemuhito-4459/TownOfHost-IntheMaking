@@ -1,11 +1,20 @@
-# TOHKのプライベートフォークです
+<p align="center">
+  <img src="Resources/IntheMaking/TitleLogo.png" alt="TownOfHost In the Making" width="600">
+</p>
+
+# TownOfHost-IntheMaking
+**TOHKのプライベートフォークです**<br>
 ビルドしたファイルは配布しません<br>
-絶対に何があってもこのMODによって発生したバグ等はTOHKに問い合わせないでください<br>
+絶対にこのMODによって発生したバグ等はTOHKに問い合わせないでください<br>
+
+- 表示は日本語のみです（日本語以外の翻訳は削除しています。）
+- 名前の「In the Making」は「作っている途中」の意味です。いつまでも作りかけです
 
 # Discord
-問い合わせはディスコへ<br>
-[dm](https://discord.com/users/1473675883981307916)<br>
-[server?](https://discord.gg/thggPFRCPw)<br>
+  問い合わせはディスコードへ<br>
+    [DM](https://discord.com/users/1473675883981307916)<br>
+    [Server](https://discord.gg/thggPFRCPw)<br>
+
 
 
 # フォーク元のTownOfHost-Kの開発者様
@@ -36,7 +45,8 @@
 
 
 # クレジット
-＜TownOfHost-K様が記載しているクレジットの引用（一部変更）です＞<br>
+＜TownOfHost-K様が記載しているクレジットの引用（一部変更）＞
+※このフォークでは、ここに書かれている役職・機能の一部を削除しています<br>
 
 [Town Of Host](https://github.com/tukasa0001/TownOfHost)<br>
 　TownOfHost-K様のFork元の本家です。
@@ -74,6 +84,11 @@ TOR_GM_Haoming_Edition<br>
 
 [ExtremeRoles](https://github.com/yukieiji/ExtremeRoles)<br>
 　アサシンとマーリンの参考/移植をさせていただきました。<br>
+
+ ＜当MODのクレジット＞<br>
+
+[EndlessHostRoles](https://github.com/gurge44/EndlessHostRoles)<br>
+　BepInEx（be.735）の環境づくりで参考にさせていただきました<br>
 
 
 [Mod Credit]<br>
