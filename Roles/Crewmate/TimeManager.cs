@@ -41,7 +41,7 @@ namespace TownOfHost.Roles.Crewmate
 
         private static void SetupOptionItem()
         {
-            OptionIncreaseMeetingTime = IntegerOptionItem.Create(RoleInfo, 10, OptionName.TimeManagerIncreaseMeetingTime, new(5, 30, 1), 15, false)
+            OptionIncreaseMeetingTime = IntegerOptionItem.Create(RoleInfo, 10, OptionName.TimeManagerIncreaseMeetingTime, new(1, 180, 1), 15, false)
                 .SetValueFormat(OptionFormat.Seconds);
         }
 

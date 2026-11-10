@@ -48,7 +48,7 @@ namespace TownOfHost.Roles.Impostor
         {
             OptionKillCooldown = FloatOptionItem.Create(RoleInfo, 10, GeneralOption.KillCooldown, new(0f, 180f, 0.5f), 30f, false)
                 .SetValueFormat(OptionFormat.Seconds);
-            OptionDecreaseMeetingTime = IntegerOptionItem.Create(RoleInfo, 11, OptionName.TimeThiefDecreaseMeetingTime, new(0, 100, 1), 20, false)
+            OptionDecreaseMeetingTime = IntegerOptionItem.Create(RoleInfo, 11, OptionName.TimeThiefDecreaseMeetingTime, new(1, 180, 1), 20, false)
                 .SetValueFormat(OptionFormat.Seconds);
             OptionReturnStolenTimeUponDeath = BooleanOptionItem.Create(RoleInfo, 12, OptionName.TimeThiefReturnStolenTimeUponDeath, true, false);
         }

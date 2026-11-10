@@ -70,7 +70,7 @@ public sealed class Balancer : RoleBase, ISelfVoter
 
     private static void SetupOptionItem()
     {
-        OptionMeetingTime = IntegerOptionItem.Create(RoleInfo, 10, Option.BalancerMeetingTime, new(15, 120, 1), 30, false)
+        OptionMeetingTime = IntegerOptionItem.Create(RoleInfo, 10, Option.BalancerMeetingTime, new(1, 240, 1), 30, false)
             .SetValueFormat(OptionFormat.Seconds);
         OptionCanUseAllAlive = BooleanOptionItem.Create(RoleInfo, 11, Option.BalancerCanUseAllAlive, false, false);
         OptionCanMeetingAbility = BooleanOptionItem.Create(RoleInfo, 12, Option.BalancerCanUseMeetingAbility, false, false);
