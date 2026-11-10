@@ -76,13 +76,14 @@ namespace TownOfHost
         /// <summary>
         /// 役職の秒数設定を「0.5秒刻み・0.5〜180秒」にそろえる。
         /// 0にオフ/無制限の意味がある設定は0を残して「∞」表記にする。
-        /// メイン設定と、最大値が180秒を超える設定は対象外(あとで個別に設定する)。
+        /// メイン設定は対象外。最大値が180秒を超えるものは、役職の設定だけ対象にする
+        /// (役職に属さない共通設定と、リミッターは元の範囲のまま)。
         /// </summary>
         public void NormalizeRoleSeconds()
         {
             if (ValueFormat != OptionFormat.Seconds) return;
             if (Tab is TabGroup.MainSettings) return;
-            if (Rule.MaxValue > 180f) return;
+            if (Rule.MaxValue > 180f && ParentRole is CustomRoles.NotAssigned or CustomRoles.Limiter) return;
 
             var keepZero = ZeroNotation is not OptionZeroNotation.None && Rule.MinValue <= 0f;
             var defaultSeconds = Rule.GetValueByIndex(DefaultValue);
