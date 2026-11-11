@@ -33,6 +33,7 @@ namespace TownOfHost
          *   生存時間 ÷ 試合時間 × (賭けた人が勝ったなら、その人の基本レート)
          * 【負けた】
          *   － 基本レート × 0.75 (死んでいて賭けた人が勝ったなら、上の死亡時の分は足す)
+         *   それでプラスになったときは、その2割だけ
          * 最後に小数点以下を四捨五入
          */
         /// <summary>基本値(勝ったとき)</summary>
@@ -60,6 +61,8 @@ namespace TownOfHost
         const float MadmateShareRate = 0.1f;
         /// <summary>負けたときに減る割合(基本レートの0.75倍)</summary>
         const float LoseRate = 0.75f;
+        /// <summary>負けたのにプラスになったとき、もらえる割合</summary>
+        const float LosePlusRate = 0.2f;
         /// <summary>最初のレート</summary>
         const int StartRating = 1000;
         /// <summary>陣営ごとの倍率(勝ったとき, 負けたとき)。勝ちの倍率が高い陣営は負けの倍率も高い</summary>
@@ -274,6 +277,12 @@ namespace TownOfHost
                 {
                     value = -baseRate * LoseRate + deadPart;
                     detail = $"基本レート {baseRate:0.#} × 0.75 を失った";
+                    //負けたのにプラスになったときは2割だけ
+                    if (value > 0)
+                    {
+                        value *= LosePlusRate;
+                        detail += $"\n負けたけどプラスなので2割だけ";
+                    }
                 }
                 else if (!alive)
                 {
