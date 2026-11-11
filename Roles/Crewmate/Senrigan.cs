@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using AmongUs.GameOptions;
 using UnityEngine;
 
@@ -9,9 +10,8 @@ namespace TownOfHost.Roles.Crewmate;
 
 /// <summary>
 /// 千里眼<br/>
-/// ・クールダウンが明けた瞬間の全員の居場所(部屋)が、本人の画面の名前の横に出る<br/>
-///   (シェイプシフトの画面を開くと、全員の居場所の一覧として見られる)<br/>
-/// ・シェイプシフトの画面で誰かを選ぶと居場所が消えて、もう一度クールダウン(変身はしない)<br/>
+/// ・クールダウンが明けた瞬間の全員の居場所を、誰かは出さずに北から順に、自分の名前の下に出す(本人の画面だけ)<br/>
+/// ・シェイプシフトの画面で誰かを選ぶと表示が消えて、もう一度クールダウン(変身はしない)<br/>
 /// ・次にクールダウンが明けたら、その瞬間の居場所に更新される
 /// </summary>
 public sealed class Senrigan : RoleBase, IKiller
@@ -57,8 +57,8 @@ public sealed class Senrigan : RoleBase, IKiller
     /// <summary>クールダウンの残り(ホストで数える)</summary>
     float timer;
     int usedCount;
-    /// <summary>クールダウンが明けた瞬間の居場所。null なら見えていない</summary>
-    Dictionary<byte, string> snapshot;
+    /// <summary>クールダウンが明けた瞬間の居場所(北から順、誰かは出さない)。null なら見えていない</summary>
+    string snapshot;
 
     bool HasUseLeft => UseLimit.GetInt() == 0 || usedCount < UseLimit.GetInt();
 
@@ -71,7 +71,6 @@ public sealed class Senrigan : RoleBase, IKiller
     public override bool OnInvokeSabotage(SystemTypes systemType) => false;
 
     public override bool CanUseAbilityButton() => HasUseLeft;
-    public override bool NotifyRolesCheckOtherName => true;
 
     public override void ApplyGameOptions(IGameOptions opt)
     {
@@ -101,14 +100,23 @@ public sealed class Senrigan : RoleBase, IKiller
 
     void TakeSnapshot()
     {
-        snapshot = new();
-        foreach (var pc in PlayerCatch.AllAlivePlayerControls)
+        //北(上)にいる人から順に、場所だけを並べる。同じ場所が続いたら「×人数」にまとめる
+        var rooms = new List<(string room, int count)>();
+        foreach (var pc in PlayerCatch.AllAlivePlayerControls
+            .Where(pc => pc != null && pc.PlayerId != Player.PlayerId)
+            .OrderByDescending(pc => pc.transform.position.y))
         {
-            if (pc == null || pc.PlayerId == Player.PlayerId) continue;
             var room = pc.GetShipRoomName();
-            snapshot[pc.PlayerId] = room == "" ? "？" : room;
+            if (room == "") room = "？";
+            if (rooms.Count > 0 && rooms[^1].room == room) rooms[^1] = (room, rooms[^1].count + 1);
+            else rooms.Add((room, 1));
         }
-        Logger.Info($"{Player.Data.GetLogPlayerName()} の千里眼: {string.Join(", ", snapshot)}", "Senrigan");
+        var parts = rooms.Select(r => r.count > 1 ? $"{r.room}×{r.count}" : r.room).ToList();
+        //4つごとに改行
+        var lines = new List<string>();
+        for (var i = 0; i < parts.Count; i += 4) lines.Add(string.Join("、", parts.Skip(i).Take(4)));
+        snapshot = lines.Count == 0 ? "（だれもいない）" : string.Join("\n", lines);
+        Logger.Info($"{Player.Data.GetLogPlayerName()} の千里眼(北から): {string.Join(" / ", parts)}", "Senrigan");
         UtilsNotifyRoles.NotifyRoles(SpecifySeer: Player);
     }
 
@@ -126,11 +134,11 @@ public sealed class Senrigan : RoleBase, IKiller
         return false;//変身はしない
     }
 
-    public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
+    /// <summary>自分の名前の下に、北から順の場所を出す(自分の画面だけ)</summary>
+    public override string GetSuffix(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     {
-        if (isForMeeting || seen == null || seen == seer || !Is(seer)) return "";
-        if (snapshot == null || !snapshot.TryGetValue(seen.PlayerId, out var room)) return "";
-        return $"<size=70%>{Utils.ColorString(RoleInfo.RoleColor, $"({room})")}</size>";
+        if (isForMeeting || (seen != null && seen != seer) || !Is(seer) || snapshot == null) return "";
+        return $"<size=60%>{Utils.ColorString(RoleInfo.RoleColor, $"北から：{snapshot}")}</size>";
     }
 
     public override string GetProgressText(bool comms = false, bool GameLog = false)
