@@ -124,19 +124,22 @@ namespace TownOfHost
         }
 
         /// <summary>ランクの文字(色つき)</summary>
-        public static string RankText(Data d)
+        /// <param name="prefix">ランクの前に付ける文字(ロビーの表示では「レート」)</param>
+        public static string RankText(Data d, string prefix = "")
         {
-            if (d == null || d.Games == 0) return "<#9e9e9e>B</color>";
+            if (d == null || d.Games == 0) return $"<#9e9e9e>{prefix}B</color>";
             return d.Rating switch
             {
-                < 500 => "<#5fd35f>A</color>",
-                < 1000 => "<#3fd0ff>A+</color>",
-                < 1500 => "<#ffd84a>S</color>",
-                < 2000 => "<#ff8a3d>S+</color>",
-                _ => $"<#d27cff>{d.Rating}</color>",
+                < 500 => $"<#5fd35f>{prefix}A</color>",
+                < 1000 => $"<#3fd0ff>{prefix}A+</color>",
+                < 1500 => $"<#ffd84a>{prefix}S</color>",
+                < 2000 => $"<#ff8a3d>{prefix}S+</color>",
+                _ => $"<#d27cff>{prefix}{d.Rating}</color>",
             };
         }
         public static string RankText(PlayerControl pc) => RankText(Get(pc?.GetClient()?.FriendCode));
+        /// <summary>ロビーで名前の上に出す文字(「レートB」「レート3000」など)</summary>
+        public static string LobbyRankText(PlayerControl pc) => RankText(Get(pc?.GetClient()?.FriendCode), "レート");
 
         // ------------------ 試合 ------------------
         /// <summary>試合に出ていた人(プレイヤーID → フレンドコード・名前)</summary>
@@ -225,7 +228,7 @@ namespace TownOfHost
                 if (target.PlayerId == PlayerControl.LocalPlayer.PlayerId) continue;//ホストの名前は ApplySuffix で付けている
                 var name = target.Data?.PlayerName;
                 if (string.IsNullOrEmpty(name)) continue;
-                var text = LobbyName(name, RankText(target));
+                var text = LobbyName(name, LobbyRankText(target));
                 foreach (var seer in PlayerCatch.AllPlayerControls)
                 {
                     if (seer == null || seer.PlayerId == PlayerControl.LocalPlayer.PlayerId || seer.IsModClient()) continue;
