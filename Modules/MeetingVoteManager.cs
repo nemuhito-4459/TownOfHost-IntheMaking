@@ -166,6 +166,7 @@ public class MeetingVoteManager
     public void EndMeeting(bool applyVoteMode = true, bool ClearAndExile = false)
     {
         PredictionManager.OnMeetingEnd();//死亡後の勝者予想の締め切り
+        RatingManager.OnMeetingVotes(AllVotes.Values);//人外に投票した回数(レート)
         var result = CountVotes(applyVoteMode, ClearAndExile);
         var logName = result.Exiled == null ? (result.IsTie ? "同数" : "スキップ") : result.Exiled.Object.GetNameWithRole().RemoveHtmlTags();
         logger.Info($"追放者: {logName} で会議を終了します");

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 
 using TownOfHost.Attributes;
+using TownOfHost.Modules;
 using TownOfHost.Roles.Core;
 using static TownOfHost.Utils;
 
@@ -21,30 +22,37 @@ namespace TownOfHost
     public static class RatingManager
     {
         // ====== 数値(ここを変えると調整できる) ======
-        /// <summary>勝ったときの増加量(ランクごと、10分の試合での値)</summary>
-        static int WinBase(int rating) => rating switch
+        /*
+         * 【勝って生き残った】
+         *   基本レート = 試合時間 × 陣営ボーナス × ランク補正 × 基本値
+         *   クルーメイト         ＋ 人外に投票した回数 × 基本値 × タスク完了割合
+         *   キルできる人外       ＋ キルした回数 × 基本値 × 0.6
+         *   キルできない人外     ＋ 自分に賭けた人数 × 1.2
+         * 【勝って死んでいた】
+         *   生存時間 ÷ 試合時間 × (賭けた人が勝ったなら、その人の基本レート)
+         * 【負けた】
+         *   － 基本レート × 0.5 (死んでいて賭けた人が勝ったなら、上の死亡時の分は足す)
+         * 最後に小数点以下を四捨五入
+         */
+        /// <summary>基本値</summary>
+        const float BaseValue = 10f;
+        /// <summary>試合時間の倍率。10分で1倍、20分で2倍…</summary>
+        static float TimeRate(double minutes) => (float)(minutes / 10.0);
+        /// <summary>ランク補正</summary>
+        static float RankRate(int rating) => rating switch
         {
-            < 500 => 40,   //A
-            < 1000 => 30,  //A+
-            < 1500 => 25,  //S
-            < 2000 => 20,  //S+
-            _ => 15,       //2000～
+            < 500 => 1.5f,   //A(Bも)
+            < 1000 => 1.2f,  //A+
+            < 1500 => 1.0f,  //S
+            < 2000 => 0.8f,  //S+
+            _ => 0.75f,      //2000～
         };
-        /// <summary>試合時間の倍率(勝ったときだけ)。10分で1倍、0.5～2倍</summary>
-        static float TimeRate(double minutes) => Math.Clamp((float)(minutes / 10.0), 0.5f, 2f);
-        /// <summary>負けたときの減少量</summary>
-        const int LoseAmount = 20;
-        /// <summary>勝者予想が当たったときの割合(勝ったときの増加量の1割)</summary>
-        const float PredictionRate = 0.1f;
-        /// <summary>勝ったときに、最後まで生きていた人の倍率</summary>
-        const float AliveRate = 1.5f;
-        /// <summary>勝ったときに、死んでいた人の倍率の最小(生きていた時間の割合がこれより小さくても、これだけはもらえる)</summary>
-        const float MinSurviveRate = 0.3f;
-        /// <summary>
-        /// 生存の倍率(勝ったときだけ)<br/>
-        /// 最後まで生きていたら1.5倍。死んでいたら、試合の中で生きていた時間の割合(0.3～1倍)
-        /// </summary>
-        static float SurviveRate(bool alive, double aliveRatio) => alive ? AliveRate : Math.Clamp((float)aliveRatio, MinSurviveRate, 1f);
+        /// <summary>キルできる人外の、1キルあたりの倍率</summary>
+        const float KillRate = 0.6f;
+        /// <summary>キルできない人外の、自分に賭けた人1人あたりの量</summary>
+        const float BettorRate = 1.2f;
+        /// <summary>負けたときに減る割合(基本レートの5割)</summary>
+        const float LoseRate = 0.5f;
         /// <summary>陣営ごとの倍率(勝ったとき, 負けたとき)。勝ちの倍率が高い陣営は負けの倍率も高い</summary>
         static (float win, float lose) FactionRate(Faction f) => f switch
         {
@@ -161,6 +169,20 @@ namespace TownOfHost
             if (!counting || deathTimes.ContainsKey(playerId)) return;
             deathTimes[playerId] = DateTime.Now;
         }
+        /// <summary>人外(クルーメイト以外)に投票した回数</summary>
+        static Dictionary<byte, int> badVotes = new();
+        /// <summary>会議の投票が締め切られたとき(ホスト)。人外に投票した人を数える</summary>
+        public static void OnMeetingVotes(IEnumerable<MeetingVoteManager.VoteData> votes)
+        {
+            if (!counting) return;
+            foreach (var v in votes)
+            {
+                if (v == null || v.VotedFor >= 253) continue;
+                var role = PlayerState.GetByPlayerId(v.VotedFor)?.MainRole ?? CustomRoles.NotAssigned;
+                if (role is CustomRoles.NotAssigned || role.IsCrewmate()) continue;
+                badVotes[v.Voter] = badVotes.GetValueOrDefault(v.Voter) + 1;
+            }
+        }
         static DateTime startTime;
         static bool counting;
 
@@ -169,6 +191,7 @@ namespace TownOfHost
         {
             participants = new();
             deathTimes = new();
+            badVotes = new();
             counting = false;
             if (!AmongUsClient.Instance.AmHost || GameStates.IsFreePlay) return;
             if (Options.CurrentGameMode != CustomGameMode.Standard) return;
@@ -196,30 +219,90 @@ namespace TownOfHost
             if (CustomWinnerHolder.WinnerTeam is CustomWinner.Draw or CustomWinner.None) return;
 
             var minutes = (DateTime.Now - startTime).TotalMinutes;
-            var results = new Dictionary<byte, (Data data, int before, int diff, bool win, int bonus, Faction faction, float survive)>();
+            var time = TimeRate(minutes);
+            //試合前のレート(計算の途中で変わらないように先に控えておく)
+            var ratingBefore = participants.ToDictionary(kv => kv.Key, kv => Get(kv.Value.Code)?.Rating ?? 0);
+            //基本レート = 試合時間 × 陣営ボーナス × ランク補正 × 基本値
+            float BaseRate(byte id)
+            {
+                var rating = ratingBefore.GetValueOrDefault(id);
+                return time * FactionRate(GetFaction(id)).win * RankRate(rating) * BaseValue;
+            }
+            //自分に賭けた人数
+            int Bettors(byte id) => PredictionManager.Predictions.Count(kv => kv.Value == id && kv.Key != id);
+
+            var results = new Dictionary<byte, (Data data, int before, int diff, bool win, Faction faction, string detail)>();
             foreach (var (id, (code, name)) in participants)
             {
                 var d = GetOrCreate(code, name);
                 var before = d.Rating;
                 var win = Main.winnerList.Contains(id);
                 var faction = GetFaction(id);
-                var (winRate, loseRate) = FactionRate(faction);
-                //生存の倍率(勝ったときだけ)
-                var alive = PlayerState.GetByPlayerId(id)?.IsDead == false;
-                var aliveRatio = deathTimes.TryGetValue(id, out var dt) && minutes > 0 ? (dt - startTime).TotalMinutes / minutes : (alive ? 1.0 : 0.0);
-                var survive = SurviveRate(alive, aliveRatio);
-                var diff = win ? (int)Math.Round(WinBase(d.Rating) * TimeRate(minutes) * winRate * survive) : -(int)Math.Round(LoseAmount * loseRate);
+                var state = PlayerState.GetByPlayerId(id);
+                var alive = state?.IsDead == false;
+                var baseRate = BaseRate(id);
 
-                //死亡後の勝者予想
-                var bonus = 0;
-                if (PredictionManager.Predictions.TryGetValue(id, out var predicted) && Main.winnerList.Contains(predicted))
-                    bonus = Math.Max(1, (int)Math.Round(WinBase(d.Rating) * TimeRate(minutes) * PredictionRate));
+                //死んでいた人：生存時間 ÷ 試合時間 × (賭けた人が勝ったなら、その人の基本レート)
+                var deadPart = 0f;
+                var predictedWin = false;
+                if (!alive && PredictionManager.Predictions.TryGetValue(id, out var predicted) && Main.winnerList.Contains(predicted))
+                {
+                    predictedWin = true;
+                    var aliveRatio = deathTimes.TryGetValue(id, out var dt) && minutes > 0 ? Math.Clamp((dt - startTime).TotalMinutes / minutes, 0, 1) : 0;
+                    deadPart = (float)aliveRatio * BaseRate(predicted);
+                }
 
-                d.Rating = Math.Max(0, d.Rating + diff + bonus);
+                float value;
+                string detail;
+                if (!win)
+                {
+                    value = -baseRate * LoseRate + deadPart;
+                    detail = $"基本レート {baseRate:0.#} の半分を失った";
+                }
+                else if (!alive)
+                {
+                    value = deadPart;
+                    detail = "死んでいたので、勝者予想の分だけ";
+                }
+                else
+                {
+                    value = baseRate;
+                    detail = $"生き残った！ 基本レート {baseRate:0.#}";
+                    if (faction == Faction.Crewmate)
+                    {
+                        //人外に投票した回数 × 基本値 × タスク完了割合
+                        var votes = badVotes.GetValueOrDefault(id);
+                        var ts = state?.GetTaskState();
+                        var taskRatio = ts == null || ts.AllTasksCount <= 0 ? 0f : (float)ts.CompletedTasksCount / ts.AllTasksCount;
+                        var add = votes * BaseValue * taskRatio;
+                        value += add;
+                        if (add > 0) detail += $"\n人外に投票 {votes}回 × タスク {taskRatio * 100:0}%（+{add:0.#}）";
+                    }
+                    else if (CanKill(id))
+                    {
+                        //キルした回数 × 基本値 × 0.6
+                        var kills = PlayerState.AllPlayerStates.Values.Count(ps => ps.GetRealKiller() == id && ps.PlayerId != id);
+                        var add = kills * BaseValue * KillRate;
+                        value += add;
+                        if (add > 0) detail += $"\nキル {kills}回（+{add:0.#}）";
+                    }
+                    else
+                    {
+                        //自分に賭けた人数 × 1.2
+                        var bettors = Bettors(id);
+                        var add = bettors * BettorRate;
+                        value += add;
+                        if (add > 0) detail += $"\n自分に賭けた人 {bettors}人（+{add:0.#}）";
+                    }
+                }
+                if (predictedWin) detail += $"\n勝者予想が当たった！（+{deadPart:0.#}）";
+
+                var diff = (int)Math.Round(value, MidpointRounding.AwayFromZero);
+                d.Rating = Math.Max(0, d.Rating + diff);
                 d.Games++;
                 if (win) d.Wins++;
-                results[id] = (d, before, d.Rating - before, win, bonus, faction, survive);
-                Logger.Info($"{name}: {before} → {d.Rating} ({faction} 勝ち:{win} 生存:{survive:0.00} 予想:{bonus})", "Rating");
+                results[id] = (d, before, d.Rating - before, win, faction, detail);
+                Logger.Info($"{name}: {before} → {d.Rating} ({faction} 勝ち:{win} 生存:{alive} 値:{value:0.00})", "Rating");
             }
             Save();
 
@@ -230,11 +313,19 @@ namespace TownOfHost
                 var sb = new StringBuilder();
                 sb.Append($"{FactionNames[(int)r.faction]}で{(r.win ? "勝利" : "敗北")}\n");
                 sb.Append($"レート {r.before} → {r.data.Rating}（{(r.diff >= 0 ? "+" : "")}{r.diff}）\n");
-                sb.Append($"ランク {RankText(r.data)}");
-                if (r.win) sb.Append(r.survive >= AliveRate ? $"\n最後まで生き残った！（×{AliveRate}）" : $"\n生きていた時間の割合（×{r.survive:0.0#}）");
-                if (r.bonus > 0) sb.Append($"\n勝者予想が当たった！（+{r.bonus}）");
+                sb.Append($"ランク {RankText(r.data)}\n");
+                sb.Append($"<size=80%>{r.detail}</size>");
                 SendMessage(sb.ToString(), id, "<#ffd84a>【レート】</color>");
             }
+        }
+
+        /// <summary>キルできる役職か</summary>
+        static bool CanKill(byte id)
+        {
+            var pc = PlayerCatch.GetPlayerById(id);
+            if (pc?.GetRoleClass() is Roles.Core.Interfaces.IKiller killer) return killer.CanKill;
+            var role = PlayerState.GetByPlayerId(id)?.MainRole ?? CustomRoles.Crewmate;
+            return role.IsImpostor();
         }
 
         // ------------------ ロビーの表示 ------------------
