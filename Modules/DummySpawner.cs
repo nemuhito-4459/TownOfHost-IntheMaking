@@ -139,6 +139,7 @@ namespace TownOfHost
             b.text = text;
             b.transform.localPosition = new Vector3(x, 0f, -1f);
             b.transform.localScale = Vector3.one;
+            b.alignment = TextAlignmentOptions.Center;//位置の真ん中に文字を出す
             b.gameObject.AddComponent<BoxCollider2D>().size = new Vector2(0.5f, 0.5f);
             var button = b.gameObject.AddComponent<PassiveButton>();
             button.OnClick = new();
@@ -156,8 +157,33 @@ namespace TownOfHost
         /// <summary>GameStartManager.Update のあとに呼ぶ。部屋番号の代わりにダミーの数を出す</summary>
         public static void UpdateLobbyUI(GameStartManager gsm)
         {
-            if (minus == null || !GameStates.IsLocalGame) return;
-            gsm.GameRoomNameCode.text = $"ダミー {Main.LocalDummyCount.Value}";
+            if (minus == null || plus == null || !GameStates.IsLocalGame) return;
+            var code = gsm.GameRoomNameCode;
+            code.text = $"ダミー {Main.LocalDummyCount.Value}";
+            HideLocalTitle(code);
+            //「－」「＋」を、文字の実際の左端・右端のすぐ外に置く
+            code.ForceMeshUpdate();
+            var bounds = code.textBounds;
+            if (bounds.size.x > 0f)
+            {
+                minus.transform.localPosition = new Vector3(bounds.min.x - 0.3f, bounds.center.y, -1f);
+                plus.transform.localPosition = new Vector3(bounds.max.x + 0.3f, bounds.center.y, -1f);
+            }
+        }
+        /// <summary>同じ場所に重なって出る「ローカルロビー」の文字を隠す</summary>
+        static void HideLocalTitle(TextMeshPro code)
+        {
+            //同じパネルの中を探す(親の親から)
+            var parent = code.transform.parent?.parent ?? code.transform.parent;
+            if (parent == null) return;
+            foreach (var tmp in parent.GetComponentsInChildren<TextMeshPro>())
+            {
+                if (tmp == null || tmp == code || tmp.transform.IsChildOf(code.transform)) continue;
+                if (!tmp.enabled) continue;
+                var t = tmp.text ?? "";
+                //プライバシーの「ローカル」は消さないように、「ローカルロビー」だけ
+                if ((t.Contains("ローカル") && t.Contains("ロビー")) || t.ToLower().Contains("local lobby")) tmp.enabled = false;
+            }
         }
 
         /// <summary>ホストのコマンド「/dummy [体数] [norole]」</summary>
