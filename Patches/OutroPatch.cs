@@ -132,6 +132,8 @@ namespace TownOfHost
                 EndGameResult.CachedWinners.Add(new CachedPlayerData(pc.Data));
                 Main.winnerList.Add(pc.PlayerId);
             }
+            //レートの計算(勝者が決まったあと)
+            RatingManager.OnGameEnd();
 
             Main.VisibleTasksCount = false;
             if (AmongUsClient.Instance.AmHost)

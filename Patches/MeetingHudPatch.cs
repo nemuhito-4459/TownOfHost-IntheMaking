@@ -40,6 +40,8 @@ public static class MeetingHudPatch
         public static bool Prefix(MeetingHud __instance, [HarmonyArgument(0)] PlayerId srcPlayerId /* 投票した人 */ , [HarmonyArgument(1)] PlayerId suspectPlayerId /* 投票された人 */ )
         {
             if (AmongUsClient.Instance.AmHost is false) return true;
+            //死亡後の勝者予想の票は、普通の投票として扱わない
+            if (PredictionManager.TryPredict(__instance, srcPlayerId, suspectPlayerId)) return false;
             if (Options.firstturnmeeting && Options.FirstTurnMeetingCantability.GetBool() && MeetingStates.FirstMeeting)
             {
                 MeetingVoteManager.Instance?.SetVote(srcPlayerId, 253);
@@ -176,6 +178,7 @@ public static class MeetingHudPatch
         public static void Postfix(MeetingHud __instance)
         {
             MeetingVoteManager.Start();
+            PredictionManager.OnMeetingStarted();//死亡後の勝者予想の案内
 
             SoundManager.Instance.ChangeAmbienceVolume(0f);
             if (!GameStates.IsModHost) return;

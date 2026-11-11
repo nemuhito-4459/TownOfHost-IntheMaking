@@ -248,6 +248,9 @@ namespace TownOfHost
             bool IsMeetingBlackout = Options.ExCallMeetingBlackout.GetBool() || CustomRoles.Monochromer.IsEnable() || GameStates.AlreadyDied;
             IsMeetingBlackout &= (Options.firstturnmeeting && MeetingStates.FirstMeeting) is false;
 
+            //死亡後の勝者予想: 予想できる人を本人の画面で生きているように見せる
+            //(会議中の名前の更新より先に届くように、早めに送る)
+            PredictionManager.BeforeMeetingStart();
             DisableDevice.StartMeeting();
             foreach (var kvp in PlayerState.AllPlayerStates)
             {

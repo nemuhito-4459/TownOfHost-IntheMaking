@@ -141,6 +141,16 @@ namespace TownOfHost
             {
                 switch (args[0])
                 {
+                    //レート(部屋にいる全員)
+                    case "/rate":
+                        canceled = true;
+                        SendMessage(RatingManager.ShowAllText(), PlayerControl.LocalPlayer.PlayerId);
+                        break;
+                    //死亡後の勝者予想(ホストは投票できないのでコマンド)
+                    case "/yosou":
+                        canceled = true;
+                        PredictionManager.HostCommand(args);
+                        break;
                     //モデレーターの追加・削除・一覧
                     case "/mod":
                         canceled = true;
@@ -1436,6 +1446,10 @@ namespace TownOfHost
                         player.RpcProtectedMurderPlayer();
                     }
                     canceled = true;
+                    break;
+                //自分のレート
+                case "/rate":
+                    SendMessage(RatingManager.ShowText(player), player.PlayerId);
                     break;
                 //モデレーターのコマンド
                 case "/kick":

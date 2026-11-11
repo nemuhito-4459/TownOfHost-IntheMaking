@@ -367,6 +367,7 @@ namespace TownOfHost
 
                 PlayerControl.LocalPlayer.RpcSyncSettings(GameOptionsManager.Instance.gameOptionsFactory.ToBytes(opt, AprilFoolsMode.IsAprilFoolsModeToggledOn));
 
+                RatingManager.RestoreLobbyNames();//名前の上のランクを外す
                 __instance.ReallyBegin(false);
                 TemplateManager.SendTemplate("Start", noErr: true);
                 PlayerCatch.AllPlayerControls.Do(pc => Utils.ApplySuffix(pc, false, true));
