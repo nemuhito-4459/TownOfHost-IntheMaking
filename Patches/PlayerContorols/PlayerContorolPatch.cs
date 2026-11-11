@@ -90,6 +90,8 @@ namespace TownOfHost
                         if (__instance.GetCustomRole().IsImpostor() || ((__instance.GetRoleClass() as IKiller)?.CanUseSabotageButton() ?? false))
                             _ = new LateTask(() =>
                             {
+                                //0.2秒の間に試合が終わっていたら何もしない(終わったときの役職(勝ち負けの表示)を上書きしてしまうため)
+                                if (CustomWinnerHolder.WinnerTeam != CustomWinner.Default || GameStates.IsLobby || !GameStates.InGame) return;
                                 if (!GameStates.CalledMeeting && !AntiBlackout.IsSet)
                                 {
                                     __instance.RpcSetRole(RoleTypes.ImpostorGhost, true);
