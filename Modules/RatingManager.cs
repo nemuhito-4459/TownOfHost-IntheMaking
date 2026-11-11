@@ -36,6 +36,15 @@ namespace TownOfHost
         const int LoseAmount = 20;
         /// <summary>勝者予想が当たったときの割合(勝ったときの増加量の1割)</summary>
         const float PredictionRate = 0.1f;
+        /// <summary>勝ったときに、最後まで生きていた人の倍率</summary>
+        const float AliveRate = 1.5f;
+        /// <summary>勝ったときに、死んでいた人の倍率の最小(生きていた時間の割合がこれより小さくても、これだけはもらえる)</summary>
+        const float MinSurviveRate = 0.3f;
+        /// <summary>
+        /// 生存の倍率(勝ったときだけ)<br/>
+        /// 最後まで生きていたら1.5倍。死んでいたら、試合の中で生きていた時間の割合(0.3～1倍)
+        /// </summary>
+        static float SurviveRate(bool alive, double aliveRatio) => alive ? AliveRate : Math.Clamp((float)aliveRatio, MinSurviveRate, 1f);
         /// <summary>陣営ごとの倍率(勝ったとき, 負けたとき)。勝ちの倍率が高い陣営は負けの倍率も高い</summary>
         static (float win, float lose) FactionRate(Faction f) => f switch
         {
@@ -144,6 +153,14 @@ namespace TownOfHost
         // ------------------ 試合 ------------------
         /// <summary>試合に出ていた人(プレイヤーID → フレンドコード・名前)</summary>
         static Dictionary<byte, (string Code, string Name)> participants = new();
+        /// <summary>死んだ時刻(生存の倍率に使う)</summary>
+        static Dictionary<byte, DateTime> deathTimes = new();
+        /// <summary>死んだとき(ホスト)。最初に死んだ時刻だけ記録する</summary>
+        public static void OnDead(byte playerId)
+        {
+            if (!counting || deathTimes.ContainsKey(playerId)) return;
+            deathTimes[playerId] = DateTime.Now;
+        }
         static DateTime startTime;
         static bool counting;
 
@@ -151,6 +168,7 @@ namespace TownOfHost
         public static void OnGameStart()
         {
             participants = new();
+            deathTimes = new();
             counting = false;
             if (!AmongUsClient.Instance.AmHost || GameStates.IsFreePlay) return;
             if (Options.CurrentGameMode != CustomGameMode.Standard) return;
@@ -178,7 +196,7 @@ namespace TownOfHost
             if (CustomWinnerHolder.WinnerTeam is CustomWinner.Draw or CustomWinner.None) return;
 
             var minutes = (DateTime.Now - startTime).TotalMinutes;
-            var results = new Dictionary<byte, (Data data, int before, int diff, bool win, int bonus, Faction faction)>();
+            var results = new Dictionary<byte, (Data data, int before, int diff, bool win, int bonus, Faction faction, float survive)>();
             foreach (var (id, (code, name)) in participants)
             {
                 var d = GetOrCreate(code, name);
@@ -186,7 +204,11 @@ namespace TownOfHost
                 var win = Main.winnerList.Contains(id);
                 var faction = GetFaction(id);
                 var (winRate, loseRate) = FactionRate(faction);
-                var diff = win ? (int)Math.Round(WinBase(d.Rating) * TimeRate(minutes) * winRate) : -(int)Math.Round(LoseAmount * loseRate);
+                //生存の倍率(勝ったときだけ)
+                var alive = PlayerState.GetByPlayerId(id)?.IsDead == false;
+                var aliveRatio = deathTimes.TryGetValue(id, out var dt) && minutes > 0 ? (dt - startTime).TotalMinutes / minutes : (alive ? 1.0 : 0.0);
+                var survive = SurviveRate(alive, aliveRatio);
+                var diff = win ? (int)Math.Round(WinBase(d.Rating) * TimeRate(minutes) * winRate * survive) : -(int)Math.Round(LoseAmount * loseRate);
 
                 //死亡後の勝者予想
                 var bonus = 0;
@@ -196,8 +218,8 @@ namespace TownOfHost
                 d.Rating = Math.Max(0, d.Rating + diff + bonus);
                 d.Games++;
                 if (win) d.Wins++;
-                results[id] = (d, before, d.Rating - before, win, bonus, faction);
-                Logger.Info($"{name}: {before} → {d.Rating} ({faction} 勝ち:{win} 予想:{bonus})", "Rating");
+                results[id] = (d, before, d.Rating - before, win, bonus, faction, survive);
+                Logger.Info($"{name}: {before} → {d.Rating} ({faction} 勝ち:{win} 生存:{survive:0.00} 予想:{bonus})", "Rating");
             }
             Save();
 
@@ -209,6 +231,7 @@ namespace TownOfHost
                 sb.Append($"{FactionNames[(int)r.faction]}で{(r.win ? "勝利" : "敗北")}\n");
                 sb.Append($"レート {r.before} → {r.data.Rating}（{(r.diff >= 0 ? "+" : "")}{r.diff}）\n");
                 sb.Append($"ランク {RankText(r.data)}");
+                if (r.win) sb.Append(r.survive >= AliveRate ? $"\n最後まで生き残った！（×{AliveRate}）" : $"\n生きていた時間の割合（×{r.survive:0.0#}）");
                 if (r.bonus > 0) sb.Append($"\n勝者予想が当たった！（+{r.bonus}）");
                 SendMessage(sb.ToString(), id, "<#ffd84a>【レート】</color>");
             }

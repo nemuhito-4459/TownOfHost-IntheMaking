@@ -141,6 +141,7 @@ namespace TownOfHost
             IsDead = true;
             if (AmongUsClient.Instance.AmHost)
             {
+                RatingManager.OnDead(PlayerId);//レートの生存の倍率に使う
                 RPC.SendDeathReason(PlayerId, DeathReason);
             }
         }

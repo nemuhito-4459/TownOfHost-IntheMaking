@@ -85,13 +85,27 @@ namespace TownOfHost
         public static void OnMeetingStarted()
         {
             if (!AmongUsClient.Instance.AmHost) return;
-            foreach (var id in eligible)
+            //会議の始めのほかのメッセージに埋もれないように、少し待ってから送る
+            foreach (var id in eligible.ToArray())
             {
                 var text = id == PlayerControl.LocalPlayer.PlayerId
-                    ? "勝者予想ができます。\n「/yosou 名前」で勝つと思う人を選んでください（この会議の終わりまで）"
-                    : "勝者予想ができます。\n勝つと思う人に投票してください（この会議の終わりまで）\nスキップに投票すると取り消し";
-                SendMessage(text, id, "<#ffd84a>【勝者予想】</color>");
+                    ? "死んだあとの最初の会議なので、勝者予想ができます。\n\n「/yosou 名前」で、勝つと思う人を選んでください。\n・もう一度打つと変えられます。「/yosou」だけで取り消し\n・締め切りはこの会議の終わりまで\n・当たると、試合のあとのレートが少し増えます"
+                    : "あなたは死んでいますが、死んだあとの最初の会議なので、勝者予想ができます。\nこの会議の間だけ、自分の画面では生きているように見えています（バグではありません）。\n\n勝つと思う人に投票してください。\n・この票はほかの人には見えず、追放にも関係しません\n・もう一度投票すると変えられます。スキップに投票すると取り消し\n・締め切りはこの会議の終わりまで\n・当たると、試合のあとのレートが少し増えます";
+                _ = new LateTask(() =>
+                {
+                    if (!GameStates.IsMeeting || !eligible.Contains(id)) return;
+                    SendMessage(text, id, Title);
+                }, 2f, "PredictionNotice", true);
             }
+        }
+        const string Title = "<#ffd84a>【勝者予想タイム】</color>";
+
+        /// <summary>会議中、予想できる人の名前の下に出す(本人の画面だけ)</summary>
+        public static string MeetingSelfText(PlayerControl seer)
+        {
+            if (seer == null || !eligible.Contains(seer.PlayerId)) return "";
+            var how = seer.PlayerId == PlayerControl.LocalPlayer.PlayerId ? "「/yosou 名前」で予想" : "勝つと思う人に投票";
+            return $"<size=70%><#ffd84a>【勝者予想タイム】{how}</color></size>";
         }
 
         /// <summary>CastVote の最初で呼ぶ。予想の票なら true(普通の投票として扱わない)</summary>
@@ -104,13 +118,13 @@ namespace TownOfHost
             if (targetId is MeetingVoteManager.Skip or MeetingVoteManager.NoVote || targetId == voterId)
             {
                 Predictions.Remove(voterId);
-                SendMessage("勝者予想を取り消しました", voterId, "<#ffd84a>【勝者予想】</color>");
+                SendMessage("勝者予想を取り消しました", voterId, Title);
             }
             else
             {
                 Predictions[voterId] = targetId;
                 var target = PlayerCatch.GetPlayerById(targetId);
-                SendMessage($"{target?.Data?.GetLogPlayerName() ?? "???"} が勝つと予想しました\n（もう一度投票すると変えられます）", voterId, "<#ffd84a>【勝者予想】</color>");
+                SendMessage($"{target?.Data?.GetLogPlayerName() ?? "???"} が勝つと予想しました\n（もう一度投票すると変えられます）", voterId, Title);
             }
             Logger.Info($"{voter.Data.GetLogPlayerName()} の予想 => {targetId}", "Prediction");
             //投票済みの表示を消して、変えられるようにする
@@ -136,7 +150,7 @@ namespace TownOfHost
                 return;
             }
             Predictions[host.PlayerId] = target.PlayerId;
-            SendMessage($"{target.Data.GetLogPlayerName()} が勝つと予想しました", host.PlayerId, "<#ffd84a>【勝者予想】</color>");
+            SendMessage($"{target.Data.GetLogPlayerName()} が勝つと予想しました", host.PlayerId, Title);
         }
 
         /// <summary>会議の終わり(投票の締め切り)に呼ぶ</summary>

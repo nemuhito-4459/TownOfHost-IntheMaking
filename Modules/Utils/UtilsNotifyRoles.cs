@@ -515,6 +515,8 @@ namespace TownOfHost
                         SelfSuffix.Append(seerRole?.GetLowerText(seer, isForMeeting: true) ?? "");
                     //seerに関わらず発動するLowerText
                     SelfSuffix.Append(CustomRoleManager.GetLowerTextOthers(seer, isForMeeting: true));
+                    //死亡後の勝者予想ができる人(本人の画面だけ)
+                    SelfSuffix.Append(PredictionManager.MeetingSelfText(seer));
 
                     //seer役職が対象のSuffix
                     if (Amnesiacheck)
