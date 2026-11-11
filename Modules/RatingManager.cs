@@ -25,7 +25,7 @@ namespace TownOfHost
         /*
          * 【勝って生き残った】
          *   基本レート = 試合時間 × 陣営ボーナス × ランク補正 × 基本値
-         *   クルーメイト         ＋ 人外に投票した回数 × 基本値 × タスク完了割合
+         *   クルーメイト         ＋ 人外に投票した回数 × 基本値 × タスク完了割合 × 1.5
          *   キルできる人外       ＋ キルした回数 × 基本値 × 0.6
          *   キルできない人外     ＋ 自分に賭けた人数 × 1.2
          *   マッドメイト         ＋ 勝ったインポスターが得た量の合計 × 0.1
@@ -48,6 +48,8 @@ namespace TownOfHost
             < 2000 => 0.8f,  //S+
             _ => 0.75f,      //2000～
         };
+        /// <summary>クルーメイトのタスク完了割合にかける倍率</summary>
+        const float TaskRate = 1.5f;
         /// <summary>キルできる人外の、1キルあたりの倍率</summary>
         const float KillRate = 0.6f;
         /// <summary>キルできない人外の、自分に賭けた人1人あたりの量</summary>
@@ -275,13 +277,13 @@ namespace TownOfHost
                     detail = $"生き残った！ 基本レート {baseRate:0.#}";
                     if (faction == Faction.Crewmate)
                     {
-                        //人外に投票した回数 × 基本値 × タスク完了割合
+                        //人外に投票した回数 × 基本値 × タスク完了割合 × 1.5
                         var votes = badVotes.GetValueOrDefault(id);
                         var ts = state?.GetTaskState();
                         var taskRatio = ts == null || ts.AllTasksCount <= 0 ? 0f : (float)ts.CompletedTasksCount / ts.AllTasksCount;
-                        var add = votes * BaseValue * taskRatio;
+                        var add = votes * BaseValue * taskRatio * TaskRate;
                         value += add;
-                        if (add > 0) detail += $"\n人外に投票 {votes}回 × タスク {taskRatio * 100:0}%（+{add:0.#}）";
+                        if (add > 0) detail += $"\n人外に投票 {votes}回 × タスク {taskRatio * 100:0}% × {TaskRate}（+{add:0.#}）";
                     }
                     else if (CanKill(id))
                     {
