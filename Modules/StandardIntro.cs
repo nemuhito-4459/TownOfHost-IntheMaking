@@ -173,7 +173,7 @@ class StandardIntro
                                 pc.Data.RpcSetTasks(taskids);
                             else
                             {
-                                Logger.Error($"{pc.Data.GetLogPlayerName()} => taskIds is null", "AssingTask");
+                                if (!LocalTestManager.IsDummy(pc)) Logger.Error($"{pc.Data.GetLogPlayerName()} => taskIds is null", "AssingTask");
                                 pc.Data.RpcSetTasks(Array.Empty<byte>());//再配布と同じ処理を行なっておく。
                             }
                         });

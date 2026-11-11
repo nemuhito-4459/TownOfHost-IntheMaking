@@ -270,7 +270,7 @@ namespace TownOfHost
             if (AmongUsClient.Instance.AmHost is false) return;
             if (clientId == -1)
             {
-                Logger.Error($"clientIdが-1!", "RpcSetRoleDesync");
+                if (!GameStates.IsLocalGame) Logger.Error($"clientIdが-1!", "RpcSetRoleDesync");//ローカルではダミーあてなので出さない
                 return;
             }
             //player: ロールの変更対象

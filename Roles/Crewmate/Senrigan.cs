@@ -43,12 +43,20 @@ public sealed class Senrigan : RoleBase
 
     static SenriganCooldownOptionItem Cooldown;
     static OptionItem UseLimit;
+    static OptionItem BlockedByComms;
+    enum OptionName
+    {
+        SenriganBlockedByComms
+    }
     static void SetupOptionItem()
     {
         Cooldown = SenriganCooldownOptionItem.Create(RoleInfo, 10);
         UseLimit = IntegerOptionItem.Create(RoleInfo, 11, GeneralOption.OptionCount, new(0, 99, 1), 0, false)
             .SetValueFormat(OptionFormat.Times).SetZeroNotation(OptionZeroNotation.Infinity);
+        BlockedByComms = BooleanOptionItem.Create(RoleInfo, 12, OptionName.SenriganBlockedByComms, true, false);
     }
+    /// <summary>通信障害で居場所が分からない状態か</summary>
+    static bool IsBlocked => BlockedByComms.GetBool() && Utils.IsActive(SystemTypes.Comms);
 
     /// <summary>1か所を出す秒数</summary>
     const float ShowTime = 1f;
@@ -79,6 +87,7 @@ public sealed class Senrigan : RoleBase
         if (!AmongUsClient.Instance.AmHost || !Player.IsAlive() || !GameStates.IsInTask) return;
         if (rooms != null) return;//表示中(同じベントから出たのが2回届いたときなど)
         if (!HasUseLeft) return;
+        if (IsBlocked) return;//通信障害中は分からない(回数も使わない)
 
         var list = PlayerCatch.AllAlivePlayerControls
             .Where(pc => pc != null && pc.PlayerId != Player.PlayerId)
@@ -98,7 +107,7 @@ public sealed class Senrigan : RoleBase
     public override void OnFixedUpdate(PlayerControl player)
     {
         if (!AmongUsClient.Instance.AmHost || rooms == null) return;
-        if (!Player.IsAlive() || !GameStates.IsInTask)
+        if (!Player.IsAlive() || !GameStates.IsInTask || IsBlocked)
         {
             Stop();
             return;

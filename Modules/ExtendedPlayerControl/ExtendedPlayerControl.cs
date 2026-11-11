@@ -32,7 +32,7 @@ namespace TownOfHost
             //(自分あてに送ると自分に返ってきて、乗り移り先の役職などが上書きされてしまう)
             if (LocalTestManager.IsHostBodyWhilePossessed(player)) return -1;
             var client = player?.GetClient();
-            if (client == null) Logger.Error($"{player?.Data?.GetLogPlayerName() ?? "null"}のclientがnull", "GetClientId");
+            if (client == null && !LocalTestManager.IsDummy(player)) Logger.Error($"{player?.Data?.GetLogPlayerName() ?? "null"}のclientがnull", "GetClientId");
             return client == null ? -1 : client.Id;
         }
         public static CustomRoles GetCustomRole(this NetworkedPlayerInfo player)

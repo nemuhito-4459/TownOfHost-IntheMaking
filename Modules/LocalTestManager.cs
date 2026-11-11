@@ -26,6 +26,8 @@ namespace TownOfHost
         /// <summary>ホスト本人の体(乗り移っていないときは null)</summary>
         static PlayerControl hostBody;
         /// <summary>乗り移っている間の、元のホストの体か</summary>
+        /// <summary>ダミーか(乗り移っている間のダミーも含む)。ログを出さないかの判定などに使う</summary>
+        public static bool IsDummy(PlayerControl pc) => pc != null && (pc.isDummy || pc == Possessed);
         public static bool IsHostBodyWhilePossessed(PlayerControl pc) => pc != null && Possessed != null && hostBody != null && pc == hostBody;
         /// <summary>今乗り移っているプレイヤー(乗り移っていないときは null)</summary>
         public static PlayerControl Possessed { get; private set; }

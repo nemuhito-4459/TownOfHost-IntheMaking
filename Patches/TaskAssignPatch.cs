@@ -57,13 +57,13 @@ namespace TownOfHost
             //null対策
             if (Main.RealOptionsData == null)
             {
-                Logger.Warn("警告:RealOptionsDataがnullです。", "RpcSetTasksPatch");
+                if (!GameStates.IsLocalGame) Logger.Warn("警告:RealOptionsDataがnullです。", "RpcSetTasksPatch");//ローカルではダミーを入れたときに出るので出さない
                 return;
             }
 
             if (ShipStatus.Instance == null)
             {
-                Logger.Warn("警告:ShipStatusがnullです。", "RpcSetTasksPatch");
+                if (!GameStates.IsLocalGame) Logger.Warn("警告:ShipStatusがnullです。", "RpcSetTasksPatch");
                 return;
             }
 

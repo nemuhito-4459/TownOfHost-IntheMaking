@@ -37,6 +37,10 @@ public static class MeetingHudPatch
     [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.CastVote))]
     public static class CastVotePatch
     {
+        /// <summary>勝者予想ができる人がいる会議で、ダミーが投票するまで待つ秒数(会議の始まりから)</summary>
+        const float DummyVoteDelay = 15f;
+        /// <summary>遅らせたあとの投票(もう一度止めないようにする)</summary>
+        static readonly System.Collections.Generic.HashSet<byte> allowedDummyVotes = new();
         public static bool Prefix(MeetingHud __instance, [HarmonyArgument(0)] PlayerId srcPlayerId /* 投票した人 */ , [HarmonyArgument(1)] PlayerId suspectPlayerId /* 投票された人 */ )
         {
             if (AmongUsClient.Instance.AmHost is false) return true;
@@ -55,6 +59,25 @@ public static class MeetingHudPatch
                 {
                     __instance.RpcClearVote(voter.PlayerId);
                     return false;
+                }
+                //ローカルのテストで勝者予想ができる人がいる会議では、予想する時間を作るためにダミーの投票を遅らせる
+                if (GameStates.IsLocalGame && PredictionManager.HasEligible && !allowedDummyVotes.Remove(voter.PlayerId))
+                {
+                    var wait = PredictionManager.MeetingStartTime + DummyVoteDelay - UnityEngine.Time.time;
+                    if (wait > 0)
+                    {
+                        var src = srcPlayerId;
+                        var suspect = suspectPlayerId;
+                        __instance.RpcClearVote(voter.PlayerId);
+                        _ = new LateTask(() =>
+                        {
+                            var meeting = MeetingHud.Instance;
+                            if (meeting == null || meeting.state is MeetingHud.VoteStates.Results or MeetingHud.VoteStates.Proceeding) return;
+                            allowedDummyVotes.Add(voter.PlayerId);
+                            meeting.CastVote(src, suspect);
+                        }, wait, "DummyVoteDelay", true);
+                        return false;
+                    }
                 }
                 MeetingVoteManager.Instance?.SetVote(srcPlayerId, suspectPlayerId);
                 return true;

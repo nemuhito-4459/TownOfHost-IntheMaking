@@ -211,7 +211,7 @@ namespace TownOfHost
             if (Player) isRoleCache.Remove(Player.PlayerId);
             if (Player.GetClient() is null)
             {
-                Logger.Error($"{Player?.Data?.PlayerName ?? "???"}のclientがnull", "ExiledSetRole");
+                if (!LocalTestManager.IsDummy(Player)) Logger.Error($"{Player?.Data?.PlayerName ?? "???"}のclientがnull", "ExiledSetRole");
                 if (Player != null && !Player.isDummy && Player.Data?.Disconnected == false)
                     BlackoutWarning.Show($"{Player.Data.GetLogPlayerName()} の役職を戻せませんでした");
                 return;

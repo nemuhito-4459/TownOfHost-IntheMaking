@@ -40,12 +40,17 @@ namespace TownOfHost
         static bool Enabled => Options.CurrentGameMode == CustomGameMode.Standard && !GameStates.IsFreePlay;
         /// <summary>今の会議で予想できる人か</summary>
         public static bool IsEligible(byte playerId) => eligible.Contains(playerId);
+        /// <summary>今の会議で予想できる人がいるか</summary>
+        public static bool HasEligible => eligible.Count > 0;
+        /// <summary>今の会議が始まった時刻(Time.time)</summary>
+        public static float MeetingStartTime;
 
         /// <summary>会議が始まる直前(StartMeeting を送る前)に呼ぶ</summary>
         public static void BeforeMeetingStart()
         {
             eligible.Clear();
             desynced.Clear();
+            MeetingStartTime = UnityEngine.Time.time;
             if (!AmongUsClient.Instance.AmHost || !Enabled) return;
             if (Roles.Impostor.Assassin.NowUse) return;//アサシン会議は対象外(締め切りにも数えない)
 
