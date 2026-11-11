@@ -20,8 +20,13 @@ namespace TownOfHost
     {
         /// <summary>ローカルの部屋のホストか</summary>
         public static bool IsLocalHost => AmongUsClient.Instance != null && AmongUsClient.Instance.AmHost && GameStates.IsLocalGame;
-        /// <summary>全員の役職が見えるか</summary>
-        public static bool SeeAllRoles => IsLocalHost;
+        /// <summary>全員の役職が見えるか(乗り移っている間は、そのプレイヤーの目線にする)</summary>
+        public static bool SeeAllRoles => IsLocalHost && Possessed == null;
+        /// <summary>
+        /// 乗り移っている間は、MOD未導入のプレイヤー(非クライアント)と同じ目線・動作にする。<br/>
+        /// 右下のボタンはバニラのまま(MODの画像や文字の上書きなし)、能力のボタンもバニラの処理(ホストに送る形)で動く
+        /// </summary>
+        public static bool VanillaView => IsLocalHost && Possessed != null;
 
         /// <summary>ホスト本人の体(乗り移っていないときは null)</summary>
         static PlayerControl hostBody;
@@ -63,11 +68,12 @@ namespace TownOfHost
                 HudManager.Instance.PlayerCam.SetTarget(target);
                 HudManager.Instance.PlayerCam.SnapToTarget();
 
-                //乗り移った先の役職のボタンなどを出す(自分の画面だけ)
-                RoleManager.Instance.SetRole(target, GetRoleType(target));
-
                 Possessed = target == hostBody ? null : target;
                 if (Possessed == null) hostBody = null;
+
+                //乗り移った先の役職のボタンなどを出す(自分の画面だけ)
+                RoleManager.Instance.SetRole(target, GetRoleType(target));
+                ResetHud(target);
                 Logger.Info($"{target.Data.GetLogPlayerName()} に乗り移り", "LocalTest");
                 UtilsNotifyRoles.NotifyRoles(true, true);
             }
@@ -75,6 +81,25 @@ namespace TownOfHost
             {
                 Logger.Error(ex.ToString(), "LocalTest");
             }
+        }
+        /// <summary>
+        /// 右下のボタンを、その役職のバニラの状態に戻す(前の役職のMODの画像・文字を消す)。<br/>
+        /// 元の自分に戻ったときは、MODの表示をもう一度付け直す
+        /// </summary>
+        static void ResetHud(PlayerControl target)
+        {
+            var hud = HudManager.Instance;
+            if (hud == null) return;
+            if (CustomButtonHud.MotoKillButton) hud.KillButton.graphic.sprite = CustomButtonHud.MotoKillButton;
+            if (CustomButtonHud.ImpVentButton) hud.ImpostorVentButton.graphic.sprite = CustomButtonHud.ImpVentButton;
+            hud.KillButton.OverrideText(Translator.GetString(StringNames.KillLabel));
+            var role = target.Data.Role;
+            if (role != null && role.Ability != null) role.InitializeAbilityButton();
+            else hud.AbilityButton.ToggleVisible(false);
+            if (HudManagerPatch.LowerInfoText != null) HudManagerPatch.LowerInfoText.text = "";
+            hud.SetHudActive(target, role, true);
+            //元の自分に戻ったら、MODのボタン表示を付け直す
+            if (Possessed == null) CustomButtonHud.BottonHud(true);
         }
         /// <summary>元の自分に戻る</summary>
         public static void Release()

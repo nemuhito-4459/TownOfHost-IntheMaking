@@ -41,6 +41,8 @@ public static class AbilityButtonDoClickPatch
 {
     public static bool Prefix(AbilityButton __instance)
     {
+        //ローカルのテストで乗り移っている間は、MOD未導入の人と同じくバニラの処理(ホストに送る形)で動かす
+        if (TownOfHost.LocalTestManager.VanillaView) return true;
         var player = PlayerControl.LocalPlayer;
 
         if (!AmongUsClient.Instance.AmHost || HudManager._instance.AbilityButton.isCoolingDown
