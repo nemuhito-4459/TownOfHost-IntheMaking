@@ -320,10 +320,61 @@ namespace TownOfHost
         }
 
         static readonly Regex UnderlineRegex = new(@"<u>(.*?)</u>", RegexOptions.Singleline | RegexOptions.Compiled);
+        /// <summary>MODが送るチャットの1行の最大文字数(スイッチなど画面の狭い端末向け)</summary>
+        public const int ChatWrapLength = 24;
+        /// <summary>
+        /// 1行が max 文字を超えたら改行を入れる。タグ(&lt;color&gt; など)は数えず、タグの途中では切らない
+        /// </summary>
+        public static string WrapChatText(string text, int max = ChatWrapLength)
+        {
+            if (string.IsNullOrEmpty(text)) return text;
+            var sb = new StringBuilder();
+            var lines = text.Split('\n');
+            for (var l = 0; l < lines.Length; l++)
+            {
+                var line = lines[l];
+                var count = 0;
+                var inTag = false;
+                for (var i = 0; i < line.Length; i++)
+                {
+                    var c = line[i];
+                    if (!inTag && c == '<' && line.IndexOf('>', i) > i) inTag = true;
+                    sb.Append(c);
+                    if (inTag)
+                    {
+                        if (c == '>') inTag = false;
+                        continue;
+                    }
+                    count++;
+                    if (count >= max && HasVisibleChar(line, i + 1))
+                    {
+                        sb.Append('\n');
+                        count = 0;
+                    }
+                }
+                if (l < lines.Length - 1) sb.Append('\n');
+            }
+            return sb.ToString();
+
+            static bool HasVisibleChar(string line, int start)
+            {
+                var inTag = false;
+                for (var i = start; i < line.Length; i++)
+                {
+                    var c = line[i];
+                    if (!inTag && c == '<' && line.IndexOf('>', i) > i) { inTag = true; continue; }
+                    if (inTag) { if (c == '>') inTag = false; continue; }
+                    return true;
+                }
+                return false;
+            }
+        }
         public static void SendMessage(string text, byte sendTo = byte.MaxValue, string title = "", bool checkl = true, bool isTowSend = false, bool setsize = false)
         {
             if (!AmongUsClient.Instance.AmHost) return;
             if (text.RemoveHtmlTags() == "") return;
+            //MODが送るチャットは24文字で改行する(2回目の送信=続きの分は、もう改行済み)
+            if (!isTowSend) text = WrapChatText(text);
             if (title == "") title = $"<{Main.ModColor}>" + GetString($"DefaultSystemMessageTitle") + "</color>";
             if (IsRestriction() && isTowSend && title == "NonTitle") title = "";
 
