@@ -47,7 +47,7 @@ namespace TownOfHost
             //タスク
             new("task10", "見習い作業員", "#8fd3ff", "タスクを10個終わらせる", s => s.Tasks, 10),
             new("task100", "働き者", "#3fa9ff", "タスクを100個終わらせる", s => s.Tasks, 100),
-            new("task500", "タスクの鬼", "#1f6fff", "タスクを500個終わらせる", s => s.Tasks, 500),
+            new("task500", "ブラック企業", "#1f6fff", "タスクを500個終わらせる", s => s.Tasks, 500),
             //ウォークタスク
             new("walk10", "お散歩好き", "#b4e86a", "ウォークタスクを10回終わらせる", s => s.WalkTasks, 10),
             new("walk100", "旅人", "#7cc63a", "ウォークタスクを100回終わらせる", s => s.WalkTasks, 100),
