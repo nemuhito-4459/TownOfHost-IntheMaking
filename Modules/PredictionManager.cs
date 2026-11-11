@@ -3,6 +3,7 @@ using System.Linq;
 using Hazel;
 
 using TownOfHost.Attributes;
+using TownOfHost.Modules;
 using TownOfHost.Patches;
 using static TownOfHost.Utils;
 

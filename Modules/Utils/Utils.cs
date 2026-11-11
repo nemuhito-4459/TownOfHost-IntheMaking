@@ -345,6 +345,7 @@ namespace TownOfHost
                         if (c == '>') inTag = false;
                         continue;
                     }
+                    if (c == '\r') continue;//\r は文字として数えない
                     count++;
                     if (count >= max && HasVisibleChar(line, i + 1))
                     {

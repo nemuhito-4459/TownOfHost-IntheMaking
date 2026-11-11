@@ -1,4 +1,5 @@
 using System.Linq;
+using Hazel;
 using TownOfHost.Roles.Core;
 using TownOfHost.Roles.Impostor;
 using static TownOfHost.Translator;
@@ -17,6 +18,9 @@ namespace TownOfHost
 
         /// <summary>ホストの追放画面に出す文(空なら使わない)</summary>
         public static string Text = "";
+        /// <summary>MOD未導入者に送った名前と、追放される人</summary>
+        static string sentName;
+        static PlayerControl sentTarget;
 
         public static void SetupOption(OptionItem parent)
         {
@@ -31,6 +35,8 @@ namespace TownOfHost
         public static string Create(NetworkedPlayerInfo exiled)
         {
             Text = "";
+            sentName = null;
+            sentTarget = null;
             if (exiled == null || Option == null) return null;
             var mode = (Mode)Option.GetValue();
             if (mode == Mode.Off) return null;
@@ -56,9 +62,37 @@ namespace TownOfHost
             var name = Main.AllPlayerNames.TryGetValue(exiled.PlayerId, out var n) ? n : exiled.PlayerName;
             Text = $"{string.Format(GetString("fortuihou"), name)}\n{lines}";
             //バニラ側の「は追放された。」は<size=0>で見えなくする
-            return $"{Text}<size=0>";
+            sentName = $"{Text}<size=0>";
+            sentTarget = exiled.Object;
+            return sentName;
 
             static string Line(string label, int count) => string.Format(GetString("ExileRemainLine"), GetString(label), count);
+        }
+
+        /// <summary>
+        /// 名前を送り直す。<br/>
+        /// 会議終了の4秒後に AntiBlackout が GameData を丸ごと送ると、名前が元に戻ってしまう(追放画面はその後に出る)
+        /// </summary>
+        public static void Resend()
+        {
+            if (!AmongUsClient.Instance.AmHost || sentName == null || sentTarget == null) return;
+            foreach (var player in PlayerCatch.AllPlayerControls)
+            {
+                if (player == null || player.PlayerId == PlayerControl.LocalPlayer.PlayerId || player.IsModClient()) continue;
+                var clientId = player.GetClientId();
+                if (clientId == -1) continue;
+                sentTarget.SetNameCheck(sentName, player, true);
+                //GameData のあとに確実に届くように Reliable で送る
+                var sender = CustomRpcSender.Create("ExileRemainName", SendOption.Reliable);
+                sender.StartMessage(clientId);
+                sender.StartRpc(sentTarget.NetId, RpcCalls.SetName)
+                    .Write(sentTarget.Data.NetId)
+                    .Write(sentName)
+                    .Write(true)
+                    .EndRpc();
+                sender.EndMessage();
+                sender.SendMessage();
+            }
         }
     }
 }

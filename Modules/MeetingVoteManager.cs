@@ -203,6 +203,8 @@ public class MeetingVoteManager
             {
                 AntiBlackout.SetIsDead();
                 AntiBlackout.SetRole(result);
+                //SetIsDead の GameData 送信で名前が元に戻るので、追放画面の名前を送り直す
+                ExileRemainText.Resend();
             }, 4f, "LateAntiBlackoutSet", null);
         }
         if (AmongUsClient.Instance.AmHost)

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 
 using TownOfHost.Attributes;
+using TownOfHost.Roles.Core;
 using static TownOfHost.Utils;
 
 namespace TownOfHost
@@ -35,9 +36,31 @@ namespace TownOfHost
         const int LoseAmount = 20;
         /// <summary>勝者予想が当たったときの割合(勝ったときの増加量の1割)</summary>
         const float PredictionRate = 0.1f;
+        /// <summary>陣営ごとの倍率(勝ったとき, 負けたとき)。人数が少ない陣営ほど勝つと多く、負けても少なめ</summary>
+        static (float win, float lose) FactionRate(Faction f) => f switch
+        {
+            Faction.Crewmate => (1.0f, 1.0f),
+            Faction.Impostor => (1.3f, 0.8f),
+            Faction.Madmate => (1.3f, 0.8f),
+            Faction.Jackal => (1.5f, 0.7f),
+            _ => (1.5f, 0.7f),//ニュートラル
+        };
         // ===========================================
 
         static readonly string FilePath = Main.BaseDirectory + "/Rating.txt";
+
+        public enum Faction { Crewmate, Impostor, Madmate, Jackal, Neutral }
+        static readonly string[] FactionNames = ["クルーメイト", "インポスター", "マッドメイト", "ジャッカル", "ニュートラル"];
+        /// <summary>試合が終わったときの役職から陣営を決める</summary>
+        static Faction GetFaction(byte id)
+        {
+            var role = PlayerState.GetByPlayerId(id)?.MainRole ?? CustomRoles.Crewmate;
+            if (role.GetRoleInfo()?.CountType == CountTypes.Jackal) return Faction.Jackal;
+            if (role.IsMadmate()) return Faction.Madmate;
+            if (role.IsImpostor()) return Faction.Impostor;
+            if (role.IsNeutral()) return Faction.Neutral;
+            return Faction.Crewmate;
+        }
 
         public class Data
         {
@@ -150,13 +173,15 @@ namespace TownOfHost
             if (CustomWinnerHolder.WinnerTeam is CustomWinner.Draw or CustomWinner.None) return;
 
             var minutes = (DateTime.Now - startTime).TotalMinutes;
-            var results = new Dictionary<byte, (Data data, int before, int diff, bool win, int bonus)>();
+            var results = new Dictionary<byte, (Data data, int before, int diff, bool win, int bonus, Faction faction)>();
             foreach (var (id, (code, name)) in participants)
             {
                 var d = GetOrCreate(code, name);
                 var before = d.Rating;
                 var win = Main.winnerList.Contains(id);
-                var diff = win ? (int)Math.Round(WinBase(d.Rating) * TimeRate(minutes)) : -LoseAmount;
+                var faction = GetFaction(id);
+                var (winRate, loseRate) = FactionRate(faction);
+                var diff = win ? (int)Math.Round(WinBase(d.Rating) * TimeRate(minutes) * winRate) : -(int)Math.Round(LoseAmount * loseRate);
 
                 //死亡後の勝者予想
                 var bonus = 0;
@@ -166,15 +191,17 @@ namespace TownOfHost
                 d.Rating = Math.Max(0, d.Rating + diff + bonus);
                 d.Games++;
                 if (win) d.Wins++;
-                results[id] = (d, before, d.Rating - before, win, bonus);
-                Logger.Info($"{name}: {before} → {d.Rating} (勝ち:{win} 予想:{bonus})", "Rating");
+                results[id] = (d, before, d.Rating - before, win, bonus, faction);
+                Logger.Info($"{name}: {before} → {d.Rating} ({faction} 勝ち:{win} 予想:{bonus})", "Rating");
             }
             Save();
 
             //本人にだけ結果を送る(ロビーに戻ってから届く)
             foreach (var (id, r) in results)
             {
+                if (PlayerCatch.GetPlayerById(id) == null) continue;//抜けた人には送らない
                 var sb = new StringBuilder();
+                sb.Append($"{FactionNames[(int)r.faction]}で{(r.win ? "勝利" : "敗北")}\n");
                 sb.Append($"レート {r.before} → {r.data.Rating}（{(r.diff >= 0 ? "+" : "")}{r.diff}）\n");
                 sb.Append($"ランク {RankText(r.data)}");
                 if (r.bonus > 0) sb.Append($"\n勝者予想が当たった！（+{r.bonus}）");
