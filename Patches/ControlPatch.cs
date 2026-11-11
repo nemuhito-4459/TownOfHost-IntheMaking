@@ -187,9 +187,20 @@ namespace TownOfHost
                 UtilsShowOption.ShowActiveSettings();
             }
             //キルフラッシュ(Ctrl+Shift+K)
+            //全員に本物のサボタージュを一瞬起こすやり方(AllPlayerKillFlash)は、会議と重なると暗転することがあるので使わない。
+            //キルされたときのキルフラッシュと同じく、一人ずつ自分の画面だけで光らせる
             if (GetKeysDown(KeyCode.K, KeyCode.LeftShift, KeyCode.LeftControl) && GameStates.InGame && AmongUsClient.Instance.AmHost)
             {
-                Utils.AllPlayerKillFlash();
+                if (GameStates.IsMeeting || GameStates.CalledMeeting || !GameStates.IsInTask)
+                    Logger.Info("会議中・会議の直前はキルフラッシュを出さない", "KillFlash");
+                else
+                {
+                    foreach (var pc in PlayerCatch.AllPlayerControls)
+                    {
+                        if (pc.PlayerId == PlayerControl.LocalPlayer.PlayerId) Utils.FlashColor(new(1f, 0f, 0f, 0.5f));
+                        else pc.ReactorFlash();
+                    }
+                }
             }
             //TOH-Kオプションをデフォルトに設定
             if (GetKeysDown(KeyCode.Delete, KeyCode.LeftControl))
