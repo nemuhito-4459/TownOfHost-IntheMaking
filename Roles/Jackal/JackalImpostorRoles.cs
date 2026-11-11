@@ -29,7 +29,7 @@ public sealed class JackalBountyHunter : JackalImpostorBase
                 AssignCountRule = new(1, 1, 1)
             },
             AddHaveRole: () => CustomRoles.BountyHunter,
-            from: From.TownOfHost_IntheMaking);
+            from: From.None);
     public JackalBountyHunter(PlayerControl player) : base(RoleInfo, player) { }
     protected override CustomRoles GetHaveRole() => CustomRoles.BountyHunter;
 }
@@ -55,7 +55,7 @@ public sealed class JackalEraser : JackalImpostorBase
                 AssignCountRule = new(1, 1, 1)
             },
             AddHaveRole: () => CustomRoles.Eraser,
-            from: From.TownOfHost_IntheMaking);
+            from: From.None);
     public JackalEraser(PlayerControl player) : base(RoleInfo, player) { }
     protected override CustomRoles GetHaveRole() => CustomRoles.Eraser;
 }
@@ -81,7 +81,7 @@ public sealed class JackalEvilButtoner : JackalImpostorBase
                 AssignCountRule = new(1, 1, 1)
             },
             AddHaveRole: () => CustomRoles.EvilButtoner,
-            from: From.TownOfHost_IntheMaking);
+            from: From.None);
     public JackalEvilButtoner(PlayerControl player) : base(RoleInfo, player) { }
     protected override CustomRoles GetHaveRole() => CustomRoles.EvilButtoner;
 }
@@ -107,7 +107,7 @@ public sealed class JackalEvilTeller : JackalImpostorBase
                 AssignCountRule = new(1, 1, 1)
             },
             AddHaveRole: () => CustomRoles.EvilTeller,
-            from: From.TownOfHost_IntheMaking);
+            from: From.None);
     public JackalEvilTeller(PlayerControl player) : base(RoleInfo, player) { }
     protected override CustomRoles GetHaveRole() => CustomRoles.EvilTeller;
 }
@@ -133,7 +133,7 @@ public sealed class JackalEvilgambler : JackalImpostorBase
                 AssignCountRule = new(1, 1, 1)
             },
             AddHaveRole: () => CustomRoles.Evilgambler,
-            from: From.TownOfHost_IntheMaking);
+            from: From.None);
     public JackalEvilgambler(PlayerControl player) : base(RoleInfo, player) { }
     protected override CustomRoles GetHaveRole() => CustomRoles.Evilgambler;
 }
@@ -159,7 +159,7 @@ public sealed class JackalInsider : JackalImpostorBase
                 AssignCountRule = new(1, 1, 1)
             },
             AddHaveRole: () => CustomRoles.Insider,
-            from: From.TownOfHost_IntheMaking);
+            from: From.None);
     public JackalInsider(PlayerControl player) : base(RoleInfo, player) { }
     protected override CustomRoles GetHaveRole() => CustomRoles.Insider;
 }
@@ -185,7 +185,7 @@ public sealed class JackalPenguin : JackalImpostorBase
                 AssignCountRule = new(1, 1, 1)
             },
             AddHaveRole: () => CustomRoles.Penguin,
-            from: From.TownOfHost_IntheMaking);
+            from: From.None);
     public JackalPenguin(PlayerControl player) : base(RoleInfo, player) { }
     protected override CustomRoles GetHaveRole() => CustomRoles.Penguin;
 }
@@ -211,7 +211,7 @@ public sealed class JackalProgressKiller : JackalImpostorBase
                 AssignCountRule = new(1, 1, 1)
             },
             AddHaveRole: () => CustomRoles.ProgressKiller,
-            from: From.TownOfHost_IntheMaking);
+            from: From.None);
     public JackalProgressKiller(PlayerControl player) : base(RoleInfo, player) { }
     protected override CustomRoles GetHaveRole() => CustomRoles.ProgressKiller;
 }
@@ -237,7 +237,7 @@ public sealed class JackalPuppeteer : JackalImpostorBase
                 AssignCountRule = new(1, 1, 1)
             },
             AddHaveRole: () => CustomRoles.Puppeteer,
-            from: From.TownOfHost_IntheMaking);
+            from: From.None);
     public JackalPuppeteer(PlayerControl player) : base(RoleInfo, player) { }
     protected override CustomRoles GetHaveRole() => CustomRoles.Puppeteer;
 }
@@ -263,7 +263,7 @@ public sealed class JackalQuickKiller : JackalImpostorBase
                 AssignCountRule = new(1, 1, 1)
             },
             AddHaveRole: () => CustomRoles.QuickKiller,
-            from: From.TownOfHost_IntheMaking);
+            from: From.None);
     public JackalQuickKiller(PlayerControl player) : base(RoleInfo, player) { }
     protected override CustomRoles GetHaveRole() => CustomRoles.QuickKiller;
 }
@@ -289,7 +289,7 @@ public sealed class JackalSerialKiller : JackalImpostorBase
                 AssignCountRule = new(1, 1, 1)
             },
             AddHaveRole: () => CustomRoles.SerialKiller,
-            from: From.TownOfHost_IntheMaking);
+            from: From.None);
     public JackalSerialKiller(PlayerControl player) : base(RoleInfo, player) { }
     protected override CustomRoles GetHaveRole() => CustomRoles.SerialKiller;
 }
@@ -315,7 +315,7 @@ public sealed class JackalSpeedStar : JackalImpostorBase
                 AssignCountRule = new(1, 1, 1)
             },
             AddHaveRole: () => CustomRoles.SpeedStar,
-            from: From.TownOfHost_IntheMaking);
+            from: From.None);
     public JackalSpeedStar(PlayerControl player) : base(RoleInfo, player) { }
     protected override CustomRoles GetHaveRole() => CustomRoles.SpeedStar;
 }
@@ -341,7 +341,7 @@ public sealed class JackalStealth : JackalImpostorBase
                 AssignCountRule = new(1, 1, 1)
             },
             AddHaveRole: () => CustomRoles.Stealth,
-            from: From.TownOfHost_IntheMaking);
+            from: From.None);
     public JackalStealth(PlayerControl player) : base(RoleInfo, player) { }
     protected override CustomRoles GetHaveRole() => CustomRoles.Stealth;
 }
@@ -367,7 +367,7 @@ public sealed class JackalVampire : JackalImpostorBase
                 AssignCountRule = new(1, 1, 1)
             },
             AddHaveRole: () => CustomRoles.Vampire,
-            from: From.TownOfHost_IntheMaking);
+            from: From.None);
     public JackalVampire(PlayerControl player) : base(RoleInfo, player) { }
     protected override CustomRoles GetHaveRole() => CustomRoles.Vampire;
 }
@@ -393,7 +393,7 @@ public sealed class JackalWarlock : JackalImpostorBase
                 AssignCountRule = new(1, 1, 1)
             },
             AddHaveRole: () => CustomRoles.Warlock,
-            from: From.TownOfHost_IntheMaking);
+            from: From.None);
     public JackalWarlock(PlayerControl player) : base(RoleInfo, player) { }
     protected override CustomRoles GetHaveRole() => CustomRoles.Warlock;
 }
@@ -419,7 +419,7 @@ public sealed class JackalWitch : JackalImpostorBase
                 AssignCountRule = new(1, 1, 1)
             },
             AddHaveRole: () => CustomRoles.Witch,
-            from: From.TownOfHost_IntheMaking);
+            from: From.None);
     public JackalWitch(PlayerControl player) : base(RoleInfo, player) { }
     protected override CustomRoles GetHaveRole() => CustomRoles.Witch;
 }
