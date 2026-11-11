@@ -863,8 +863,19 @@ namespace TownOfHost
     public static class UtilsOption
     {
         public static string GetFrom(SimpleRoleInfo info, bool isblock = true) => GetFrom(info.From, info.RoleName, isblock);
+        /// <summary>
+        /// このMOD(TownOfHost-IntheMaking)で追加した役職を提案した人<br/>
+        /// ここに載っている役職は「From:」ではなく「Suggested:提案した人」と表示する(役職を追加したら登録すること)
+        /// </summary>
+        public static readonly Dictionary<CustomRoles, string> Suggesters = new()
+        {
+            { CustomRoles.Senrigan, "虚無玉" },
+            { CustomRoles.Welder, "虚無玉" },
+        };
         public static string GetFrom(From from, CustomRoles role = CustomRoles.NotAssigned, bool isblock = true)
         {
+            if (from == From.TownOfHost_IntheMaking && Suggesters.TryGetValue(role, out var suggester))
+                return $"<#{(isblock ? "000000" : "ffffff")}>Suggested:</color><{Main.ModColor}>{suggester}</color>";
             string Fromtext = $"<#{(isblock ? "000000" : "ffffff")}>From:</color>";
             switch (from)
             {
