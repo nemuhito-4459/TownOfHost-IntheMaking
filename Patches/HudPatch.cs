@@ -111,8 +111,6 @@ namespace TownOfHost
             //ゲーム中でなければ以下は実行されない
             if (!AmongUsClient.Instance.IsGameStarted) return;
             PlayerCatch.CountAlivePlayers();
-            //ローカルのテストで乗り移っている間は、MOD未導入の人と同じバニラの表示にする
-            if (LocalTestManager.VanillaView) return;
 
             if (SetHudActivePatch.IsActive)
             {
@@ -319,7 +317,6 @@ namespace TownOfHost
                 if (SetHudActivePatch.IsActive)
                 {
                     if (!GameStates.IsModHost) return;
-                    if (LocalTestManager.VanillaView) return;//乗り移っている間はバニラのボタンのまま
                     var player = PlayerControl.LocalPlayer;
                     if (player == null) return;
                     var roleClass = player.GetRoleClass();
@@ -554,7 +551,6 @@ namespace TownOfHost
             IsActive = isActive;
             if (GameStates.IsLobby) return;
             if (!isActive) return;
-            if (LocalTestManager.VanillaView) return;//乗り移っている間はバニラの表示のまま
 
             var player = PlayerControl.LocalPlayer;
             __instance.KillButton.ToggleVisible(player.CanUseKillButton());

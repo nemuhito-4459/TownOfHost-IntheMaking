@@ -20,13 +20,8 @@ namespace TownOfHost
     {
         /// <summary>ローカルの部屋のホストか</summary>
         public static bool IsLocalHost => AmongUsClient.Instance != null && AmongUsClient.Instance.AmHost && GameStates.IsLocalGame;
-        /// <summary>全員の役職が見えるか(乗り移っている間は、そのプレイヤーの目線にする)</summary>
-        public static bool SeeAllRoles => IsLocalHost && Possessed == null;
-        /// <summary>
-        /// 乗り移っている間は、MOD未導入のプレイヤー(非クライアント)と同じ目線・動作にする。<br/>
-        /// 右下のボタンはバニラのまま(MODの画像や文字の上書きなし)、能力のボタンもバニラの処理(ホストに送る形)で動く
-        /// </summary>
-        public static bool VanillaView => IsLocalHost && Possessed != null;
+        /// <summary>全員の役職が見えるか(乗り移っている間も見える)</summary>
+        public static bool SeeAllRoles => IsLocalHost;
 
         /// <summary>ホスト本人の体(乗り移っていないときは null)</summary>
         static PlayerControl hostBody;
@@ -42,6 +37,7 @@ namespace TownOfHost
             var current = PlayerControl.LocalPlayer;
             if (current == null || target == current) return;
             hostBody ??= current;
+            UndoRevive();
             try
             {
                 //今の体は止める(ダミーなら元のダミーに戻す)
@@ -74,6 +70,8 @@ namespace TownOfHost
                 //乗り移った先の役職のボタンなどを出す(自分の画面だけ)
                 RoleManager.Instance.SetRole(target, GetRoleType(target));
                 ResetHud(target);
+                //会議中に勝者予想ができる人へ乗り移ったら投票できるようにする
+                ReviveForPrediction(target);
                 Logger.Info($"{target.Data.GetLogPlayerName()} に乗り移り", "LocalTest");
                 UtilsNotifyRoles.NotifyRoles(true, true);
             }
@@ -96,10 +94,10 @@ namespace TownOfHost
             var role = target.Data.Role;
             if (role != null && role.Ability != null) role.InitializeAbilityButton();
             else hud.AbilityButton.ToggleVisible(false);
-            if (HudManagerPatch.LowerInfoText != null) HudManagerPatch.LowerInfoText.text = "";
+            if (GameStates.IsMeeting) return;//会議中はボタンを出さない(会議が終わると元の処理で出る)
+            //乗り移った先の役職のMODのボタン表示にする
             hud.SetHudActive(target, role, true);
-            //元の自分に戻ったら、MODのボタン表示を付け直す
-            if (Possessed == null) CustomButtonHud.BottonHud(true);
+            CustomButtonHud.BottonHud(true);
         }
         /// <summary>元の自分に戻る</summary>
         public static void Release()
@@ -149,11 +147,40 @@ namespace TownOfHost
             return role.GetRoleInfo()?.BaseRoleType?.Invoke() ?? pc.Data.Role.Role;
         }
 
+        // ------------------ 会議中の乗り移り(死亡後の勝者予想のテスト) ------------------
+        /// <summary>会議の間だけ、自分の画面で生きているように見せたプレイヤー</summary>
+        static PlayerControl revived;
+        /// <summary>
+        /// 会議中に、勝者予想ができる死んだプレイヤーに乗り移ったら、自分の画面でだけ生きているように見せて投票できるようにする
+        /// (MOD未導入の人にしている見せ方と同じ)
+        /// </summary>
+        static void ReviveForPrediction(PlayerControl target)
+        {
+            UndoRevive();
+            if (!GameStates.IsMeeting || target == null || target.IsAlive() || !PredictionManager.IsEligible(target.PlayerId)) return;
+            target.Data.IsDead = false;
+            revived = target;
+            foreach (var area in MeetingHud.Instance.playerStates)
+                if (area.TargetPlayerId == target.PlayerId) area.AmDead = false;
+            Logger.Info($"{target.Data.GetLogPlayerName()} は勝者予想ができるので、会議の間だけ生きているように見せる", "LocalTest");
+        }
+        /// <summary>生きているように見せたのを元に戻す(会議の終わり・別の人に乗り移ったとき)</summary>
+        public static void UndoRevive()
+        {
+            if (revived == null) return;
+            if (!revived.IsAlive()) revived.Data.IsDead = true;
+            if (MeetingHud.Instance != null)
+                foreach (var area in MeetingHud.Instance.playerStates)
+                    if (area.TargetPlayerId == revived.PlayerId) area.AmDead = !revived.IsAlive();
+            revived = null;
+        }
+
         // ------------------ 左下のボタン ------------------
         [HarmonyPatch(typeof(HudManager), nameof(HudManager.Update)), HarmonyPostfix]
         public static void HudUpdatePostfix(HudManager __instance)
         {
-            var show = IsLocalHost && GameStates.IsInTask && !GameStates.IsMeeting;
+            //タスク中と会議中(追放の画面などは除く)
+            var show = IsLocalHost && GameStates.InGame && (GameStates.IsInTask || GameStates.IsMeeting) && !GameStates.ExiledAnimate;
             if (!show)
             {
                 if (button != null) button.gameObject.SetActive(false);
@@ -162,6 +189,13 @@ namespace TownOfHost
             if (button == null) CreateButton(__instance);
             if (button == null) return;
             button.gameObject.SetActive(true);
+            //会議の画面より手前に出す
+            var aspect = button.GetComponent<AspectPosition>();
+            if (aspect != null)
+            {
+                aspect.DistanceFromEdge = new Vector3(0.8f, 0.8f, GameStates.IsMeeting ? -150f : -5f);
+                aspect.AdjustPosition();
+            }
             button.SetEnabled();
             button.SetCoolDown(0f, 1f);
             button.OverrideText(Possessed == null ? "乗り移り" : "乗り移り中");
@@ -200,7 +234,7 @@ namespace TownOfHost
             if (role == null) return;
             picking = true;
             var minigame = Object.Instantiate(role.ShapeshifterMenu, Camera.main.transform, false);
-            minigame.transform.localPosition = new Vector3(0f, 0f, -50f);
+            minigame.transform.localPosition = new Vector3(0f, 0f, GameStates.IsMeeting ? -200f : -50f);//会議中は会議の画面より手前
             minigame.Begin(null);
         }
 
@@ -233,15 +267,35 @@ namespace TownOfHost
                     Possess(target);
                 });
                 panel.SetPlayer(i, target.Data, onShift);
-                //役職と、元の自分かどうかを名前の下に出す
-                var (_, roleText) = UtilsRoleText.GetRoleNameAndProgressTextData(target, target, false);
-                panel.ColorBlindName.text = (target == hostBody ? "【元の自分】 " : "") + roleText.RemoveHtmlTags() + (target.IsAlive() ? "" : "（死亡）");
+                //役職(役職の色)・タスク数・元の自分かどうかを名前の下に出す
+                panel.ColorBlindName.text = PanelText(target);
                 panel.ColorBlindName.enabled = true;
                 __instance.potentialVictims.Add(panel);
                 selectable.Add(panel.Button);
             }
             ControllerManager.Instance.OpenOverlayMenu(__instance.name, __instance.BackButton, __instance.DefaultButtonSelected, selectable);
             return false;
+        }
+
+        /// <summary>選ぶ画面の名前の下の文字(役職は役職の色、タスクは水色、部屋タスクは黄緑)</summary>
+        static string PanelText(PlayerControl pc)
+        {
+            var sb = new System.Text.StringBuilder();
+            if (pc == hostBody) sb.Append("【元の自分】");
+            var role = pc.GetCustomRole();
+            sb.Append(Utils.ColorString(UtilsRoleText.GetRoleColor(role), UtilsRoleText.GetRoleName(role)));
+            var state = PlayerState.GetByPlayerId(pc.PlayerId);
+            var info = role.GetRoleInfo();
+            //部屋タスク(ウォーカーのタスク)を持つ役職か
+            var roomTask = RoomTaskSettings.GetTargetType(role) is not RoomTaskSettings.TargetType.None
+                || (info?.ClassType != null && typeof(Roles.Core.Interfaces.IRoomTasker).IsAssignableFrom(info.ClassType));
+            if (state != null && (roomTask || UtilsTask.HasTasks(pc.Data)))
+            {
+                var task = $"({state.taskState.CompletedTasksCount}/{state.taskState.AllTasksCount})";
+                sb.Append(' ').Append(Utils.ColorString(roomTask ? new Color32(154, 205, 50, 255) : new Color32(0, 255, 255, 255), task));
+            }
+            if (!pc.IsAlive()) sb.Append("（死亡）");
+            return sb.ToString();
         }
 
         // ------------------ 試合の終わり ------------------

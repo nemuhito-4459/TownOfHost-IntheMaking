@@ -38,6 +38,8 @@ namespace TownOfHost
         }
 
         static bool Enabled => Options.CurrentGameMode == CustomGameMode.Standard && !GameStates.IsFreePlay;
+        /// <summary>今の会議で予想できる人か</summary>
+        public static bool IsEligible(byte playerId) => eligible.Contains(playerId);
 
         /// <summary>会議が始まる直前(StartMeeting を送る前)に呼ぶ</summary>
         public static void BeforeMeetingStart()
@@ -136,6 +138,7 @@ namespace TownOfHost
         public static void OnMeetingEnd()
         {
             if (!AmongUsClient.Instance.AmHost) return;
+            LocalTestManager.UndoRevive();//ローカルのテストで生きているように見せていたのを戻す
             used.UnionWith(eligible);
             eligible.Clear();
             if (desynced.Count == 0) return;
