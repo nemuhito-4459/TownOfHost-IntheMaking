@@ -36,14 +36,15 @@ namespace TownOfHost
         const int LoseAmount = 20;
         /// <summary>勝者予想が当たったときの割合(勝ったときの増加量の1割)</summary>
         const float PredictionRate = 0.1f;
-        /// <summary>陣営ごとの倍率(勝ったとき, 負けたとき)。人数が少ない陣営ほど勝つと多く、負けても少なめ</summary>
+        /// <summary>陣営ごとの倍率(勝ったとき, 負けたとき)。勝ちの倍率が高い陣営は負けの倍率も高い</summary>
         static (float win, float lose) FactionRate(Faction f) => f switch
         {
             Faction.Crewmate => (1.0f, 1.0f),
-            Faction.Impostor => (1.3f, 0.8f),
-            Faction.Madmate => (1.3f, 0.8f),
-            Faction.Jackal => (1.5f, 0.7f),
-            _ => (1.5f, 0.7f),//ニュートラル
+            Faction.Neutral => (1.2f, 1.2f),
+            Faction.Madmate => (1.2f, 1.2f),
+            Faction.Impostor => (1.5f, 1.5f),
+            Faction.Jackal => (1.5f, 1.5f),
+            _ => (1.0f, 1.0f),
         };
         // ===========================================
 
