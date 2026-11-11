@@ -88,6 +88,8 @@ public static class MeetingHudPatch
             foreach (var pc in PlayerCatch.AllPlayerControls)
             {
                 var roleClass = pc.GetRoleClass();
+                //投票で人を選ぶ能力(自投票で使う能力)は使わない。能力は「/ab 番号」で使う
+                if (roleClass is ISelfVoter && pc.PlayerId == voter.PlayerId) continue;
                 if (Balancer.Id != 255 && !(suspectPlayerId == srcPlayerId || suspectPlayerId == Balancer.target1 || suspectPlayerId == Balancer.target2) && !pc.Is(CustomRoles.Balancer) && Balancer.OptionCanMeetingAbility.GetBool()) continue;
 
                 if (roleClass?.CheckVoteAsVoter(suspectPlayerId, voter) == false || (!votefor.IsAlive() && suspectPlayerId != 253 && suspectPlayerId != 254 && !Assassin.NowUse))
@@ -102,16 +104,6 @@ public static class MeetingHudPatch
                     __instance.RpcClearVote(voter.PlayerId);
                     Logger.Info($"{voter.GetNameWithRole().RemoveHtmlTags()} イレクター発動 => {suspectPlayerId}", nameof(CastVotePatch));
                     return false;
-                }
-            }
-            if (voter.GetRoleClass() is ISelfVoter selfVoter)
-            {
-                if (selfVoter.CanUseVoted())
-                {
-                    MeetingVoteManager.Instance?.SetVote(srcPlayerId, suspectPlayerId, isoverride: false);
-                    __instance.RpcClearVote(voter.PlayerId);
-                    Utils.SendMessage(GetString("SelfVoterCancelMessage"), voter.PlayerId);
-                    return true;
                 }
             }
             MeetingVoteManager.Instance?.SetVote(srcPlayerId, suspectPlayerId);
