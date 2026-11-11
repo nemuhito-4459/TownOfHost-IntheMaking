@@ -154,6 +154,11 @@ namespace TownOfHost
                         canceled = true;
                         SendMessage(RatingManager.ShowAllText(), PlayerControl.LocalPlayer.PlayerId);
                         break;
+                    //会議中の能力を番号で使う
+                    case "/ab":
+                        canceled = true;
+                        Modules.SelfVoteManager.AbilityCommand(PlayerControl.LocalPlayer, args);
+                        break;
                     //死亡後の勝者予想(ホストは投票できないのでコマンド)
                     case "/yosou":
                         canceled = true;
@@ -1471,6 +1476,11 @@ namespace TownOfHost
                 //自分のレート
                 case "/rate":
                     SendMessage(RatingManager.ShowText(player), player.PlayerId);
+                    break;
+                //会議中の能力を番号で使う
+                case "/ab":
+                    canceled = true;
+                    Modules.SelfVoteManager.AbilityCommand(player, args);
                     break;
                 //モデレーターのコマンド
                 case "/kick":
