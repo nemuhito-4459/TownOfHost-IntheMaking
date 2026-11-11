@@ -72,7 +72,8 @@ public static class MeetingHudPatch
                         _ = new LateTask(() =>
                         {
                             var meeting = MeetingHud.Instance;
-                            if (meeting == null || meeting.state is MeetingHud.VoteStates.Results or MeetingHud.VoteStates.Proceeding) return;
+                            //投票が締め切られたあと(予想できる人が消えたあと)なら何もしない
+                            if (meeting == null || !GameStates.IsMeeting || !PredictionManager.HasEligible) return;
                             allowedDummyVotes.Add(voter.PlayerId);
                             meeting.CastVote(src, suspect);
                         }, wait, "DummyVoteDelay", true);
