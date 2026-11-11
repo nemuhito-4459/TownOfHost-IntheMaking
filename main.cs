@@ -36,7 +36,7 @@ namespace TownOfHost
         // プライベートフォークの規約により常にfalse(trueに戻さないこと)
         public static readonly bool AllowPublicRoom = false;
         // フォークID / ForkId (Default: OriginalTOH)
-        public static readonly string ForkId = "TOH-K";
+        public static readonly string ForkId = "TOH-IM";
         // Discordボタンを表示するか / Show Discord Button (Default: true)
         public static readonly bool ShowDiscordButton = true;
         // Discordサーバーの招待リンク / Discord Server Invite URL (Default: https://discord.gg/W5ug6hXB9V)
@@ -62,8 +62,8 @@ namespace TownOfHost
         public const string PluginGuid = "com.walf4459.townofhost-inthemaking";
         // バージョンは「1.xx」表記。更新ごとに xx を1増やす(xx は16進数: 1.00 → 1.09 → 1.0a → … → 1.ff)
         // PluginVersion は BepInEx/Version.Parse 用に数字だけで「1.(xxを10進にした値).0」と書く。例: 1.0a → "1.10.0"
-        public const string PluginVersion = "1.59.0";
-        public const string PluginShowVersion = "1.3b";
+        public const string PluginVersion = "1.60.0";
+        public const string PluginShowVersion = "1.3c";
 
         /// 配布するデバッグ版なのであればtrue。リリース時にはfalseにすること。
         public static bool DebugVersion = false;
@@ -173,14 +173,39 @@ namespace TownOfHost
 
         public const float RoleTextSize = 2f;
         public static Main Instance;
+        /// <summary>BanList・Rating・Moderators などを置くフォルダ(Among Us のフォルダの TownOfHost-IntheMaking_DATA)</summary>
         public static string BaseDirectory
             => Path.GetFullPath(Path.Combine(
                 string.IsNullOrEmpty(BepInEx.Paths.BepInExRootPath) ? Application.persistentDataPath : BepInEx.Paths.BepInExRootPath,
-                "../TOHK_DATA"));
+                "../TownOfHost-IntheMaking_DATA"));
+        /// <summary>
+        /// 名前を TOHK から変えたフォルダに、前のフォルダの中身をコピーする(新しいフォルダがまだ無いときだけ。前のフォルダは残す)
+        /// </summary>
+        static void MigrateOldData()
+        {
+            try
+            {
+                var root = string.IsNullOrEmpty(BepInEx.Paths.BepInExRootPath) ? Application.persistentDataPath : BepInEx.Paths.BepInExRootPath;
+                CopyFilesIfNew(Path.GetFullPath(Path.Combine(root, "../TOHK_DATA")), BaseDirectory);
+                CopyFilesIfNew(Path.Combine(Application.persistentDataPath, "TownOfHost_K"), Path.Combine(Application.persistentDataPath, DataFolderName));
+            }
+            catch (Exception ex) { UnityEngine.Debug.LogWarning($"MigrateOldData: {ex}"); }
+
+            static void CopyFilesIfNew(string from, string to)
+            {
+                if (!Directory.Exists(from) || Directory.Exists(to)) return;
+                Directory.CreateDirectory(to);
+                foreach (var file in Directory.GetFiles(from))
+                    File.Copy(file, Path.Combine(to, Path.GetFileName(file)));
+            }
+        }
+        /// <summary>統計やログを置くフォルダ(persistentDataPath の中)</summary>
+        public static string DataFolderName => "TownOfHost-IntheMaking";
         public override void Load()
         {
             GameCount = 0;
             Instance = this;
+            MigrateOldData();
 
             //Client Options
             HideName = Config.Bind("Client Options", "Hide Game Code Name", "TownOfHost-IntheMaking");
