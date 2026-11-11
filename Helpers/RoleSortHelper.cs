@@ -23,6 +23,7 @@ namespace TownOfHost
             { CustomRoles.EarnestWolf, "いちずなおおかみ" },
             { CustomRoles.FireWorks, "はなびしょくにん" },
             { CustomRoles.Tairou, "たいろう" },
+            { CustomRoles.Shinigami, "しにがみ" },
             //クルー
             { CustomRoles.Bakery, "ぱんや" },
             { CustomRoles.Balancer, "てんびん" },
