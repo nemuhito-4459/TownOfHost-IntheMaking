@@ -107,7 +107,7 @@ namespace TownOfHost
             }
             Logger.Info($"{voter.Data.GetLogPlayerName()} の予想 => {targetId}", "Prediction");
             //投票済みの表示を消して、変えられるようにする
-            meetingHud.RpcClearVote(voter.GetClientId());
+            meetingHud.RpcClearVote(voter.PlayerId);
             return true;
         }
 
