@@ -42,10 +42,14 @@ namespace TownOfHost
 
         /// <summary>設定ボタンと「？」ボタンだけの役職の行(値は表示しない)。ONのときだけ出る</summary>
         static OptionItem CreateRow(SimpleRoleInfo info, OptionItem toggle)
-            => IntegerOptionItem.Create(IdBase + info.ConfigId, info.RoleName.ToString(), new(0, 0, 1), 0, TabGroup.Combinations, false, HideValue: true)
+        {
+            var row = IntegerOptionItem.Create(IdBase + info.ConfigId, info.RoleName.ToString(), new(0, 0, 1), 0, TabGroup.Combinations, false, HideValue: true)
                 .SetCustomRole(info.RoleName)
                 .SetColorcode(info.RoleColorCode)
                 .SetColor(info.RoleColor)
                 .SetEnabled(() => toggle.GetBool());
+            row.HideValueText = true;//値(0)は出さない
+            return row;
+        }
     }
 }

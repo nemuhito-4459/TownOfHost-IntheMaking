@@ -201,6 +201,8 @@ namespace TownOfHost
         });
         /// <summary>値を「オン/オフ」で表示する(0ならオフ、それ以外はオン)</summary>
         public bool ShowOnOff { get; set; }
+        /// <summary>値の文字を出さない(設定ボタンと「？」だけの行に使う)</summary>
+        public bool HideValueText { get; set; }
         public OptionItem SetChild(OptionItem child) => Do(i => i.Children.Add(child));
         public OptionItem RegisterUpdateValueEvent(EventHandler<UpdateValueEventArgs> handler)
             => Do(i => UpdateValueEvent += handler);
@@ -290,6 +292,7 @@ namespace TownOfHost
 
         public string ApplyFormat(string value, bool coloroff = true)
         {
+            if (HideValueText) return "";
             if (ShowOnOff) return Translator.GetString(value is "0" or "-0" ? "ColoredOff" : "ColoredOn");
             if (value == "-0") value = "0";
             if (value == "0")
