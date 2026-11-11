@@ -24,7 +24,7 @@ namespace TownOfHost
         // ====== 数値(ここを変えると調整できる) ======
         /*
          * 【勝って生き残った】
-         *   基本レート = 試合時間 × 陣営ボーナス × ランク補正 × 基本値
+         *   基本レート = 試合時間 × 陣営ボーナス × ランク補正 × 基本値(勝ち40・負け25)
          *   クルーメイト         ＋ 人外に投票した回数 × 基本値 × タスク完了割合 × 1.5
          *   キルできる人外       ＋ キルした回数 × 基本値 × 0.6
          *   キルできない人外     ＋ 自分に賭けた人数 × 1.2
@@ -35,8 +35,10 @@ namespace TownOfHost
          *   － 基本レート × 0.75 (死んでいて賭けた人が勝ったなら、上の死亡時の分は足す)
          * 最後に小数点以下を四捨五入
          */
-        /// <summary>基本値</summary>
-        const float BaseValue = 25f;
+        /// <summary>基本値(勝ったとき)</summary>
+        const float BaseValue = 40f;
+        /// <summary>基本値(負けたとき)</summary>
+        const float LoseBaseValue = 25f;
         /// <summary>試合時間の倍率。10分で1倍、20分で2倍…</summary>
         static float TimeRate(double minutes) => (float)(minutes / 10.0);
         /// <summary>ランク補正</summary>
@@ -235,10 +237,10 @@ namespace TownOfHost
             //試合前のレート(計算の途中で変わらないように先に控えておく)
             var ratingBefore = participants.ToDictionary(kv => kv.Key, kv => Get(kv.Value.Code)?.Rating ?? StartRating);
             //基本レート = 試合時間 × 陣営ボーナス × ランク補正 × 基本値
-            float BaseRate(byte id)
+            float BaseRate(byte id, float baseValue = BaseValue)
             {
                 var rating = ratingBefore.GetValueOrDefault(id);
-                return time * FactionRate(GetFaction(id)).win * RankRate(rating) * BaseValue;
+                return time * FactionRate(GetFaction(id)).win * RankRate(rating) * baseValue;
             }
             //自分に賭けた人数
             int Bettors(byte id) => PredictionManager.Predictions.Count(kv => kv.Value == id && kv.Key != id);
@@ -254,7 +256,7 @@ namespace TownOfHost
                 var faction = GetFaction(id);
                 var state = PlayerState.GetByPlayerId(id);
                 var alive = state?.IsDead == false;
-                var baseRate = BaseRate(id);
+                var baseRate = BaseRate(id, win ? BaseValue : LoseBaseValue);
 
                 //死んでいた人：生存時間 ÷ 試合時間 × (賭けた人が勝ったなら、その人の基本レート)
                 var deadPart = 0f;
@@ -271,7 +273,7 @@ namespace TownOfHost
                 if (!win)
                 {
                     value = -baseRate * LoseRate + deadPart;
-                    detail = $"基本レート {baseRate:0.#} の半分を失った";
+                    detail = $"基本レート {baseRate:0.#} × 0.75 を失った";
                 }
                 else if (!alive)
                 {
