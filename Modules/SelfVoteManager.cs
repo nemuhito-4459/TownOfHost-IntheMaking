@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using TownOfHost.Roles.Core;
 using TownOfHost.Roles.Core.Interfaces;
 using TownOfHost.Roles.Impostor;
 using TownOfHost.Roles.Madmate;
