@@ -2887,6 +2887,7 @@
 "RoomTaskWaitCommon","ウォークタスクの待ち時間(通常)"
 "RoomTaskWaitShort","ウォークタスクの待ち時間(ショート)"
 "RoomTaskWaitLong","ウォークタスクの待ち時間(ロング)"
+"CrewRoomTaskAll","インポスター置き換え以外のクルーにもウォークタスクを割り当てる"
 "NeutralRoomTask","ジャッカル陣営以外のニュートラルにウォークタスクを割り当てる"
 "NeutralRoomTaskOverride","個別に設定する"
 "RoomTaskKind.Common","通常"

@@ -388,6 +388,8 @@ public static class CustomRoleManager
         else
         {
             OtherRolesAdd(player);
+            //バニラのクルー役職にも(設定でオンのとき)ウォークタスクを割り当てる
+            RoomTaskSettings.AddTasker(player, role);
         }
         var roleclass = player.GetRoleClass();
         if (player.Data.Role.Role == RoleTypes.Shapeshifter || role.GetRoleInfo()?.BaseRoleType?.Invoke() == RoleTypes.Shapeshifter)

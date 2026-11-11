@@ -11,6 +11,7 @@ namespace TownOfHost
 
     /// <summary>
     /// インポスター置き換え(デシンクインポスター)のクルー・ニュートラル役職に割り当てる「ウォークタスク」の設定と判定。<br/>
+    /// 設定で、普通のクルー(クルーメイト置き換えなど)にも普通のタスクの代わりに割り当てられる。<br/>
     /// 部屋へ行って、種類ごとに設定した秒数その部屋にいると1タスク完了(部屋を出ても待ち時間は途中から再開)。<br/>
     /// 役職のクラスに手を入れずに割り当てるので、今後追加する置き換え役職にも自動で付く。
     /// </summary>
@@ -20,6 +21,8 @@ namespace TownOfHost
 
         //クルーメイト(タスク数はクルーメイトの共通設定を使う)
         public static OptionItem CrewWaitCommon, CrewWaitShort, CrewWaitLong;
+        /// <summary>インポスター置き換え以外のクルー(クルーメイト・千里眼など)にもウォークタスクを割り当てるか</summary>
+        public static OptionItem CrewAll;
         //ニュートラル
         public static OptionItem NeutralEnable, NeutralOverride;
         public static OptionItem NeutralNumCommon, NeutralNumShort, NeutralNumLong;
@@ -38,6 +41,8 @@ namespace TownOfHost
                 .SetValueFormat(OptionFormat.Seconds).SetColor(crew);
             CrewWaitLong = FloatOptionItem.Create(IdStart + 2, "RoomTaskWaitLong", new(0.5f, 180f, 0.5f), 15f, tab, false)
                 .SetValueFormat(OptionFormat.Seconds).SetColor(crew);
+            CrewAll = BooleanOptionItem.Create(IdStart + 3, "CrewRoomTaskAll", false, tab, false)
+                .SetColor(crew);
         }
 
         /// <summary>ニュートラルタブ: ジャッカル陣営以外の置き換え役職にタスクを割り当てるか → 個別に設定するか → 個別の値</summary>
@@ -68,6 +73,12 @@ namespace TownOfHost
         {
             if (Options.CurrentGameMode is not CustomGameMode.Standard) return TargetType.None;
             var info = role.GetRoleInfo();
+            //設定がオンなら、普通のクルー(バニラのクルー役職・クルーメイト置き換え)にも普通のタスクの代わりに割り当てる
+            if (CrewAll?.GetBool() == true && (info == null ? role.IsVanilla() && !role.IsImpostor() && role.IsCrewmate() : !info.IsDesyncImpostor && info.CustomRoleType == CustomRoleTypes.Crewmate))
+            {
+                if (info?.ClassType != null && typeof(IRoomTasker).IsAssignableFrom(info.ClassType)) return TargetType.None;
+                return TargetType.Crewmate;
+            }
             if (info == null || !info.IsDesyncImpostor) return TargetType.None;
             //自前でウォークタスクを持つ役職(マーリン・妖狐など)は対象外
             if (info.ClassType != null && typeof(IRoomTasker).IsAssignableFrom(info.ClassType)) return TargetType.None;
