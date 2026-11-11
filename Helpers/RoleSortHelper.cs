@@ -53,15 +53,11 @@ namespace TownOfHost
             return key;
         }
 
-        /// <summary>読み(ひらがな・カタカナ)。ジャッカル〇〇は「じゃっかる」+元の役職の読み</summary>
+        /// <summary>読み(ひらがな・カタカナ)</summary>
         static string GetReading(CustomRoles role)
         {
             if (Readings.TryGetValue(role, out var reading)) return reading;
-            if (role is not CustomRoles.JackalWolf && Roles.Neutral.JackalImpostorBase.IsJackalImpostor(role))
-            {
-                var baseRole = Roles.Neutral.JackalImpostorBase.GetBaseRole(role);
-                if (baseRole is not CustomRoles.NotAssigned and not CustomRoles.Impostor) return "じゃっかる" + GetReading(baseRole);
-            }
+            //ジャッカル〇〇も表示されている名前(カタカナ)の順に並べる
             return Translator.GetString(role.ToString(), SupportedLangs.Japanese);
         }
 

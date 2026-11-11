@@ -13,6 +13,15 @@ namespace TownOfHost
         #region static
         public static IReadOnlyList<OptionItem> AllOptions => _allOptions;
         private static List<OptionItem> _allOptions = new(2048);
+        /// <summary>表示の順番(AllOptionsの並び)で、item を target の直前に移す。IDは変わらないので保存値には影響しない</summary>
+        public static void MoveBefore(OptionItem item, OptionItem target)
+        {
+            if (item == null || target == null || item == target) return;
+            if (!_allOptions.Remove(item)) return;
+            var index = _allOptions.IndexOf(target);
+            if (index < 0) _allOptions.Add(item);
+            else _allOptions.Insert(index, item);
+        }
         public static IReadOnlyDictionary<int, OptionItem> FastOptions => _fastOptions;
         private static Dictionary<int, OptionItem> _fastOptions = new(2048);
         public static IReadOnlyList<OptionItem> KillCoolOption => _killcooloption;

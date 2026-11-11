@@ -40,6 +40,13 @@ namespace TownOfHost
                 if (isMerlin) option.SetParentRole(CustomRoles.Merlin);
                 if (option.Parent == toggle) option.ReParent(isMerlin ? MerlinRow : AssassinRow);
             }
+
+            //行は設定より後に作っているので、設定ページでは一番下に出てしまう。
+            //普通の役職と同じように、それぞれの設定の一番上(直前)に並べ替える(ページの中の行のボタンで元の画面に戻れる)
+            var firstAssassin = OptionItem.AllOptions.FirstOrDefault(o => o.ParentRole == CustomRoles.Assassin && !IsRow(o));
+            var firstMerlin = OptionItem.AllOptions.FirstOrDefault(o => o.ParentRole == CustomRoles.Merlin && !IsRow(o));
+            OptionItem.MoveBefore(AssassinRow, firstAssassin);
+            OptionItem.MoveBefore(MerlinRow, firstMerlin);
         }
 
         /// <summary>設定ボタンと「？」ボタンだけの役職の行(値は表示しない)。ONのときだけ出る</summary>
