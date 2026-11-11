@@ -1,0 +1,201 @@
+using System;
+using System.Linq;
+using AmongUs.GameOptions;
+using HarmonyLib;
+using UnityEngine;
+using Object = UnityEngine.Object;
+
+using TownOfHost.Roles.Core;
+
+namespace TownOfHost
+{
+    /// <summary>
+    /// ローカルでのテストプレイ用(ローカルの部屋のホストだけ)<br/>
+    /// ・全員の役職が見える<br/>
+    /// ・左下の「乗り移り」ボタンで、選んだプレイヤー(ダミー)に乗り移って、そのプレイヤーとして動ける<br/>
+    ///   (元の自分を選ぶと戻る。試合が終わると自動で元に戻る)
+    /// </summary>
+    [HarmonyPatch]
+    public static class LocalTestManager
+    {
+        /// <summary>ローカルの部屋のホストか</summary>
+        public static bool IsLocalHost => AmongUsClient.Instance != null && AmongUsClient.Instance.AmHost && GameStates.IsLocalGame;
+        /// <summary>全員の役職が見えるか</summary>
+        public static bool SeeAllRoles => IsLocalHost;
+
+        /// <summary>ホスト本人の体(乗り移っていないときは null)</summary>
+        static PlayerControl hostBody;
+        /// <summary>今乗り移っているプレイヤー(乗り移っていないときは null)</summary>
+        public static PlayerControl Possessed { get; private set; }
+        static bool picking;
+        static ActionButton button;
+
+        // ------------------ 乗り移り ------------------
+        public static void Possess(PlayerControl target)
+        {
+            if (!IsLocalHost || target == null) return;
+            var current = PlayerControl.LocalPlayer;
+            if (current == null || target == current) return;
+            hostBody ??= current;
+            try
+            {
+                //今の体は止める(ダミーなら元のダミーに戻す)
+                current.MyPhysics.SetNormalizedVelocity(Vector2.zero);
+                current.moveable = false;
+                if (current != hostBody) SetDummy(current, true);
+
+                //次の体を動かせるようにする
+                if (target != hostBody) SetDummy(target, false);
+                target.moveable = true;
+
+                //視界(ライト)を移す
+                var light = current.lightSource;
+                if (light != null)
+                {
+                    var pos = light.transform.localPosition;
+                    light.transform.SetParent(target.transform, false);
+                    light.transform.localPosition = pos;
+                    current.lightSource = target.lightSource;
+                    target.lightSource = light;
+                }
+
+                PlayerControl.LocalPlayer = target;
+                HudManager.Instance.PlayerCam.SetTarget(target);
+                HudManager.Instance.PlayerCam.SnapToTarget();
+
+                //乗り移った先の役職のボタンなどを出す(自分の画面だけ)
+                RoleManager.Instance.SetRole(target, GetRoleType(target));
+
+                Possessed = target == hostBody ? null : target;
+                if (Possessed == null) hostBody = null;
+                Logger.Info($"{target.Data.GetLogPlayerName()} に乗り移り", "LocalTest");
+                UtilsNotifyRoles.NotifyRoles(true, true);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex.ToString(), "LocalTest");
+            }
+        }
+        /// <summary>元の自分に戻る</summary>
+        public static void Release()
+        {
+            if (hostBody != null && Possessed != null) Possess(hostBody);
+            hostBody = null;
+            Possessed = null;
+        }
+        static void SetDummy(PlayerControl pc, bool isDummy)
+        {
+            pc.isDummy = isDummy;
+            var behaviour = pc.GetComponent<DummyBehaviour>();
+            if (behaviour != null) behaviour.enabled = isDummy;
+        }
+        /// <summary>その人の画面で見える自分の役職(バニラの役職)</summary>
+        static RoleTypes GetRoleType(PlayerControl pc)
+        {
+            var role = pc.GetCustomRole();
+            if (!pc.IsAlive())
+                return role.IsImpostor() || role.IsMadmate() ? RoleTypes.ImpostorGhost : RoleTypes.CrewmateGhost;
+            return role.GetRoleInfo()?.BaseRoleType?.Invoke() ?? pc.Data.Role.Role;
+        }
+
+        // ------------------ 左下のボタン ------------------
+        [HarmonyPatch(typeof(HudManager), nameof(HudManager.Update)), HarmonyPostfix]
+        public static void HudUpdatePostfix(HudManager __instance)
+        {
+            var show = IsLocalHost && GameStates.IsInTask && !GameStates.IsMeeting;
+            if (!show)
+            {
+                if (button != null) button.gameObject.SetActive(false);
+                return;
+            }
+            if (button == null) CreateButton(__instance);
+            if (button == null) return;
+            button.gameObject.SetActive(true);
+            button.SetEnabled();
+            button.SetCoolDown(0f, 1f);
+            button.OverrideText(Possessed == null ? "乗り移り" : "乗り移り中");
+        }
+        static void CreateButton(HudManager hud)
+        {
+            try
+            {
+                var source = hud.AbilityButton;
+                if (source == null) return;
+                var b = Object.Instantiate(source, hud.transform);
+                b.name = "LocalTestPossessButton";
+                //ボタンを押したときの処理は差し替える(AbilityButton の役職の能力は使わない)
+                var shapeshifter = RoleManager.Instance.AllRoles.ToArray().FirstOrDefault(r => r.Role == RoleTypes.Shapeshifter);
+                if (shapeshifter?.Ability?.Image != null) b.graphic.sprite = shapeshifter.Ability.Image;
+                var passive = b.GetComponent<PassiveButton>();
+                passive.OnClick = new();
+                passive.OnClick.AddListener((Action)OpenPicker);
+                var aspect = b.GetComponent<AspectPosition>() ?? b.gameObject.AddComponent<AspectPosition>();
+                aspect.Alignment = AspectPosition.EdgeAlignments.LeftBottom;
+                aspect.DistanceFromEdge = new Vector3(0.8f, 0.8f, -5f);
+                aspect.AdjustPosition();
+                button = b;
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex.ToString(), "LocalTest");
+            }
+        }
+
+        // ------------------ 乗り移る相手を選ぶ画面 ------------------
+        static void OpenPicker()
+        {
+            if (!IsLocalHost || Minigame.Instance != null) return;
+            var role = RoleManager.Instance.AllRoles.ToArray().FirstOrDefault(r => r.Role == RoleTypes.Shapeshifter)?.TryCast<ShapeshifterRole>();
+            if (role == null) return;
+            picking = true;
+            var minigame = Object.Instantiate(role.ShapeshifterMenu, Camera.main.transform, false);
+            minigame.transform.localPosition = new Vector3(0f, 0f, -50f);
+            minigame.Begin(null);
+        }
+
+        [HarmonyPatch(typeof(ShapeshifterMinigame), nameof(ShapeshifterMinigame.Begin)), HarmonyPrefix]
+        public static bool PickerBeginPrefix(ShapeshifterMinigame __instance)
+        {
+            if (!picking) return true;
+            picking = false;
+
+            EditorUI.MinigameBegin(__instance);
+            __instance.potentialVictims = new();
+            Il2CppSystem.Collections.Generic.List<UiElement> selectable = new();
+            //自分(今の体)以外の全員。元の自分もここから選べる
+            var players = PlayerControl.AllPlayerControls.ToArray()
+                .Where(pc => pc != null && pc != PlayerControl.LocalPlayer && pc.Data != null && !pc.Data.Disconnected)
+                .OrderBy(pc => pc.PlayerId).ToArray();
+            for (var i = 0; i < players.Length; i++)
+            {
+                var target = players[i];
+                var panel = Object.Instantiate(__instance.PanelPrefab, __instance.transform);
+                panel.transform.localPosition = new Vector3(__instance.XStart + i % 3 * __instance.XOffset, __instance.YStart + i / 3 * __instance.YOffset, -1f);
+                Il2CppSystem.Action onShift = (Action)(() =>
+                {
+                    __instance.Close();
+                    Possess(target);
+                });
+                panel.SetPlayer(i, target.Data, onShift);
+                //役職と、元の自分かどうかを名前の下に出す
+                var (_, roleText) = UtilsRoleText.GetRoleNameAndProgressTextData(target, target, false);
+                panel.ColorBlindName.text = (target == hostBody ? "【元の自分】 " : "") + roleText.RemoveHtmlTags() + (target.IsAlive() ? "" : "（死亡）");
+                panel.ColorBlindName.enabled = true;
+                __instance.potentialVictims.Add(panel);
+                selectable.Add(panel.Button);
+            }
+            ControllerManager.Instance.OpenOverlayMenu(__instance.name, __instance.BackButton, __instance.DefaultButtonSelected, selectable);
+            return false;
+        }
+
+        // ------------------ 試合の終わり ------------------
+        [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.OnGameEnd)), HarmonyPrefix]
+        public static void OnGameEndPrefix()
+        {
+            //試合が終わる前に元の自分に戻る(結果画面などはホストの体で動くため)
+            if (Possessed != null) Release();
+            if (button != null) Object.Destroy(button.gameObject);
+            button = null;
+        }
+    }
+}

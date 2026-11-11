@@ -72,6 +72,13 @@ namespace TownOfHost
             if (text == roleText && !ch)//アドオンの上書きチェック
                 (roleColor, roleText) = GetTrueRoleNameData(seen.PlayerId, addon);
 
+            //ローカルでのテスト: ホストの画面では全員の本当の役職を出す
+            if (LocalTestManager.SeeAllRoles)
+            {
+                (roleColor, roleText) = GetTrueRoleNameData(seen.PlayerId, true);
+                enabled = true;
+            }
+
             return enabled ? ColorString(roleColor, roleText) : "";
         }
         /// <summary>
