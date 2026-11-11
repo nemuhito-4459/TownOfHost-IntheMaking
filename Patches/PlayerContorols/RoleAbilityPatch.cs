@@ -168,6 +168,7 @@ namespace TownOfHost
     {
         public static void Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, [HarmonyArgument(1)] bool animate)
         {
+            if (__instance == null || __instance.PlayerId >= 254) return;//雪玉など(LobbyNetObject)の絵の切り替え
             Logger.Info($"{__instance?.GetNameWithRole().RemoveHtmlTags()} => {target?.GetNameWithRole().RemoveHtmlTags()}", "Shapeshift");
 
             var shapeshifter = __instance;

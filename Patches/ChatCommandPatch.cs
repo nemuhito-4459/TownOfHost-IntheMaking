@@ -159,6 +159,11 @@ namespace TownOfHost
                         canceled = true;
                         PredictionManager.HostCommand(args);
                         break;
+                    //ロビーの雪玉遊び
+                    case "/snow":
+                        canceled = true;
+                        Modules.SnowballManager.Command(args);
+                        break;
                     //ローカルでのテスト用のダミー
                     case "/dummy":
                         canceled = true;

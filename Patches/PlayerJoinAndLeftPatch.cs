@@ -153,6 +153,8 @@ namespace TownOfHost
         {
             checkjoin(client);
             RPC.RpcVersionCheck();
+            //ロビーの雪玉は、入ってきた人の画面がおかしくならないように出し直す
+            Modules.SnowballManager.OnPlayerJoined();
         }
         public static void checkjoin(ClientData client)
         {
