@@ -370,12 +370,22 @@ namespace TownOfHost
                 return false;
             }
         }
+        /// <summary>
+        /// 24文字で改行するか。<br/>
+        /// 個人あてならその人がスイッチのときだけ。全員あてなら部屋にスイッチの人がいるときだけ(1つのメッセージを全員に送るので、人ごとに変えられない)
+        /// </summary>
+        static bool NeedsChatWrap(byte sendTo)
+        {
+            static bool IsSwitch(PlayerControl pc) => pc != null && pc.GetClient()?.PlatformData?.Platform is Platforms.Switch;
+            if (sendTo != byte.MaxValue) return IsSwitch(PlayerCatch.GetPlayerById(sendTo));
+            return PlayerCatch.AllPlayerControls.Any(IsSwitch);
+        }
         public static void SendMessage(string text, byte sendTo = byte.MaxValue, string title = "", bool checkl = true, bool isTowSend = false, bool setsize = false)
         {
             if (!AmongUsClient.Instance.AmHost) return;
             if (text.RemoveHtmlTags() == "") return;
-            //MODが送るチャットは24文字で改行する(2回目の送信=続きの分は、もう改行済み)
-            if (!isTowSend) text = WrapChatText(text);
+            //MODが送るチャットは、スイッチの人に届くときだけ24文字で改行する(2回目の送信=続きの分は、もう改行済み)
+            if (!isTowSend && NeedsChatWrap(sendTo)) text = WrapChatText(text);
             if (title == "") title = $"<{Main.ModColor}>" + GetString($"DefaultSystemMessageTitle") + "</color>";
             if (IsRestriction() && isTowSend && title == "NonTitle") title = "";
 
