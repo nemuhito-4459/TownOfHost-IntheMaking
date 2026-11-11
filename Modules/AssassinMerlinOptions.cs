@@ -16,6 +16,8 @@ namespace TownOfHost
         /// <summary>行だけのダミー設定のID(+ConfigId)</summary>
         const int IdBase = 3_100_000;
         public static OptionItem AssassinRow, MerlinRow;
+        /// <summary>アサシン・マーリンの行か(役職の設定ページに移さないようにする)</summary>
+        public static bool IsRow(OptionItem option) => option != null && (option == AssassinRow || option == MerlinRow);
 
         public static void Setup()
         {

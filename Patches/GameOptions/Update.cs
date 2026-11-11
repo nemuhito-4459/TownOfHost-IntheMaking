@@ -99,7 +99,8 @@ namespace TownOfHost
                     {
                         p = p.Parent;
                     }
-                    if (option.ParentRole == NowRoleTab)
+                    //アサシンとマーリンの行(タブの行)は設定ページに持ってこない
+                    if (option.ParentRole == NowRoleTab && !AssassinMerlinOptions.IsRow(p))
                     {
                         if (!crOptions[NowRoleTab].Contains(p.OptionBehaviour))
                         {

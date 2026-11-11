@@ -649,6 +649,12 @@ namespace TownOfHost
                             stringOption.PlusBtn.transform.localPosition = new Vector3(100, 100, 100);
                             stringOption.MinusBtn.transform.localPosition = new Vector3(100, 100, 100);
                         }
+                        //値を出さない行は、値の枠も消す
+                        if (option.HideValueText)
+                        {
+                            var box = stringOption.transform.FindChild("ValueBox");
+                            if (box != null) box.gameObject.SetActive(false);
+                        }
                         // フィルターオプション、属性設定なら
                         if (option is FilterOptionItem or AssignOptionItem)
                         {
@@ -748,6 +754,12 @@ namespace TownOfHost
                         {
                             stringOption.PlusBtn.transform.localPosition = new Vector3(100, 100, 100);
                             stringOption.MinusBtn.transform.localPosition = new Vector3(100, 100, 100);
+                        }
+                        //値を出さない行は、値の枠も消す
+                        if (option.HideValueText)
+                        {
+                            var box = stringOption.transform.FindChild("ValueBox");
+                            if (box != null) box.gameObject.SetActive(false);
                         }
                         // フィルターオプション、属性設定なら
                         if (option is FilterOptionItem or AssignOptionItem)
