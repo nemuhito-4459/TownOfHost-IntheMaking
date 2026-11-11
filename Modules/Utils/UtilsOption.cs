@@ -896,6 +896,7 @@ namespace TownOfHost
                 case From.TownOfUs: Fromtext += $"<#daa520>{from}</color>"; break;
                 case From.TownOfHost: Fromtext += $"<#00bfff>{from}</color>"; break;
                 case From.TownOfHost_K: Fromtext += "<#00c1ff>TownOfHost-K</color>"; break;
+                case From.TownOfHost_Pko: Fromtext += "<#e58ae5>TownOfHost-Pko</color>"; break;
                 case From.TownOfHost_IntheMaking: Fromtext += $"<{Main.ModColor}>{Main.ModName}</color>"; break;
                 case From.TownOfHost_Y: Fromtext += $"<#dddd00>TownOfHost_Y</color>"; break;
                 case From.TownOfHost_for_E: Fromtext += $"<#18e744>TownOfHost for E</color>"; break;

@@ -24,6 +24,7 @@ public enum From
     TownOfUs,
     TownOfHost,
     TownOfHost_K,//TownOfHost-K で作られた役職
+    TownOfHost_Pko,//TownOfHost-Pko から移植した役職
     TownOfHost_IntheMaking,//このMODで作った役職
     TownOfHost_Y,
     TownOfHost_for_E,

@@ -737,6 +737,7 @@ public enum CustomRoles
     FortuneTeller,
     TaskStar,
     PonkotuTeller,
+    SuspiciousTeller,
     UltraStar,
     MeetingSheriff,
     GuardMaster,

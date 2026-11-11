@@ -31,6 +31,7 @@ namespace TownOfHost
             { CustomRoles.King, "くんりんしゃ" },
             { CustomRoles.MMArcher, "ほあんかん" },
             { CustomRoles.PonkotuTeller, "ぽんこつうらないし" },
+            { CustomRoles.SuspiciousTeller, "あやしいうらないし" },
             { CustomRoles.Senrigan, "せんりがん" },
             { CustomRoles.WolfBoy, "おおかみしょうねん" },
             //ジャッカル〇〇で、元の役職名から読みを作れないもの
