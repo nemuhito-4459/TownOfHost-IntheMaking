@@ -4,7 +4,8 @@ GitHub Wiki に貼り付けるためのページです。ファイル名がそ�
 
 - `Home.md` … トップページ
 - `_Sidebar.md` … 横のメニュー
-- 役職のページ：`Impostor.md` `Madmate.md` `Crewmate.md` `Jackal.md` `Neutral.md` `AssassinAndMerlin.md`
+- 陣営のページ（役職の一覧）：`Impostor.md` `Madmate.md` `Crewmate.md` `Jackal.md` `Neutral.md` `AssassinAndMerlin.md`
+- 役職のページ：1役職1ページ（ファイル名は役職名。例：`アンチレポーター.md`）
 
 役職の説明と設定の名前は `Resources/string.csv` の翻訳から作っています。
 
