@@ -80,3 +80,7 @@ TownOfHost-K（TOHK）をもとにした、Among Us のホストMODです。
 | `/cmd /kick 名前` | モデレーター | キック |
 | `/cmd /start` | モデレーター | ゲーム開始 |
 | `/cmd /stop` | モデレーター | 開始の取り消し |
+
+---
+
+このWikiは、リポジトリの `wiki/` フォルダから自動で更新されます。
