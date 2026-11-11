@@ -1,154 +1,224 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using AmongUs.GameOptions;
 using UnityEngine;
 
 using TownOfHost.Roles.Core;
-using TownOfHost.Roles.Core.Interfaces;
 
 namespace TownOfHost.Roles.Crewmate;
 
 /// <summary>
-/// 千里眼<br/>
-/// ・クールダウンが明けた瞬間の全員の居場所を、誰かは出さずに北から順に、自分の名前の下に出す(本人の画面だけ)<br/>
-/// ・シェイプシフトの画面で誰かを選ぶと表示が消えて、もう一度クールダウン(変身はしない)<br/>
-/// ・次にクールダウンが明けたら、その瞬間の居場所に更新される
+/// 千里眼(エンジニア置き換え・タスクあり)<br/>
+/// ・ベントから出ると、その瞬間の全員の居場所を、誰かは出さずに北から順に1つずつ画面の下に出す<br/>
+///   (1か所 1秒 → 切替中 0.2秒 → 次の場所 …)。本人の画面だけ<br/>
+/// ・ベントのクールダウンは「人数×1.1秒」より短くできない(1周を見終わる前に次が来ないように)
 /// </summary>
-public sealed class Senrigan : RoleBase, IKiller
+public sealed class Senrigan : RoleBase
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(
             typeof(Senrigan),
             player => new Senrigan(player),
             CustomRoles.Senrigan,
-            () => RoleTypes.Shapeshifter,
+            () => RoleTypes.Engineer,
             CustomRoleTypes.Crewmate,
             11300,
             SetupOptionItem,
             "sen",
             "#8f7cff",
             (6, 4),
-            true,
-            introSound: () => GetIntroSound(RoleTypes.Tracker),
+            introSound: () => GetIntroSound(RoleTypes.Engineer),
             from: From.TownOfHost_IntheMaking
         );
     public Senrigan(PlayerControl player)
     : base(
         RoleInfo,
-        player,
-        () => HasTask.False
+        player
     )
     {
-        timer = Cooldown.GetFloat();
         usedCount = 0;
-        snapshot = null;
+        rooms = null;
     }
 
-    static OptionItem Cooldown;
+    static SenriganCooldownOptionItem Cooldown;
     static OptionItem UseLimit;
     static void SetupOptionItem()
     {
-        Cooldown = FloatOptionItem.Create(RoleInfo, 10, GeneralOption.Cooldown, new(0f, 180f, 0.5f), 30f, false)
-            .SetValueFormat(OptionFormat.Seconds);
+        Cooldown = SenriganCooldownOptionItem.Create(RoleInfo, 10);
         UseLimit = IntegerOptionItem.Create(RoleInfo, 11, GeneralOption.OptionCount, new(0, 99, 1), 0, false)
             .SetValueFormat(OptionFormat.Times).SetZeroNotation(OptionZeroNotation.Infinity);
     }
 
-    /// <summary>クールダウンの残り(ホストで数える)</summary>
-    float timer;
+    /// <summary>1か所を出す秒数</summary>
+    const float ShowTime = 1f;
+    /// <summary>切り替えの秒数</summary>
+    const float GapTime = 0.2f;
+
     int usedCount;
-    /// <summary>クールダウンが明けた瞬間の居場所(北から順、誰かは出さない)。null なら見えていない</summary>
-    string snapshot;
+    /// <summary>ベントから出た瞬間の居場所(北から順)。null なら表示していない</summary>
+    List<string> rooms;
+    /// <summary>今出している番号</summary>
+    int index;
+    /// <summary>今の表示(場所 or 切替中)の残り秒数</summary>
+    float timer;
+    /// <summary>切替中か</summary>
+    bool inGap;
 
     bool HasUseLeft => UseLimit.GetInt() == 0 || usedCount < UseLimit.GetInt();
 
-    // ---- キル・サボ・ベントは使えない(インポスター視点のボタンを消す) ----
-    public bool CanKill => false;
-    public bool CanUseKillButton() => false;
-    float IKiller.CalculateKillCooldown() => 0f;
-    public bool CanUseSabotageButton() => false;
-    public bool CanUseImpostorVentButton() => false;
-    public override bool OnInvokeSabotage(SystemTypes systemType) => false;
-
-    public override bool CanUseAbilityButton() => HasUseLeft;
-
     public override void ApplyGameOptions(IGameOptions opt)
     {
-        AURoleOptions.ShapeshifterCooldown = HasUseLeft ? Cooldown.GetFloat() : 255f;
-        AURoleOptions.ShapeshifterDuration = 1f;
+        AURoleOptions.EngineerCooldown = Cooldown.GetFloat();
+        AURoleOptions.EngineerInVentMaxTime = 0f;
     }
 
-    /// <summary>タスクターンに出てきたとき(この後クールダウンがリセットされる)</summary>
-    public override void OnSpawn(bool initialState = false)
+    /// <summary>ベントから出たとき(ホストで呼ばれる)</summary>
+    public void OnExitVent()
     {
-        timer = Cooldown.GetFloat();
-        snapshot = null;
-    }
-    public override void OnStartMeeting()
-    {
-        snapshot = null;
+        if (!AmongUsClient.Instance.AmHost || !Player.IsAlive() || !GameStates.IsInTask) return;
+        if (rooms != null) return;//表示中(同じベントから出たのが2回届いたときなど)
+        if (!HasUseLeft) return;
+
+        var list = PlayerCatch.AllAlivePlayerControls
+            .Where(pc => pc != null && pc.PlayerId != Player.PlayerId)
+            .OrderByDescending(pc => pc.transform.position.y)
+            .Select(pc => { var r = pc.GetShipRoomName(); return r == "" ? "？" : r; })
+            .ToList();
+        Logger.Info($"{Player.Data.GetLogPlayerName()} の千里眼(北から): {string.Join(" / ", list)}", "Senrigan");
+        if (list.Count == 0) return;
+        usedCount++;
+        rooms = list;
+        index = 0;
+        inGap = false;
+        timer = ShowTime;
+        UtilsNotifyRoles.NotifyRoles(SpecifySeer: Player);
     }
 
     public override void OnFixedUpdate(PlayerControl player)
     {
-        if (!AmongUsClient.Instance.AmHost || !GameStates.IsInTask || !Player.IsAlive()) return;
-        if (snapshot != null || !HasUseLeft) return;
+        if (!AmongUsClient.Instance.AmHost || rooms == null) return;
+        if (!Player.IsAlive() || !GameStates.IsInTask)
+        {
+            Stop();
+            return;
+        }
         timer -= Time.fixedDeltaTime;
         if (timer > 0) return;
-        TakeSnapshot();
-    }
-
-    void TakeSnapshot()
-    {
-        //北(上)にいる人から順に、場所だけを並べる。同じ場所が続いたら「×人数」にまとめる
-        var rooms = new List<(string room, int count)>();
-        foreach (var pc in PlayerCatch.AllAlivePlayerControls
-            .Where(pc => pc != null && pc.PlayerId != Player.PlayerId)
-            .OrderByDescending(pc => pc.transform.position.y))
+        if (inGap)
         {
-            var room = pc.GetShipRoomName();
-            if (room == "") room = "？";
-            if (rooms.Count > 0 && rooms[^1].room == room) rooms[^1] = (room, rooms[^1].count + 1);
-            else rooms.Add((room, 1));
+            //次の場所へ
+            inGap = false;
+            index++;
+            timer = ShowTime;
         }
-        var parts = rooms.Select(r => r.count > 1 ? $"{r.room}×{r.count}" : r.room).ToList();
-        //4つごとに改行
-        var lines = new List<string>();
-        for (var i = 0; i < parts.Count; i += 4) lines.Add(string.Join("、", parts.Skip(i).Take(4)));
-        snapshot = lines.Count == 0 ? "（だれもいない）" : string.Join("\n", lines);
-        Logger.Info($"{Player.Data.GetLogPlayerName()} の千里眼(北から): {string.Join(" / ", parts)}", "Senrigan");
+        else if (index + 1 >= rooms.Count)
+        {
+            //最後まで出したら終わり
+            Stop();
+            return;
+        }
+        else
+        {
+            inGap = true;
+            timer = GapTime;
+        }
         UtilsNotifyRoles.NotifyRoles(SpecifySeer: Player);
     }
-
-    public override bool CheckShapeshift(PlayerControl target, ref bool animate)
+    void Stop()
     {
-        animate = false;
-        if (!HasUseLeft) return false;
-        if (snapshot == null)
-        {
-            //ホストで数えているクールダウンより少しだけ早く押された(ずれ)なら、使った回数には数えずに今の居場所を出す
-            if (timer <= 2f) TakeSnapshot();
-            return false;
-        }
-        usedCount++;
-        snapshot = null;
-        timer = Cooldown.GetFloat();
-        //変身の取り消しが届いたあとでクールダウンを始め直す
-        Player.RpcResetAbilityCooldown(Sync: true);
-        if (!HasUseLeft) Player.MarkDirtySettings();//使い切ったらボタンを使えなくする
+        if (rooms == null) return;
+        rooms = null;
         UtilsNotifyRoles.NotifyRoles(SpecifySeer: Player);
-        return false;//変身はしない
+    }
+    public override void OnStartMeeting()
+    {
+        rooms = null;
     }
 
-    /// <summary>自分の名前の下に、北から順の場所を出す(自分の画面だけ)</summary>
-    public override string GetSuffix(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
+    /// <summary>画面の下(MODなしの人は名前の下)に出す。本人の画面だけ</summary>
+    public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
     {
-        if (isForMeeting || (seen != null && seen != seer) || !Is(seer) || snapshot == null || !Player.IsAlive()) return "";
-        return $"<size=60%>{Utils.ColorString(RoleInfo.RoleColor, $"北から：{snapshot}")}</size>";
+        if (isForMeeting || (seen != null && seen != seer) || !Is(seer) || rooms == null || !Player.IsAlive()) return "";
+        var text = inGap ? "切替中" : rooms[index];
+        return Utils.ColorString(RoleInfo.RoleColor, $"千里眼 {index + 1}/{rooms.Count}：{text}");
     }
 
     public override string GetProgressText(bool comms = false, bool GameLog = false)
         => UseLimit.GetInt() == 0 ? "" : Utils.ColorString(HasUseLeft ? RoleInfo.RoleColor : Color.gray, $"({UseLimit.GetInt() - usedCount})");
 
-    public override string GetAbilityButtonText() => GetString("SenriganAbility");
+    /// <summary>クールダウンの最小値(人数×1.1秒)。人数は今いるプレイヤー全員</summary>
+    public static float MinCooldown()
+    {
+        var count = PlayerCatch.AllPlayerControls.Count();
+        return Math.Min(180f, (float)(count * 11 / 10m));
+    }
+}
+
+/// <summary>
+/// 千里眼のクールダウン設定<br/>
+/// ・「最小値」(人数×1.1秒)、0.1～19.9秒(0.1秒刻み)、20～180秒(0.5秒刻み)<br/>
+/// ・最小値以下の値は飛ばして「最小値」にする(下げていくと 14.4 → 最小値 → 180)<br/>
+/// ・設定した後に人が増えて最小値を下回ったときも「最小値」として扱う
+/// </summary>
+public class SenriganCooldownOptionItem : OptionItem
+{
+    /// <summary>0.1～19.9 の数</summary>
+    const int FineCount = 199;
+    /// <summary>一番大きい番号(180秒)</summary>
+    const int MaxIndex = FineCount + 321;
+
+    public SenriganCooldownOptionItem(int id, string name, TabGroup tab)
+    : base(id, name, 0, tab, false) { }
+
+    public static SenriganCooldownOptionItem Create(SimpleRoleInfo roleInfo, int idOffset)
+    {
+        var opt = new SenriganCooldownOptionItem(roleInfo.ConfigId + idOffset, "Cooldown", roleInfo.Tab);
+        opt.SetValueFormat(OptionFormat.Seconds);
+        opt.SetParent(roleInfo.RoleOption);
+        opt.SetParentRole(roleInfo.RoleName);
+        return opt;
+    }
+
+    /// <summary>番号 → 秒数(0番は最小値なので 0 を返す)</summary>
+    static float ValueOf(int index)
+    {
+        if (index <= 0) return 0f;
+        if (index <= FineCount) return (float)(index / 10m);
+        return (float)(20m + (index - FineCount - 1) * 0.5m);
+    }
+    /// <summary>最小値より大きい一番小さい番号</summary>
+    static int FirstIndexAbove(float min)
+    {
+        for (var i = 1; i <= MaxIndex; i++)
+            if (ValueOf(i) > min + 0.001f) return i;
+        return MaxIndex;
+    }
+    static bool IsMin(int index) => index <= 0 || ValueOf(index) <= Senrigan.MinCooldown() + 0.001f;
+
+    public override int GetValue() => Math.Clamp(base.GetValue(), 0, MaxIndex);
+    public override float GetFloat()
+    {
+        var index = GetValue();
+        return IsMin(index) ? Senrigan.MinCooldown() : ValueOf(index);
+    }
+    public override int GetInt() => (int)GetFloat();
+    public override string GetString()
+    {
+        var index = GetValue();
+        return IsMin(index) ? $"最小値({ApplyFormat(Senrigan.MinCooldown().ToString())})" : ApplyFormat(ValueOf(index).ToString());
+    }
+    public override string GetValueString(bool coloroff) => GetString();
+
+    public override void SetValue(int afterValue, bool doSync = true)
+    {
+        var before = GetValue();
+        var min = Senrigan.MinCooldown();
+        int next;
+        if (afterValue > MaxIndex) next = 0;//180の次は最小値
+        else if (afterValue < 0) next = MaxIndex;//最小値から下げると180
+        else if (afterValue == 0 || ValueOf(afterValue) > min + 0.001f) next = afterValue;
+        else next = afterValue < before ? 0 : FirstIndexAbove(min);//最小値以下は飛ばす
+        base.SetValue(next, doSync);
+    }
 }

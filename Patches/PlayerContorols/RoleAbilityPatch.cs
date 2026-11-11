@@ -598,6 +598,8 @@ namespace TownOfHost
             else if (Camouflage.ventplayr.Contains(player.PlayerId))
                 Camouflage.RpcSetSkin(player, force: null);
 
+            //千里眼はベントから出たときに居場所を出す
+            (player.GetRoleClass() as Roles.Crewmate.Senrigan)?.OnExitVent();
             return true;
 
             void ReMove()
