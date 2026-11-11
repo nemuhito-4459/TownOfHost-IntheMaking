@@ -214,7 +214,7 @@ namespace TownOfHost
             }
             hasTasks = true;
             AllTasksCount = player.Data.Tasks.Count;
-            //汎用の部屋タスク持ちは、部屋タスクの数だけにする(バニラのタスクはこなせないので数えない)
+            //汎用のウォークタスク持ちは、ウォークタスクの数だけにする(バニラのタスクはこなせないので数えない)
             if (RoomTaskSettings.GetTotal(player.PlayerId) is int roomTotal)
             {
                 AllTasksCount = roomTotal;

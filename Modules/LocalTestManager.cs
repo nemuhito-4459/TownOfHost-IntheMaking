@@ -294,7 +294,7 @@ namespace TownOfHost
             return false;
         }
 
-        /// <summary>選ぶ画面の名前の下の文字(役職は役職の色、タスクは水色、部屋タスクは黄緑)</summary>
+        /// <summary>選ぶ画面の名前の下の文字(役職は役職の色、タスクは水色、ウォークタスクは黄緑)</summary>
         static string PanelText(PlayerControl pc)
         {
             var sb = new System.Text.StringBuilder();
@@ -303,7 +303,7 @@ namespace TownOfHost
             sb.Append(Utils.ColorString(UtilsRoleText.GetRoleColor(role), UtilsRoleText.GetRoleName(role)));
             var state = PlayerState.GetByPlayerId(pc.PlayerId);
             var info = role.GetRoleInfo();
-            //部屋タスク(ウォーカーのタスク)を持つ役職か
+            //ウォークタスク(ウォーカーのタスク)を持つ役職か
             var roomTask = RoomTaskSettings.GetTargetType(role) is not RoomTaskSettings.TargetType.None
                 || (info?.ClassType != null && typeof(Roles.Core.Interfaces.IRoomTasker).IsAssignableFrom(info.ClassType));
             if (state != null && (roomTask || UtilsTask.HasTasks(pc.Data)))

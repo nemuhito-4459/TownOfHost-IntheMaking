@@ -6,11 +6,11 @@ using UnityEngine;
 
 namespace TownOfHost
 {
-    /// <summary>部屋タスクの種類(クルーのタスク数と同じ分け方)</summary>
+    /// <summary>ウォークタスクの種類(クルーのタスク数と同じ分け方)</summary>
     public enum RoomTaskKind { Common, Short, Long }
 
     /// <summary>
-    /// インポスター置き換え(デシンクインポスター)のクルー・ニュートラル役職に割り当てる「部屋タスク」の設定と判定。<br/>
+    /// インポスター置き換え(デシンクインポスター)のクルー・ニュートラル役職に割り当てる「ウォークタスク」の設定と判定。<br/>
     /// 部屋へ行って、種類ごとに設定した秒数その部屋にいると1タスク完了(部屋を出ても待ち時間は途中から再開)。<br/>
     /// 役職のクラスに手を入れずに割り当てるので、今後追加する置き換え役職にも自動で付く。
     /// </summary>
@@ -63,13 +63,13 @@ namespace TownOfHost
                 .SetValueFormat(OptionFormat.Seconds).SetParent(NeutralOverride);
         }
 
-        /// <summary>この役職が部屋タスクの対象か(クルー/ニュートラル)</summary>
+        /// <summary>この役職がウォークタスクの対象か(クルー/ニュートラル)</summary>
         public static TargetType GetTargetType(CustomRoles role)
         {
             if (Options.CurrentGameMode is not CustomGameMode.Standard) return TargetType.None;
             var info = role.GetRoleInfo();
             if (info == null || !info.IsDesyncImpostor) return TargetType.None;
-            //自前で部屋タスクを持つ役職(マーリン・妖狐など)は対象外
+            //自前でウォークタスクを持つ役職(マーリン・妖狐など)は対象外
             if (info.ClassType != null && typeof(IRoomTasker).IsAssignableFrom(info.ClassType)) return TargetType.None;
             switch (info.CustomRoleType)
             {
@@ -110,7 +110,7 @@ namespace TownOfHost
             };
         }
 
-        /// <summary>対象プレイヤーなら部屋タスクの総数、対象外なら null</summary>
+        /// <summary>対象プレイヤーならウォークタスクの総数、対象外なら null</summary>
         public static int? GetTotal(byte playerId)
             => RoomTaskAssign.AllRoomTasker.TryGetValue(playerId, out var data) && data.Generic ? data.Queue.Count : null;
 
@@ -120,7 +120,7 @@ namespace TownOfHost
             var type = GetTargetType(role);
             if (type is TargetType.None)
             {
-                //役職が変わって対象外になったら、前の部屋タスクを消す
+                //役職が変わって対象外になったら、前のウォークタスクを消す
                 if (RoomTaskAssign.AllRoomTasker.TryGetValue(player.PlayerId, out var old) && old.Generic)
                 {
                     if (old.RoomArrow != Vector2.zero) GetArrow.Remove(player.PlayerId, old.RoomArrow);
@@ -143,7 +143,7 @@ namespace TownOfHost
                 Queue = queue,
             };
             CustomRoleManager.LowerOthers.Add(GetLowerTextOthers);
-            Logger.Info($"{player.name}に部屋タスクを{queue.Count}個割り当て({type})", "RoomTaskSettings");
+            Logger.Info($"{player.name}にウォークタスクを{queue.Count}個割り当て({type})", "RoomTaskSettings");
         }
 
         /// <summary>自分の画面の下に「〇〇へ行け(ショート 5秒)」を出す</summary>

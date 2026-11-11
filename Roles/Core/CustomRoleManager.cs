@@ -382,7 +382,7 @@ public static class CustomRoleManager
             if (IsGame) roleClass.ChengeRoleAdd();
             if (roleClass is ISelfVoter selfVoter) selfVoter.AddSelfVoter(player);
             if (roleClass is IRoomTasker roomTasker) roomTasker.AddRoomTaker(player.PlayerId);
-            //インポスター置き換えのクルー・ニュートラルには汎用の部屋タスクを割り当てる
+            //インポスター置き換えのクルー・ニュートラルには汎用のウォークタスクを割り当てる
             else RoomTaskSettings.AddTasker(player, role);
         }
         else

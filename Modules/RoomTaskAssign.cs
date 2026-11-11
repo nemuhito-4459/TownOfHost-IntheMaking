@@ -19,11 +19,11 @@ public class RoomTaskAssign
     public PlainShipRoom TaskPSR;
     public Vector2 RoomArrow;
 
-    //── 汎用の部屋タスク(RoomTaskSettings。インポスター置き換えのクルー・ニュートラル用) ──
-    /// <summary>役職クラスではなく RoomTaskSettings から割り当てた部屋タスクか</summary>
+    //── 汎用のウォークタスク(RoomTaskSettings。インポスター置き換えのクルー・ニュートラル用) ──
+    /// <summary>役職クラスではなく RoomTaskSettings から割り当てたウォークタスクか</summary>
     public bool Generic;
     public RoomTaskSettings.TargetType TargetType;
-    /// <summary>割り当てる部屋タスクの種類の並び(この数が総タスク数)</summary>
+    /// <summary>割り当てるウォークタスクの種類の並び(この数が総タスク数)</summary>
     public List<RoomTaskKind> Queue = new();
     /// <summary>今の部屋にいた合計秒数(部屋を出ても途中から再開)</summary>
     public float stay;
@@ -32,7 +32,7 @@ public class RoomTaskAssign
     RoomTaskKind NowKind => Queue.Count > 0 ? Queue[System.Math.Min(completeroom, Queue.Count - 1)] : RoomTaskKind.Short;
     float NowWait => RoomTaskSettings.GetWait(TargetType, NowKind);
 
-    /// <summary>今、部屋タスクを割り当てるか</summary>
+    /// <summary>今、ウォークタスクを割り当てるか</summary>
     bool IsAssign()
         => Generic ? completeroom < Queue.Count
         : (playerid.GetPlayerControl()?.GetRoleClass() as IRoomTasker)?.IsAssignRoomTask() is true;
@@ -143,7 +143,7 @@ public class RoomTaskAssign
         if (!IsAssign()) return;
         stay = 0;
         shownTenths = -1;
-        //汎用の部屋タスクは、今いる部屋も行き先から外す(着いた瞬間に数え始めないように)
+        //汎用のウォークタスクは、今いる部屋も行き先から外す(着いた瞬間に数え始めないように)
         var nowRoomId = Generic ? playerid.GetPlayerControl()?.GetPlainShipRoom(true)?.RoomId : null;
         List<PlainShipRoom> rooms = new();
         ShipStatus.Instance.AllRooms.Where(room => room?.RoomId is not null and not SystemTypes.Hallway && room?.RoomId != TaskRoom && room?.RoomId != nowRoomId).Do(r => rooms.Add(r));
@@ -205,7 +205,7 @@ public class RoomTaskAssign
         if (TaskRoom == null || !IsAssign()) return "";
         var text = $"<{colorcode}>{GetArrow.GetArrows(seer, [RoomArrow])}" +
             $"{string.Format(Translator.GetString("FoxRoomMission"), $"<color=#cccccc><b>{Translator.GetString($"{TaskRoom}")}<b></color>")}</color>";
-        //汎用の部屋タスクは種類と必要な秒数も出す
+        //汎用のウォークタスクは種類と必要な秒数も出す
         //数え始めたら「経過/必要」を0.1秒刻みで出す
         if (Generic)
         {

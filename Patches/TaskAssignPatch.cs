@@ -72,8 +72,8 @@ namespace TownOfHost
             if (RoleNullable == null) return;
             CustomRoles role = RoleNullable.Value;
 
-            //部屋タスクを持つ役職(インポスター扱いで動くクルー・ニュートラル)には、普通のタスクを配らない
-            //(配ると、ホストや乗り移ったダミーの画面では本物のタスクとして見えて、終わらせると部屋タスクと二重に数えられてしまう)
+            //ウォークタスクを持つ役職(インポスター扱いで動くクルー・ニュートラル)には、普通のタスクを配らない
+            //(配ると、ホストや乗り移ったダミーの画面では本物のタスクとして見えて、終わらせるとウォークタスクと二重に数えられてしまう)
             if (RoomTaskSettings.GetTargetType(role) is not RoomTaskSettings.TargetType.None)
             {
                 taskTypeIds = new Il2CppStructArray<byte>(0);

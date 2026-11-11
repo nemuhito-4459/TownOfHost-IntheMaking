@@ -17,7 +17,7 @@ public interface IRoomTasker
         => RoomTaskAssign.AllRoomTasker.TryGetValue(playerid, out var data) ? data : null;
 
     /// <summary>
-    /// 部屋タスクをアサインするか否か。
+    /// ウォークタスクをアサインするか否か。
     /// </summary>
     /// <returns></returns>
     public bool IsAssignRoomTask() => false;
@@ -60,7 +60,7 @@ public interface IRoomTasker
     }
     /// <summary>
     /// RPCを受け取った時に呼ぶ。<br/>
-    /// 部屋タスク完了時の処理。<br/>
+    /// ウォークタスク完了時の処理。<br/>
     /// 
     /// タスク数更新等はされないので呼んだ後に入れる必要あり。<br>
     /// </summary>
