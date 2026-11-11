@@ -186,7 +186,9 @@ namespace TownOfHost
                 activeonly.OnClick = new();
                 activeonly.OnClick.AddListener((Action)(() =>
                 {
-                    if (ModSettingsButton.selected)
+                    //左のメニューに変えてから「MODのタブのボタン」は選択中にならないので、MODの設定画面が開いているかで判断する
+                    Logger.Info($"有効な設定のみ表示を押した (MOD設定:{ModSettingsTab?.gameObject?.activeSelf})", "ActiveOnly");
+                    if (ModSettingsTab != null && ModSettingsTab.gameObject.activeSelf)
                     {
                         ActiveOnlyMode = !ActiveOnlyMode;
                         activeonly.inactiveSprites.GetComponent<SpriteRenderer>().color =
