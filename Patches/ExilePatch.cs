@@ -21,6 +21,11 @@ namespace TownOfHost
                 {
                     WrapUpPostfix(__instance.initData.networkedPlayer);
                 }
+                catch
+                {
+                    BlackoutWarning.Show("追放のあとの処理でエラーが出ました");
+                    throw;
+                }
                 finally
                 {
                     WrapUpFinalizer(__instance.initData.networkedPlayer);
@@ -50,6 +55,11 @@ namespace TownOfHost
                 {
                     WrapUpPostfix(__instance.initData.networkedPlayer);
                 }
+                catch
+                {
+                    BlackoutWarning.Show("追放のあとの処理でエラーが出ました");
+                    throw;
+                }
                 finally
                 {
                     WrapUpFinalizer(__instance.initData.networkedPlayer);
@@ -77,6 +87,11 @@ namespace TownOfHost
             bool DecidedWinner = false;
             if (AmongUsClient.Instance.AmHost)
             {
+                //暗転対策(生存偽装+インポスター役の割り当て)が追放画面の終わりまでに送れていなければ、暗転したかもしれない
+                if (!AntiBlackout.OverrideExiledPlayer() && !AntiBlackout.IsSet && !Assassin.NowUse
+                    && Assassin.assassin?.NowState is not (Assassin.AssassinMeeting.CallMetting or Assassin.AssassinMeeting.Guessing)
+                    && CustomWinnerHolder.WinnerTeam is CustomWinner.Default)
+                    BlackoutWarning.Show("暗転対策が追放画面の終わりまでに間に合いませんでした");
                 AntiBlackout.RestoreIsDead(doSend: false);
                 if (exiled != null)
                 {

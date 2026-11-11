@@ -156,6 +156,7 @@ namespace TownOfHost
             {
                 if (pc == null) continue;
                 if (pc.PlayerId == PlayerControl.LocalPlayer.PlayerId && Options.EnableGM.GetBool()) continue;//GMは数えない
+                if (pc.PlayerId == PlayerControl.LocalPlayer.PlayerId && GameStates.IsLocalGame) continue;//ローカルの部屋ではホストのレートを記録しない
                 var code = pc.GetClient()?.FriendCode;
                 if (string.IsNullOrEmpty(code)) continue;
                 participants[pc.PlayerId] = (code, pc.Data.GetLogPlayerName().RemoveHtmlTags());

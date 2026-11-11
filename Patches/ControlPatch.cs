@@ -186,8 +186,8 @@ namespace TownOfHost
             {
                 UtilsShowOption.ShowActiveSettings();
             }
-            //キルフラッシュ
-            if (GetKeysDown(KeyCode.K, KeyCode.L, KeyCode.LeftControl) && GameStates.InGame)
+            //キルフラッシュ(Ctrl+Shift+K)
+            if (GetKeysDown(KeyCode.K, KeyCode.LeftShift, KeyCode.LeftControl) && GameStates.InGame && AmongUsClient.Instance.AmHost)
             {
                 Utils.AllPlayerKillFlash();
             }

@@ -144,6 +144,7 @@ namespace TownOfHost
                     if (impostortarget is null)
                     {
                         Logger.Warn("Impostortarget is null", "AntiBlackout");
+                        BlackoutWarning.Show("暗転対策でインポスター役にできる人が見つかりませんでした");
                     }
                     HostRole = null;
                 }
@@ -211,6 +212,8 @@ namespace TownOfHost
             if (Player.GetClient() is null)
             {
                 Logger.Error($"{Player?.Data?.PlayerName ?? "???"}のclientがnull", "ExiledSetRole");
+                if (Player != null && !Player.isDummy && Player.Data?.Disconnected == false)
+                    BlackoutWarning.Show($"{Player.Data.GetLogPlayerName()} の役職を戻せませんでした");
                 return;
             }
             if (Assassin.assassin?.NowState is Assassin.AssassinMeeting.CallMetting or Assassin.AssassinMeeting.Guessing)
