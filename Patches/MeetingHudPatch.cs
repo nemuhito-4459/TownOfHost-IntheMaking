@@ -563,8 +563,25 @@ public static class MeetingHudPatch
     [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.VotingComplete))]
     class VotingCompletePatch
     {
+        static bool closing;
         public static void Postfix(MeetingHud __instance)
         {
+            //ローカルの部屋では、投票結果のあと「進む」を押しても進まないので、オンラインと同じく少し待って自動で会議を閉じる
+            if (AmongUsClient.Instance.AmHost && GameStates.IsLocalGame && !closing)
+            {
+                closing = true;
+                var meeting = __instance;
+                _ = new LateTask(() =>
+                {
+                    closing = false;
+                    if (MeetingHud.Instance != null && MeetingHud.Instance == meeting && GameStates.IsMeeting)
+                    {
+                        Logger.Info("ローカルの部屋なので会議を自動で閉じます", "LocalMeeting");
+                        meeting.RpcClose();
+                    }
+                }, 6f, "LocalMeetingAutoProceed", true);
+            }
+
             var result = AntiBlackout.voteresult;
             if (result.HasValue is false) return;
 
