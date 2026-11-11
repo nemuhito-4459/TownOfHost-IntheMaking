@@ -88,6 +88,32 @@ namespace TownOfHost
             pc.isDummy = isDummy;
             var behaviour = pc.GetComponent<DummyBehaviour>();
             if (behaviour != null) behaviour.enabled = isDummy;
+            SetOwner(pc, !isDummy);
+        }
+        /// <summary>元の持ち主(ダミーは持ち主なしで作られている)</summary>
+        static readonly System.Collections.Generic.Dictionary<byte, (int pc, int physics, int net)> owners = new();
+        /// <summary>
+        /// 自分を持ち主にする/元に戻す。<br/>
+        /// Among Us は自分が持ち主のプレイヤーにしか操作(移動)を流さないので、乗り移るときに切り替える
+        /// </summary>
+        static void SetOwner(PlayerControl pc, bool mine)
+        {
+            if (mine)
+            {
+                if (!owners.ContainsKey(pc.PlayerId))
+                    owners[pc.PlayerId] = (pc.OwnerId, pc.MyPhysics.OwnerId, pc.NetTransform.OwnerId);
+                var me = AmongUsClient.Instance.ClientId;
+                pc.OwnerId = me;
+                pc.MyPhysics.OwnerId = me;
+                pc.NetTransform.OwnerId = me;
+            }
+            else if (owners.TryGetValue(pc.PlayerId, out var o))
+            {
+                pc.OwnerId = o.pc;
+                pc.MyPhysics.OwnerId = o.physics;
+                pc.NetTransform.OwnerId = o.net;
+                owners.Remove(pc.PlayerId);
+            }
         }
         /// <summary>その人の画面で見える自分の役職(バニラの役職)</summary>
         static RoleTypes GetRoleType(PlayerControl pc)
