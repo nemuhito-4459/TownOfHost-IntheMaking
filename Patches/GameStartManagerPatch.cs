@@ -291,67 +291,7 @@ namespace TownOfHost
                 if (DebugModeManager.Spawndummy.GetBool() && DebugModeManager.EnableTOHkDebugMode.GetBool() && GameStates.IsLocalGame && PlayerCatch.AllPlayerControls.Where(pc => pc.isDummy is false).Count() == 1
                 && DebugModeManager.AmDebugger)
                 {
-                    byte id = 0;
-                    foreach (var p in PlayerControl.AllPlayerControls)
-                        id++;
-                    for (var i = PlayerCatch.AllPlayerControls.Where(pc => pc.isDummy).Count();
-                    i < DebugModeManager.Spawndummy.GetInt(); i++)
-                    {
-                        if (id > 14) break;
-                        var dummy = Object.Instantiate(AmongUsClient.Instance.PlayerPrefab);
-                        dummy.isDummy = true;
-                        dummy.PlayerId = id;
-                        var playerinfo = GameData.Instance.AddDummy(dummy);
-                        var colorid = (byte)((PlayerControl.LocalPlayer.Data.DefaultOutfit.ColorId + id) % 18);
-
-                        dummy.NetTransform.enabled = true;
-                        dummy.RpcSetColor(colorid);
-                        dummy.RpcSetName(GetString(StringNames.Dummy) + (i + 1));
-                        dummy.GetComponent<DummyBehaviour>().enabled = true;
-                        dummy.isDummy = true;
-                        switch (colorid)
-                        {
-                            case 11:
-                                dummy.SetHat("hat_paws_panda", colorid);
-                                dummy.SetVisor("visor_EyepatchL", colorid);
-                                dummy.SetSkin("skin_Sanskin", colorid);
-                                dummy.SetPet("pet_EnmptyPet");
-                                break;
-                            case 4:
-                                dummy.SetHat("hat_cat_snow", colorid);
-                                dummy.SetVisor("visor_Blush", colorid);
-                                dummy.SetSkin("skin_Science", colorid);
-                                dummy.SetPet("pet_Enmptypet");
-                                break;
-                            case 13:
-                                dummy.SetHat("hat_cat_snow", colorid);
-                                dummy.SetVisor("visor_Blush", colorid);
-                                dummy.SetSkin("skin_ChefBlue", colorid);
-                                dummy.SetPet("pet_EnmptyPet");
-                                break;
-                            case 5:
-                                dummy.SetHat("hat_NewYear2024", colorid);
-                                dummy.SetVisor("visor_hattyHattington", colorid);
-                                dummy.SetSkin("skin_D2Osiris", colorid);
-                                dummy.SetPet("pet_EmptyPet");
-                                break;
-                            case 14:
-                                dummy.SetHat("hat_paws_panda", colorid);
-                                dummy.SetVisor("visor_bsb2_noteSad", colorid);
-                                dummy.SetSkin("skin_Capt", colorid);
-                                dummy.SetPet("pet_EmptyPet");
-                                break;
-                            default:
-                                dummy.SetHat("", colorid);
-                                dummy.SetVisor("", colorid);
-                                dummy.SetSkin("", colorid);
-                                dummy.SetPet("");
-                                break;
-                        }
-                        id++;
-                        AmongUsClient.Instance.Spawn(dummy);
-                        playerinfo.RpcSetTasks(Array.Empty<byte>());
-                    }
+                    DummySpawner.Spawn(DebugModeManager.Spawndummy.GetInt());//ダミーを出す(/dummy と共通)
                 }
 
                 RoleAssignManager.CheckRoleCount();

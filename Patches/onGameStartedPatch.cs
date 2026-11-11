@@ -223,7 +223,8 @@ namespace TownOfHost
                     List<PlayerControl> AllPlayers = new();
                     foreach (var pc in PlayerCatch.AllPlayerControls)
                     {
-                        if (pc.isDummy && DebugModeManager.DummyAssignRole.GetBool() is false)
+                        //ダミーは「ダミーに役職をアサインする」か /dummy で入れたときだけ役職を付ける
+                        if (pc.isDummy && DebugModeManager.DummyAssignRole.GetBool() is false && !DummySpawner.AssignRole)
                         {
                             pc.RpcSetCustomRole(CustomRoles.Crewmate);
                             pc.RpcSetRole(RoleTypes.Crewmate);

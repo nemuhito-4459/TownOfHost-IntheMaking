@@ -159,6 +159,11 @@ namespace TownOfHost
                         canceled = true;
                         PredictionManager.HostCommand(args);
                         break;
+                    //ローカルでのテスト用のダミー
+                    case "/dummy":
+                        canceled = true;
+                        DummySpawner.Command(args);
+                        break;
                     //モデレーターの追加・削除・一覧
                     case "/mod":
                         canceled = true;
