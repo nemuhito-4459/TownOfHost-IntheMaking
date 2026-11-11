@@ -225,7 +225,7 @@ namespace TownOfHost
                 if (target.PlayerId == PlayerControl.LocalPlayer.PlayerId) continue;//ホストの名前は ApplySuffix で付けている
                 var name = target.Data?.PlayerName;
                 if (string.IsNullOrEmpty(name)) continue;
-                var text = LobbyName(name, TitleManager.TitleText(target) + RankText(target));
+                var text = LobbyName(name, RankText(target));
                 foreach (var seer in PlayerCatch.AllPlayerControls)
                 {
                     if (seer == null || seer.PlayerId == PlayerControl.LocalPlayer.PlayerId || seer.IsModClient()) continue;

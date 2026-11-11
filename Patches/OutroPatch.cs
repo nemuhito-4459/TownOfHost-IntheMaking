@@ -134,8 +134,6 @@ namespace TownOfHost
             }
             //レートの計算(勝者が決まったあと)
             RatingManager.OnGameEnd();
-            //肩書の記録
-            TitleManager.OnGameEnd();
 
             Main.VisibleTasksCount = false;
             if (AmongUsClient.Instance.AmHost)
