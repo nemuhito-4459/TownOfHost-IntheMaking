@@ -124,6 +124,12 @@ public sealed class Senrigan : RoleBase, IKiller
     {
         animate = false;
         if (!HasUseLeft) return false;
+        if (snapshot == null)
+        {
+            //ホストで数えているクールダウンより少しだけ早く押された(ずれ)なら、使った回数には数えずに今の居場所を出す
+            if (timer <= 2f) TakeSnapshot();
+            return false;
+        }
         usedCount++;
         snapshot = null;
         timer = Cooldown.GetFloat();
@@ -137,7 +143,7 @@ public sealed class Senrigan : RoleBase, IKiller
     /// <summary>自分の名前の下に、北から順の場所を出す(自分の画面だけ)</summary>
     public override string GetSuffix(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     {
-        if (isForMeeting || (seen != null && seen != seer) || !Is(seer) || snapshot == null) return "";
+        if (isForMeeting || (seen != null && seen != seer) || !Is(seer) || snapshot == null || !Player.IsAlive()) return "";
         return $"<size=60%>{Utils.ColorString(RoleInfo.RoleColor, $"北から：{snapshot}")}</size>";
     }
 
