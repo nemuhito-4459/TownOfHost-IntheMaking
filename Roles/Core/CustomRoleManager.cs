@@ -675,6 +675,7 @@ public enum CustomRoles
     EvilMaker,
     Eraser,
     QuickKiller,
+    Welder,
     CharismaStar,
     Ballooner,
     BorderKiller,

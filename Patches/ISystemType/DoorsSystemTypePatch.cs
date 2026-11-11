@@ -18,6 +18,12 @@ public static class DoorsSystemTypeUpdateSystemPatch
             amount = newReader.ReadByte();
             newReader.Recycle();
         }
+        //ウェルダーが溶接中は、誰も扉を開けられない
+        if (TownOfHost.Roles.Impostor.Welder.IsWelding)
+        {
+            __instance.IsDirty = true;//開けた人の画面を元に戻す
+            return false;
+        }
         if (player.Is(CustomRoles.Opener))
         {
             if (DoorsProgressing) return true;
