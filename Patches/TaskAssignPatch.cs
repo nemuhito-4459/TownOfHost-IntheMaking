@@ -96,6 +96,14 @@ namespace TownOfHost
                 NumShortTasks = data.numShortTasks.GetInt();    // 割り当てるショートタスクの数
                                                                 // ロングとショートは常時再割り当てが行われる。
             }
+            //マッドブレイカーは設定の数だけショートタスク
+            if (role is CustomRoles.MadBreaker)
+            {
+                hasCommonTasks = false;
+                NumCommonTasks = 0;
+                NumLongTasks = 0;
+                NumShortTasks = Roles.Madmate.MadBreaker.NumTasks;
+            }
             if (Options.CurrentGameMode == CustomGameMode.TaskBattle && TaskBattle.IsAdding)
             {
                 hasCommonTasks = false;

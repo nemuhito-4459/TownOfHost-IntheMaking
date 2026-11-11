@@ -47,7 +47,7 @@ namespace TownOfHost
                 if (!SuddenDeathMode.NowSuddenDeathMode) NameColorManager.RemoveAll(player.PlayerId);
 
                 //マッドメイトの最初からの内通
-                if (role.IsMadmate() && Options.MadCanSeeImpostor.GetBool())
+                if (role.IsMadmate() && (Options.MadCanSeeImpostor.GetBool() || Roles.Madmate.MadBreaker.CanSeeImpostor(role)))
                 {
                     if (PlayerCatch.AllPlayerFirstTypes.Any(x => x.Value is CustomRoleTypes.Impostor))
                         foreach (var imp in PlayerCatch.AllPlayerFirstTypes.Where(x => x.Value is CustomRoleTypes.Impostor))

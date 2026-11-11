@@ -481,7 +481,7 @@ namespace TownOfHost
                         PlayerCatch.AllPlayerControls.DoIf(pl => pl != pc, pl => NameColorManager.Add(pc.PlayerId, pl.PlayerId, Main.PlayerColors[pl.PlayerId].ColorCode()));
                     }
                     //マッドメイトの最初からの内通
-                    if (role.IsMadmate() && Options.MadCanSeeImpostor.GetBool())
+                    if (role.IsMadmate() && (Options.MadCanSeeImpostor.GetBool() || Roles.Madmate.MadBreaker.CanSeeImpostor(role)))
                     {
                         if (PlayerCatch.AllPlayerFirstTypes.Where(x => x.Value is CustomRoleTypes.Impostor).Any())
                             foreach (var imp in PlayerCatch.AllPlayerFirstTypes.Where(x => x.Value is CustomRoleTypes.Impostor))

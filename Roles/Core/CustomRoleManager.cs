@@ -699,6 +699,7 @@ public enum CustomRoles
     MadBait,
     MadReduced,
     MadWorker,
+    MadBreaker,
     MadTracker,
     MadChanger,
     MadSuicide,
