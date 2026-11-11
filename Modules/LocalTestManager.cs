@@ -167,7 +167,7 @@ namespace TownOfHost
             target.Data.IsDead = false;
             revived = target;
             foreach (var area in MeetingHud.Instance.playerStates)
-                if (area.TargetPlayerId == target.PlayerId) area.AmDead = false;
+                if (area.PlayerId == target.PlayerId) area.AmDead = false;
             Logger.Info($"{target.Data.GetLogPlayerName()} は勝者予想ができるので、会議の間だけ生きているように見せる", "LocalTest");
         }
         /// <summary>生きているように見せたのを元に戻す(会議の終わり・別の人に乗り移ったとき)</summary>
@@ -177,7 +177,7 @@ namespace TownOfHost
             if (!revived.IsAlive()) revived.Data.IsDead = true;
             if (MeetingHud.Instance != null)
                 foreach (var area in MeetingHud.Instance.playerStates)
-                    if (area.TargetPlayerId == revived.PlayerId) area.AmDead = !revived.IsAlive();
+                    if (area.PlayerId == revived.PlayerId) area.AmDead = !revived.IsAlive();
             revived = null;
         }
 
