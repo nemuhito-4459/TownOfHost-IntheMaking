@@ -49,7 +49,7 @@ namespace TownOfHost.Modules
             }
             text.gameObject.SetActive(true);
             text.transform.localPosition = new Vector3(0f, 2.6f, -200f);
-            text.text = $"<#ff4040><b>⚠ 暗転したかもしれません</b></color>\n<size=80%>{reason}</size>\n<size=60%><#ffffffaa>(あと{Mathf.CeilToInt(timer)}秒で消えます)</color></size>";
+            text.text = $"<#ff4040><b>⚠ 暗転の可能性</b></color>\n<size=80%>{reason}</size>\n<size=60%><#ffffffaa>(あと{Mathf.CeilToInt(timer)}秒で消えます)</color></size>";
         }
 
         [GameModuleInitializer]
