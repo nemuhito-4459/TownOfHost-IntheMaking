@@ -32,7 +32,6 @@ namespace TownOfHost
             { CustomRoles.PonkotuTeller, "ぽんこつうらないし" },
             { CustomRoles.WolfBoy, "おおかみしょうねん" },
             //ジャッカル〇〇で、元の役職名から読みを作れないもの
-            { CustomRoles.JackalEarnestWolf, "いちずなじゃっかる" },
             { CustomRoles.JackalEvilButtoner, "じゃっかるぼたなー" },
             { CustomRoles.JackalEvilTeller, "じゃっかるてらー" },
             { CustomRoles.JackalEvilgambler, "じゃっかるぎゃんぶらー" },

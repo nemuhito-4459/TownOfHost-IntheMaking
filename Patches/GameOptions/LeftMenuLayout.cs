@@ -180,7 +180,9 @@ namespace TownOfHost
                 button.buttonText.enableAutoSizing = true;
                 button.buttonText.fontSizeMin = 0.5f;
                 button.buttonText.fontSizeMax = button.buttonText.fontSize;
-                button.buttonText.text = text;
+                //文字は全部真っ白(選択中・カーソルを合わせたときに色が変わらないように、タグで色を固定する)
+                button.buttonText.color = Color.white;
+                button.buttonText.text = $"<#ffffff>{text}</color>";
             }
             if (color is Color32 col)
             {

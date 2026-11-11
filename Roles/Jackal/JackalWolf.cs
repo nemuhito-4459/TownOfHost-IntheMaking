@@ -16,7 +16,7 @@ public sealed class JackalWolf : JackalImpostorBase
             typeof(JackalWolf),
             player => new JackalWolf(player),
             CustomRoles.JackalWolf,
-            () => OptionHaveRole.GetRole().GetRoleInfo()?.BaseRoleType?.Invoke() ?? RoleTypes.Impostor,
+            () => (OptionHaveRole?.GetRole() ?? CustomRoles.Impostor).GetRoleInfo()?.BaseRoleType?.Invoke() ?? RoleTypes.Impostor,
             CustomRoleTypes.Neutral,
             24700,
             SetupOptionItem,
@@ -29,7 +29,7 @@ public sealed class JackalWolf : JackalImpostorBase
             {
                 AssignCountRule = new(1, 1, 1)
             },
-            AddHaveRole: () => OptionHaveRole.GetRole(),
+            AddHaveRole: () => OptionHaveRole?.GetRole() ?? CustomRoles.Impostor,
             from: From.TownOfHost_K);
     public JackalWolf(PlayerControl player)
     : base(RoleInfo, player)
@@ -59,7 +59,8 @@ public sealed class JackalWolf : JackalImpostorBase
         OptionHaveRole = FilterOptionItem.Create(RoleInfo, 17, OptionName.AssassinHaveRole, 0, false, null, true, false, false, false, false, () => InvalidRoles());
         SetupJackalOptions(RoleInfo);
     }
-    protected override CustomRoles GetHaveRole() => OptionHaveRole.GetBool() ? OptionHaveRole.GetRole() : CustomRoles.Impostor;
+    //設定画面に出していないので OptionHaveRole は作られない(null)。そのときはインポスター
+    protected override CustomRoles GetHaveRole() => OptionHaveRole?.GetBool() == true ? OptionHaveRole.GetRole() : CustomRoles.Impostor;
     //役職名に持っている役職が入っていないので、後ろに小さく出す
     protected override bool ShowHaveRoleInName => true;
 }

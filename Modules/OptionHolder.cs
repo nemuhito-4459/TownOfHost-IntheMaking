@@ -1186,7 +1186,8 @@ namespace TownOfHost
                     .OrderBy(role => RoleSortHelper.GetSortKey(role.RoleName), StringComparer.Ordinal);
                 foreach (var info in RoleList)
                 {
-                    if (info.RoleName is CustomRoles.AlienHijack or CustomRoles.Jackaldoll) continue;
+                    //ジャッカルウルフは設定画面に出さない(設定が無いので試合にも出ない)
+                    if (info.RoleName is CustomRoles.AlienHijack or CustomRoles.Jackaldoll or CustomRoles.JackalWolf) continue;
                     SetupRoleOptions(info);
                     info.OptionCreator?.Invoke();
                     //インポスターは役職ごとのキルクール(0=規定値)を用意する
