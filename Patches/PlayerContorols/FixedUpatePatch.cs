@@ -27,10 +27,6 @@ namespace TownOfHost
         public static void Postfix(PlayerControl __instance)
         {
             var player = __instance;
-            //雪玉など、プレイヤーのふりをした物(LobbyNetObject)は何もしない
-            if (__instance == null || __instance.PlayerId >= 254) return;
-            //ロビーの雪玉(ホストの分のときだけ動かす)
-            if (__instance == PlayerControl.LocalPlayer) Modules.SnowballManager.FixedUpdate();
 
             if (CustomSpawnEditor.ActiveEditMode && GameStates.IsFreePlay)
             {

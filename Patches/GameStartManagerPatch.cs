@@ -311,7 +311,6 @@ namespace TownOfHost
 
                 PlayerControl.LocalPlayer.RpcSyncSettings(GameOptionsManager.Instance.gameOptionsFactory.ToBytes(opt, AprilFoolsMode.IsAprilFoolsModeToggledOn));
 
-                Modules.SnowballManager.Clear();//ロビーの雪玉を片付ける
                 RatingManager.RestoreLobbyNames();//名前の上のランクを外す
                 __instance.ReallyBegin(false);
                 TemplateManager.SendTemplate("Start", noErr: true);

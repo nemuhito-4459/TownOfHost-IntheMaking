@@ -9,20 +9,20 @@ using TownOfHost.Roles.Core.Interfaces;
 namespace TownOfHost.Roles.Impostor;
 
 /// <summary>
-/// 死神(ファントム置き換え)<br/>
-/// ・ファントムボタンで、キルが届く距離にいる一番近い人を「冥界送り」(陣営を問わず昇天させる。死体は残らない)<br/>
+/// 死神(インポスター置き換え)<br/>
+/// ・キルボタンで「冥界送り」(陣営を問わず昇天させる。死体は残らない)。普通のキルはできない<br/>
 /// ・会議の始めに、昇天した人と、そのとき近く(設定の半径)にいた人が全員に知らされる(死神が近くにいれば死神も)<br/>
-/// ・普通のキルもできる。冥界送りのクールダウンは別の設定<br/>
+/// ・冥界送りのクールダウンはキルクールの設定<br/>
 /// ・設定で、インポスターが分からない(相手のインポスターからは死神が分かる)・サボタージュできない
 /// </summary>
-public sealed class Shinigami : RoleBase, IImpostor, IUsePhantomButton
+public sealed class Shinigami : RoleBase, IImpostor
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(
             typeof(Shinigami),
             player => new Shinigami(player),
             CustomRoles.Shinigami,
-            () => RoleTypes.Phantom,
+            () => RoleTypes.Impostor,
             CustomRoleTypes.Impostor,
             6200,
             SetupOptionItem,
@@ -41,21 +41,17 @@ public sealed class Shinigami : RoleBase, IImpostor, IUsePhantomButton
         records.Clear();
     }
 
-    static OptionItem OptionCooldown;
     static OptionItem OptionRadius;
     static OptionItem OptionCanSabotage;
     static OptionItem OptionCanSeeImpostor;
     enum OptionName
     {
-        ShinigamiCooldown,
         ShinigamiRadius,
         ShinigamiCanSabotage,
         ShinigamiCanSeeImpostor,
     }
     static void SetupOptionItem()
     {
-        OptionCooldown = FloatOptionItem.Create(RoleInfo, 10, OptionName.ShinigamiCooldown, new(0f, 180f, 0.5f), 30f, false)
-            .SetValueFormat(OptionFormat.Seconds);
         OptionRadius = FloatOptionItem.Create(RoleInfo, 11, OptionName.ShinigamiRadius, new(0.25f, 5f, 0.25f), 1.5f, false)
             .SetValueFormat(OptionFormat.Multiplier);
         OptionCanSabotage = BooleanOptionItem.Create(RoleInfo, 12, OptionName.ShinigamiCanSabotage, false, false);
@@ -74,39 +70,18 @@ public sealed class Shinigami : RoleBase, IImpostor, IUsePhantomButton
 
     public bool CanUseSabotageButton() => OptionCanSabotage.GetBool();
 
-    public override void ApplyGameOptions(IGameOptions opt)
+    /// <summary>キルボタン(冥界送り)。普通のキルはしない</summary>
+    public void OnCheckMurderAsKiller(MurderInfo info)
     {
-        AURoleOptions.PhantomCooldown = OptionCooldown.GetFloat();
-    }
-
-    bool IUsePhantomButton.IsresetAfterKill => false;
-    /// <summary>ファントムボタン(冥界送り)</summary>
-    public void OnClick(ref bool AdjustKillCooldown, ref bool? ResetCooldown)
-    {
-        AdjustKillCooldown = true;
-        ResetCooldown = true;
-        if (!AmongUsClient.Instance.AmHost || !Player.IsAlive()) return;
-
-        //キルが届く距離にいる一番近い人(陣営は問わない)
-        var killDistance = NormalGameOptionsV12.KillDistances[Mathf.Clamp(GameManager.Instance.LogicOptions.currentGameOptions.GetInt(Int32OptionNames.KillDistance), 0, 2)];
-        var myPos = Player.GetTruePosition();
-        PlayerControl target = null;
-        var minDis = float.MaxValue;
-        foreach (var pc in PlayerCatch.AllAlivePlayerControls)
+        if (!info.CanKill) return;//キルできない相手には無効
+        var (_, target) = info.AttemptTuple;
+        if (info.IsFakeSuicide) return;
+        if (info.CheckHasGuard())
         {
-            if (pc.PlayerId == Player.PlayerId || pc.inVent) continue;
-            var dis = Vector2.Distance(myPos, pc.GetTruePosition());
-            if (dis > killDistance || dis >= minDis) continue;
-            if (PhysicsHelpers.AnyNonTriggersBetween(myPos, (pc.GetTruePosition() - myPos).normalized, dis, Constants.ShipAndObjectsMask)) continue;
-            target = pc;
-            minDis = dis;
-        }
-        if (target == null)
-        {
-            //誰もいなければ使わなかったことにする
-            ResetCooldown = false;
+            info.IsGuard = true;
             return;
         }
+        info.DoKill = false;
         Ascend(target);
     }
 
@@ -151,4 +126,9 @@ public sealed class Shinigami : RoleBase, IImpostor, IUsePhantomButton
     }
 
     public override string GetAbilityButtonText() => "冥界送り";
+    public bool OverrideKillButtonText(out string text)
+    {
+        text = "冥界送り";
+        return true;
+    }
 }
