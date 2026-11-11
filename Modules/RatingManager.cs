@@ -32,19 +32,19 @@ namespace TownOfHost
          * 【勝って死んでいた】
          *   生存時間 ÷ 試合時間 × (賭けた人が勝ったなら、その人の基本レート)
          * 【負けた】
-         *   － 基本レート × 0.5 (死んでいて賭けた人が勝ったなら、上の死亡時の分は足す)
+         *   － 基本レート × 0.75 (死んでいて賭けた人が勝ったなら、上の死亡時の分は足す)
          * 最後に小数点以下を四捨五入
          */
         /// <summary>基本値</summary>
-        const float BaseValue = 10f;
+        const float BaseValue = 25f;
         /// <summary>試合時間の倍率。10分で1倍、20分で2倍…</summary>
         static float TimeRate(double minutes) => (float)(minutes / 10.0);
         /// <summary>ランク補正</summary>
         static float RankRate(int rating) => rating switch
         {
-            < 500 => 1.5f,   //A(Bも)
-            < 1000 => 1.2f,  //A+
-            < 1500 => 1.0f,  //S
+            < 1400 => 1.5f,  //A(Bも)
+            < 1700 => 1.2f,  //A+
+            < 1900 => 1.0f,  //S
             < 2000 => 0.8f,  //S+
             _ => 0.75f,      //2000～
         };
@@ -56,8 +56,10 @@ namespace TownOfHost
         const float BettorRate = 1.2f;
         /// <summary>生き残って勝ったマッドメイトが足す、インポスターが得た量の割合</summary>
         const float MadmateShareRate = 0.1f;
-        /// <summary>負けたときに減る割合(基本レートの5割)</summary>
-        const float LoseRate = 0.5f;
+        /// <summary>負けたときに減る割合(基本レートの0.75倍)</summary>
+        const float LoseRate = 0.75f;
+        /// <summary>最初のレート</summary>
+        const int StartRating = 1000;
         /// <summary>陣営ごとの倍率(勝ったとき, 負けたとき)。勝ちの倍率が高い陣営は負けの倍率も高い</summary>
         static (float win, float lose) FactionRate(Faction f) => f switch
         {
@@ -70,7 +72,9 @@ namespace TownOfHost
         };
         // ===========================================
 
-        static readonly string FilePath = Main.BaseDirectory + "/Rating.txt";
+        static readonly string FilePath = Main.BaseDirectory + "/Rating2.txt";
+        /// <summary>最初のレートが0だったころのファイル。読むときに最初のレートの分を足す</summary>
+        static readonly string OldFilePath = Main.BaseDirectory + "/Rating.txt";
 
         public enum Faction { Crewmate, Impostor, Madmate, Jackal, Neutral }
         static readonly string[] FactionNames = ["クルーメイト", "インポスター", "マッドメイト", "ジャッカル", "ニュートラル"];
@@ -102,8 +106,11 @@ namespace TownOfHost
                 all = new();
                 try
                 {
-                    if (File.Exists(FilePath))
-                        foreach (var line in File.ReadAllLines(FilePath))
+                    //新しいファイルがまだ無ければ、前のファイルを読んで最初のレートの分を足す
+                    var old = !File.Exists(FilePath) && File.Exists(OldFilePath);
+                    var path = old ? OldFilePath : FilePath;
+                    if (File.Exists(path))
+                        foreach (var line in File.ReadAllLines(path))
                         {
                             //フレンドコード,レート,試合数,勝利数,名前
                             var p = line.Split(',', 5);
@@ -111,7 +118,7 @@ namespace TownOfHost
                             all[p[0].Trim()] = new Data
                             {
                                 FriendCode = p[0].Trim(),
-                                Rating = int.TryParse(p[1], out var r) ? r : 0,
+                                Rating = (int.TryParse(p[1], out var r) ? r : 0) + (old ? StartRating : 0),
                                 Games = int.TryParse(p[2], out var g) ? g : 0,
                                 Wins = int.TryParse(p[3], out var w) ? w : 0,
                                 Name = p.Length > 4 ? p[4] : "",
@@ -140,7 +147,7 @@ namespace TownOfHost
         static Data GetOrCreate(string friendCode, string name)
         {
             if (!All.TryGetValue(friendCode, out var d))
-                All[friendCode] = d = new Data { FriendCode = friendCode };
+                All[friendCode] = d = new Data { FriendCode = friendCode, Rating = StartRating };
             if (!string.IsNullOrEmpty(name)) d.Name = name;
             return d;
         }
@@ -152,9 +159,9 @@ namespace TownOfHost
             if (d == null || d.Games == 0) return $"<#9e9e9e>{prefix}B</color>";
             return d.Rating switch
             {
-                < 500 => $"<#5fd35f>{prefix}A</color>",
-                < 1000 => $"<#3fd0ff>{prefix}A+</color>",
-                < 1500 => $"<#ffd84a>{prefix}S</color>",
+                < 1400 => $"<#5fd35f>{prefix}A</color>",
+                < 1700 => $"<#3fd0ff>{prefix}A+</color>",
+                < 1900 => $"<#ffd84a>{prefix}S</color>",
                 < 2000 => $"<#ff8a3d>{prefix}S+</color>",
                 _ => $"<#d27cff>{prefix}{d.Rating}</color>",
             };
@@ -226,7 +233,7 @@ namespace TownOfHost
             var minutes = (DateTime.Now - startTime).TotalMinutes;
             var time = TimeRate(minutes);
             //試合前のレート(計算の途中で変わらないように先に控えておく)
-            var ratingBefore = participants.ToDictionary(kv => kv.Key, kv => Get(kv.Value.Code)?.Rating ?? 0);
+            var ratingBefore = participants.ToDictionary(kv => kv.Key, kv => Get(kv.Value.Code)?.Rating ?? StartRating);
             //基本レート = 試合時間 × 陣営ボーナス × ランク補正 × 基本値
             float BaseRate(byte id)
             {
