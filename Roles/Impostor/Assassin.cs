@@ -220,7 +220,7 @@ public sealed class Assassin : RoleBase, IImpostor, IUsePhantomButton, IDoubleTr
                 _ = new LateTask(() =>
                 {
                     MyState.IsDead = false;
-                    ReportDeadBodyPatch.ExReportDeadBody(Player, null, false, "AssassinMeeting", "#ff1919");
+                    CallAssassinMeeting();
                     Utils.AllPlayerKillFlash();
 
                     GameDataSerializePatch.DontTouch = false;
@@ -285,11 +285,28 @@ public sealed class Assassin : RoleBase, IImpostor, IUsePhantomButton, IDoubleTr
                     {//ホストだけSetRoleして復活させる。
                         PlayerCatch.AllPlayerControls.DoIf(pc => !pc.IsModClient() && pc.PlayerId != Player.PlayerId,
                         pc => PlayerCatch.GetPlayerById(0).RpcSetRoleDesync(RoleTypes.Crewmate, pc.GetClientId()));
-                        ReportDeadBodyPatch.ExReportDeadBody(Player, null, false, "AssassinMeeting", "#ff1919");
+                        CallAssassinMeeting();
                     }, 3, "", true);
                 }
             }//, 0.5f, "AssassinShori");
         }
+    }
+    /// <summary>
+    /// アサシン会議を始める。<br/>
+    /// ほかの会議が始まりかけていると ExReportDeadBody が何もせずに終わってしまい、
+    /// アサシン会議の表示が出ない普通の会議になるので、少し待ってからやり直す
+    /// </summary>
+    void CallAssassinMeeting(int retry = 0)
+    {
+        if (NowState is not AssassinMeeting.Guessing) return;
+        if (CustomWinnerHolder.WinnerTeam is not CustomWinner.Default) return;
+        if ((GameStates.IsMeeting || ReportDeadBodyPatch.IsWaitingMeeting) && retry < 10)
+        {
+            Logger.Info($"ほかの会議の途中なので待つ({retry})", "Assassin");
+            _ = new LateTask(() => CallAssassinMeeting(retry + 1), 1f, "AssassinMeetingRetry", true);
+            return;
+        }
+        ReportDeadBodyPatch.ExReportDeadBody(Player, null, false, "AssassinMeeting", "#ff1919");
     }
     public override void OnStartMeeting()
     {
@@ -479,7 +496,9 @@ public sealed class Assassin : RoleBase, IImpostor, IUsePhantomButton, IDoubleTr
     }
     public override bool CancelReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target, ref DontReportreson reason)
     {
-        if (NowState is AssassinMeeting.CallMetting)
+        //アサシン会議を待っている間(CallMetting と、会議の外の Guessing)は通報・ボタンを止める。
+        //Guessing の間に通報が通ると、アサシン会議ではなく普通の会議になってしまっていた
+        if (NowState is AssassinMeeting.CallMetting || (NowState is AssassinMeeting.Guessing && !GameStates.IsMeeting))
         {
             reason = DontReportreson.wait;
             return true;

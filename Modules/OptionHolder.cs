@@ -1065,6 +1065,7 @@ namespace TownOfHost
             OutroCrewWinreasonchenge = BooleanOptionItem.Create(111006, "OutroCrewWinreasonchenge", true, TabGroup.MainSettings, false)
                 .SetColorcode("#66ffff")
                 .SetParent(ConvenientOptions);
+            ExileRemainText.SetupOption(ConvenientOptions);//追放時の残り人数
 
             OptionBatchSetting = BooleanOptionItem.Create(113000, "OptionBatchSetting", false, TabGroup.MainSettings, false)
                 .SetHeader(true)

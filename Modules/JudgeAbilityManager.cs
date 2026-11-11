@@ -24,6 +24,8 @@ namespace TownOfHost
         {
             JudgePlayers.Clear();
             if (!AmongUsClient.Instance.AmHost) return;
+            //アサシン会議ではアサシン以外は何もできないので、ジャッジにしない
+            if (Roles.Impostor.Assassin.NowUse) return;
 
             foreach (var pc in PlayerCatch.AllAlivePlayerControls)
             {

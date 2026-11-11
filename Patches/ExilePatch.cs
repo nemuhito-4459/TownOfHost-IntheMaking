@@ -326,6 +326,11 @@ namespace TownOfHost
                 {
                     __instance.completeString = MeetingVoteManager.Voteresult + "<size=0>";
                 }
+                else if (AmongUsClient.Instance.AmHost && ExileRemainText.Text != "")
+                {
+                    //追放時の残り人数
+                    __instance.completeString = ExileRemainText.Text;
+                }
                 else if (result.Value.OverrideExiled == byte.MaxValue)
                 {
                     __instance.completeString = string.Format(Translator.GetString(StringNames.ExileTextNonConfirm), result.Value.Exiled.GetLogPlayerName());

@@ -18,6 +18,8 @@ namespace TownOfHost
         public static Dictionary<byte, string> ChengeMeetingInfo;
         public static Dictionary<byte, List<NetworkedPlayerInfo>> WaitReport = new();
         static bool Wait;
+        /// <summary>会議を始める準備中か(ExReportDeadBody が何もしないで終わる状態)</summary>
+        public static bool IsWaitingMeeting => Wait;
         public static uint reporternetid;
         public static byte targetid;
         //public static Dictionary<byte, Vector2> Pos = new();

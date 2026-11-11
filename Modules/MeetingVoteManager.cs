@@ -218,17 +218,31 @@ public class MeetingVoteManager
 
         if (AntiBlackout.OverrideExiledPlayer())
         {
+            ExileRemainText.Text = "";
             meetingHud.RpcVotingComplete(states.ToArray(), null, true, false, 0);
             ExileControllerWrapUpPatch.AntiBlackout_LastExiled = result.Exiled;
             PlayerCatch.AllPlayerControls.Do(pc => AntiBlackout.isRoleCache.Add(pc.PlayerId));
         }
         else
         {
+            //追放画面の残り人数(MOD未導入者には追放される人の名前を書き換えて見せる)
+            var remainName = ExileRemainText.Create(result.Exiled);
+            var exiledPc = result.Exiled?.Object;
             foreach (var player in PlayerCatch.AllPlayerControls)
             {
                 if (player.GetClient() is null ||/* player.IsModClient() ||*/ player.PlayerId == PlayerControl.LocalPlayer.PlayerId) continue;
                 var sender = CustomRpcSender.Create("DeMeetingEndRpc");
                 sender.StartMessage(player.GetClientId());
+                if (remainName != null && exiledPc != null && !player.IsModClient())
+                {
+                    //名前のキャッシュも書き換えておく(会議後の名前更新で元に戻る)
+                    exiledPc.SetNameCheck(remainName, player, true);
+                    sender.StartRpc(exiledPc.NetId, RpcCalls.SetName)
+                        .Write(exiledPc.Data.NetId)
+                        .Write(remainName)
+                        .Write(true)
+                        .EndRpc();
+                }
                 sender.StartRpc(meetingHud.NetId, RpcCalls.VotingComplete)
                 .WritePacked(states.ToArray().Length);
                 foreach (MeetingHud.VoterState voterState in states)

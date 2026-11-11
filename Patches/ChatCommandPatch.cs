@@ -141,6 +141,11 @@ namespace TownOfHost
             {
                 switch (args[0])
                 {
+                    //モデレーターの追加・削除・一覧
+                    case "/mod":
+                        canceled = true;
+                        ModeratorManager.HostCommand(args);
+                        break;
                     case "/win":
                     case "/winner":
                         canceled = true;
@@ -1431,6 +1436,12 @@ namespace TownOfHost
                         player.RpcProtectedMurderPlayer();
                     }
                     canceled = true;
+                    break;
+                //モデレーターのコマンド
+                case "/kick":
+                case "/start":
+                case "/stop":
+                    ModeratorManager.ModeratorCommand(player, args);
                     break;
                 case "/callmeeting":
                 case "/cm":
