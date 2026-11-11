@@ -1,0 +1,45 @@
+# wiki フォルダを GitHub Wiki にコピーする
+# main に push して wiki/ の中が変わったとき(と、Actionsの画面から手動で実行したとき)に動く
+name: Sync Wiki
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "wiki/**"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-wiki
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: リポジトリを取得
+        uses: actions/checkout@v4
+
+      - name: Wiki を取得
+        run: |
+          git clone "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.wiki.git" wiki-repo
+
+      - name: wiki フォルダの中身をコピー(README.md は除く)
+        run: |
+          find wiki -maxdepth 1 -name "*.md" ! -name "README.md" -exec cp {} wiki-repo/ \;
+
+      - name: 変更があれば push
+        working-directory: wiki-repo
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "変更なし"
+            exit 0
+          fi
+          git commit -m "wiki フォルダから更新 (${GITHUB_SHA::7})"
+          git push
