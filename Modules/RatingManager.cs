@@ -123,7 +123,7 @@ namespace TownOfHost
                             all[p[0].Trim()] = new Data
                             {
                                 FriendCode = p[0].Trim(),
-                                Rating = (int.TryParse(p[1], out var r) ? r : 0) + (old ? StartRating : 0),
+                                Rating = Math.Max(StartRating, (int.TryParse(p[1], out var r) ? r : 0) + (old ? StartRating : 0)),
                                 Games = int.TryParse(p[2], out var g) ? g : 0,
                                 Wins = int.TryParse(p[3], out var w) ? w : 0,
                                 Name = p.Length > 4 ? p[4] : "",
@@ -331,7 +331,7 @@ namespace TownOfHost
 
                 if (win && faction == Faction.Impostor && value > 0) impostorGain += value;
                 var diff = (int)Math.Round(value, MidpointRounding.AwayFromZero);
-                d.Rating = Math.Max(0, d.Rating + diff);
+                d.Rating = Math.Max(StartRating, d.Rating + diff);//1000より下にはならない
                 d.Games++;
                 if (win) d.Wins++;
                 results[id] = (d, before, d.Rating - before, win, faction, detail);
