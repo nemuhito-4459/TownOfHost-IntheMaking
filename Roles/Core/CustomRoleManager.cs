@@ -748,6 +748,7 @@ public enum CustomRoles
     Staff,
     Efficient,
     Psychic,
+    Senrigan,
     SwitchSheriff,
     NiceLogger,
     Android,
