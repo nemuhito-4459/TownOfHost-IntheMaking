@@ -30,7 +30,8 @@ namespace TownOfHost
          *   キルできない人外     ＋ 自分に賭けた人数 × 1.2
          *   マッドメイト         ＋ 勝ったインポスターが得た量の合計 × 0.1
          * 【勝って死んでいた】
-         *   生存時間 ÷ 試合時間 × (賭けた人が勝ったなら、その人の基本レート)
+         *   基本レート × 0.75
+         *   ＋ 生存時間 ÷ 試合時間 × (賭けた人が勝ったなら、その人の基本レート)
          * 【負けた】
          *   － 基本レート × 0.75 (死んでいて賭けた人が勝ったなら、上の死亡時の分は足す)
          *   それでプラスになったときは、その2割だけ
@@ -61,6 +62,8 @@ namespace TownOfHost
         const float MadmateShareRate = 0.1f;
         /// <summary>負けたときに減る割合(基本レートの0.75倍)</summary>
         const float LoseRate = 0.75f;
+        /// <summary>勝ったけど死んでいたとき、もらえる基本レートの割合</summary>
+        const float DeadWinRate = 0.75f;
         /// <summary>負けたのにプラスになったとき、もらえる割合</summary>
         const float LosePlusRate = 0.2f;
         /// <summary>最初のレート</summary>
@@ -286,8 +289,8 @@ namespace TownOfHost
                 }
                 else if (!alive)
                 {
-                    value = deadPart;
-                    detail = "死んでいたので、勝者予想の分だけ";
+                    value = baseRate * DeadWinRate + deadPart;
+                    detail = $"死んでいたので 基本レート {baseRate:0.#} × 0.75";
                 }
                 else
                 {
