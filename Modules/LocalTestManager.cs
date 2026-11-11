@@ -159,7 +159,12 @@ namespace TownOfHost
             if (!picking) return true;
             picking = false;
 
-            EditorUI.MinigameBegin(__instance);
+            //ミニゲームを開く処理(CustomSpawnEditor の MinigameBegin と同じ)
+            Minigame.Instance = __instance;
+            __instance.timeOpened = Time.realtimeSinceStartup;
+            if (MapBehaviour.Instance) MapBehaviour.Instance.Close();
+            PlayerControl.LocalPlayer?.MyPhysics.SetNormalizedVelocity(Vector2.zero);
+            __instance.StartCoroutine(__instance.CoAnimateOpen());
             __instance.potentialVictims = new();
             Il2CppSystem.Collections.Generic.List<UiElement> selectable = new();
             //自分(今の体)以外の全員。元の自分もここから選べる
