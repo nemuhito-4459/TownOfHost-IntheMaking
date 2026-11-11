@@ -50,6 +50,12 @@ public static class MeetingHudPatch
             var voter = PlayerCatch.GetPlayerById(srcPlayerId);
             if (voter.isDummy)
             {
+                //アサシン会議ではダミーも投票できない(投票できるのはアサシンだけ)
+                if (Assassin.NowUse)
+                {
+                    __instance.RpcClearVote(voter.PlayerId);
+                    return false;
+                }
                 MeetingVoteManager.Instance?.SetVote(srcPlayerId, suspectPlayerId);
                 return true;
             }

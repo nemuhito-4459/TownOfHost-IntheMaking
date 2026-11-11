@@ -179,6 +179,12 @@ namespace TownOfHost
         [HarmonyPatch(typeof(HudManager), nameof(HudManager.Update)), HarmonyPostfix]
         public static void HudUpdatePostfix(HudManager __instance)
         {
+            //乗り移っている間は、元の自分の体を止めておく(会議のあとなどに動けるように戻されるため)
+            if (Possessed != null && hostBody != null && hostBody.moveable)
+            {
+                hostBody.moveable = false;
+                hostBody.MyPhysics.SetNormalizedVelocity(Vector2.zero);
+            }
             //タスク中と会議中(追放の画面などは除く)
             var show = IsLocalHost && GameStates.InGame && (GameStates.IsInTask || GameStates.IsMeeting) && !GameStates.ExiledAnimate;
             if (!show)
