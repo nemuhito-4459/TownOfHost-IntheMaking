@@ -41,8 +41,10 @@ namespace TownOfHost.Modules
 
         public override void SendGameOptions()
         {
+            //ローカルのテストで乗り移っている間は、元の自分の設定は使わない(乗り移った先の設定を自分の画面に使う)
+            if (LocalTestManager.IsHostBodyWhilePossessed(player)) return;
             var opt = BuildGameOptions();
-            if (player.AmOwner)
+            if (player.AmOwner || player == LocalTestManager.Possessed)
             {
                 foreach (var com in GameManager.Instance.LogicComponents)
                 {

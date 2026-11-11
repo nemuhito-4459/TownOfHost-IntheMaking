@@ -70,6 +70,9 @@ namespace TownOfHost
                 if (Possessed == null) hostBody = null;
 
                 //乗り移った先の役職のボタンなどを出す(自分の画面だけ)
+                //乗り移った先の設定(クールダウンなど)を自分の画面に使う(役職を付ける前に)
+                Modules.PlayerGameOptionsSender.SetDirty(target.PlayerId);
+                Modules.GameOptionsSender.SendAllGameOptions();
                 RoleManager.Instance.SetRole(target, GetRoleType(target));
                 ResetHud(target);
                 //会議中に勝者予想ができる人へ乗り移ったら投票できるようにする

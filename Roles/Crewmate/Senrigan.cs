@@ -119,7 +119,8 @@ public sealed class Senrigan : RoleBase, IKiller
         usedCount++;
         snapshot = null;
         timer = Cooldown.GetFloat();
-        Player.RpcResetAbilityCooldown();
+        //変身の取り消しが届いたあとでクールダウンを始め直す
+        Player.RpcResetAbilityCooldown(Sync: true);
         if (!HasUseLeft) Player.MarkDirtySettings();//使い切ったらボタンを使えなくする
         UtilsNotifyRoles.NotifyRoles(SpecifySeer: Player);
         return false;//変身はしない
