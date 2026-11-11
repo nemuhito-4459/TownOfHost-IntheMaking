@@ -25,6 +25,8 @@ namespace TownOfHost
 
         /// <summary>ホスト本人の体(乗り移っていないときは null)</summary>
         static PlayerControl hostBody;
+        /// <summary>乗り移っている間の、元のホストの体か</summary>
+        public static bool IsHostBodyWhilePossessed(PlayerControl pc) => pc != null && Possessed != null && hostBody != null && pc == hostBody;
         /// <summary>今乗り移っているプレイヤー(乗り移っていないときは null)</summary>
         public static PlayerControl Possessed { get; private set; }
         static bool picking;
@@ -138,13 +140,17 @@ namespace TownOfHost
                 owners.Remove(pc.PlayerId);
             }
         }
-        /// <summary>その人の画面で見える自分の役職(バニラの役職)</summary>
+        /// <summary>
+        /// 自分の画面での自分の役職(バニラの役職)。会議のあとにホストの画面で使う役職と同じ決め方にする
+        /// (ExilePatch: インポスター扱いで動くクルー・ニュートラルはクルーメイト)
+        /// </summary>
         static RoleTypes GetRoleType(PlayerControl pc)
         {
-            var role = pc.GetCustomRole();
-            if (!pc.IsAlive())
-                return role.IsImpostor() || role.IsMadmate() ? RoleTypes.ImpostorGhost : RoleTypes.CrewmateGhost;
-            return role.GetRoleInfo()?.BaseRoleType?.Invoke() ?? pc.Data.Role.Role;
+            var roleInfo = pc.GetCustomRole().GetRoleInfo();
+            var role = (roleInfo?.IsDesyncImpostor == true) && roleInfo.BaseRoleType.Invoke() is RoleTypes.Impostor
+                ? RoleTypes.Crewmate : (roleInfo?.BaseRoleType?.Invoke() ?? RoleTypes.Crewmate);
+            if (!pc.IsAlive()) role = role.IsCrewmate() ? RoleTypes.CrewmateGhost : RoleTypes.ImpostorGhost;
+            return role;
         }
 
         // ------------------ 会議中の乗り移り(死亡後の勝者予想のテスト) ------------------

@@ -28,6 +28,9 @@ namespace TownOfHost
         public static int GetClientId(this PlayerControl player)
         {
             if (player?.isDummy ?? false) return -1;
+            //ローカルのテストで乗り移っている間は、元のホストの体あてに送らない
+            //(自分あてに送ると自分に返ってきて、乗り移り先の役職などが上書きされてしまう)
+            if (LocalTestManager.IsHostBodyWhilePossessed(player)) return -1;
             var client = player?.GetClient();
             if (client == null) Logger.Error($"{player?.Data?.GetLogPlayerName() ?? "null"}のclientがnull", "GetClientId");
             return client == null ? -1 : client.Id;
