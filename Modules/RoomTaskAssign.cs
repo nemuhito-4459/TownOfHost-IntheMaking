@@ -27,6 +27,8 @@ public class RoomTaskAssign
     public List<RoomTaskKind> Queue = new();
     /// <summary>今の部屋にいた合計秒数(部屋を出ても途中から再開)</summary>
     public float stay;
+    /// <summary>最後に表示した秒数(0.1秒単位。変わったときだけ表示を更新する)</summary>
+    int shownTenths = -1;
     RoomTaskKind NowKind => Queue.Count > 0 ? Queue[System.Math.Min(completeroom, Queue.Count - 1)] : RoomTaskKind.Short;
     float NowWait => RoomTaskSettings.GetWait(TargetType, NowKind);
 
@@ -70,7 +72,17 @@ public class RoomTaskAssign
                 //部屋にいる間だけ待ち時間を数え、設定秒数たまったら完了
                 if (TaskRoom != nowroom.RoomId) return;
                 if (Mystate.HasSpawned) stay += Time.fixedDeltaTime;
-                if (stay < NowWait) return;
+                if (stay < NowWait)
+                {
+                    //0.1秒ごとに数字を更新する
+                    var tenths = (int)(stay * 10);
+                    if (tenths != shownTenths)
+                    {
+                        shownTenths = tenths;
+                        UtilsNotifyRoles.NotifyRoles(OnlyMeName: true, SpecifySeer: player);
+                    }
+                    return;
+                }
                 CompleteGeneric(player);
                 return;
             }
@@ -130,6 +142,7 @@ public class RoomTaskAssign
     {
         if (!IsAssign()) return;
         stay = 0;
+        shownTenths = -1;
         //汎用の部屋タスクは、今いる部屋も行き先から外す(着いた瞬間に数え始めないように)
         var nowRoomId = Generic ? playerid.GetPlayerControl()?.GetPlainShipRoom(true)?.RoomId : null;
         List<PlainShipRoom> rooms = new();
@@ -193,7 +206,12 @@ public class RoomTaskAssign
         var text = $"<{colorcode}>{GetArrow.GetArrows(seer, [RoomArrow])}" +
             $"{string.Format(Translator.GetString("FoxRoomMission"), $"<color=#cccccc><b>{Translator.GetString($"{TaskRoom}")}<b></color>")}</color>";
         //汎用の部屋タスクは種類と必要な秒数も出す
-        if (Generic) text += $" <size=80%>({Translator.GetString($"RoomTaskKind.{NowKind}")} {NowWait}{Translator.GetString("RoomTaskSeconds")})</size>";
+        //数え始めたら「経過/必要」を0.1秒刻みで出す
+        if (Generic)
+        {
+            var count = stay > 0 ? $"{System.Math.Min(stay, NowWait):0.0}/{NowWait:0.0}" : $"{NowWait}";
+            text += $" <size=80%>({Translator.GetString($"RoomTaskKind.{NowKind}")} {count}{Translator.GetString("RoomTaskSeconds")})</size>";
+        }
         return text;
     }
 
@@ -201,6 +219,7 @@ public class RoomTaskAssign
     {
         timer = 0;
         stay = 0;
+        shownTenths = -1;
         TaskRoom = null;
         TaskPSR = null;
         GetArrow.Remove(playerid, RoomArrow);
