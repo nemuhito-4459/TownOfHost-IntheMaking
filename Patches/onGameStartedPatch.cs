@@ -271,9 +271,11 @@ namespace TownOfHost
             {
                 //動かないのでTOH対応くるまでにこれで...
                 Il2CppSystem.Collections.Generic.List<NetworkedPlayerInfo> playerInfos = new();
+                //ダミーに役職を付けるときは、ダミーもインポスター/クルーの振り分け(人数の計算も)に入れる
+                var dummyGetsRole = DebugModeManager.DummyAssignRole.GetBool() || DummySpawner.AssignRole;
                 foreach (NetworkedPlayerInfo data in GameData.Instance.AllPlayers)
                 {
-                    if (data.Object != null && !data.IsDead && !Disconnected.Contains(data.PlayerId) && data?.Object?.isDummy is false)
+                    if (data.Object != null && !data.IsDead && !Disconnected.Contains(data.PlayerId) && (data?.Object?.isDummy is false || dummyGetsRole))
                         playerInfos.Add(data);
                 }
                 IGameOptions currentGameOptions = GameOptionsManager.Instance.CurrentGameOptions;
