@@ -56,6 +56,14 @@ namespace TownOfHost
             if (ChatHistory.Count == 0 || ChatHistory[^1] != text) ChatHistory.Add(text);
             ChatControllerUpdatePatch.CurrentHistorySelection = ChatHistory.Count;
             string[] args = text/*.ToLower()*/.Split(' ');
+            //「/」で始まるチャットは /cmd を付けなくてもコマンドとして扱う。ほかの人には送らず、自分の画面にだけ出す
+            var originalText = text;
+            var isSlash = text.StartsWith("/") && AmongUsClient.Instance.AmHost;
+            if (isSlash && !text.StartsWith("/cmd"))
+            {
+                text = "/cmd " + text;
+                args = text.Split(' ');
+            }
             string subArgs = "";
             var canceled = false;
             var cancelVal = "";
@@ -1149,6 +1157,8 @@ namespace TownOfHost
                 Logger.Info("Command Canceled", "ChatCommand");
                 __instance.freeChatField.textArea.Clear();
                 __instance.freeChatField.textArea.SetText(cancelVal);
+                //「/」のチャットは自分の画面にだけ出す
+                if (isSlash) __instance.AddChat(PlayerControl.LocalPlayer, originalText);
             }
             if (ChatControllerUpdatePatch.IsQuickChatOnly)
             {
@@ -1190,6 +1200,12 @@ namespace TownOfHost
             if (player.PlayerId != 0)
             {
                 ChatManager.SendMessage(player, text);
+            }
+            //「/」で始まるチャットは /cmd を付けなくてもコマンドとして扱う
+            if (text.StartsWith("/") && !text.StartsWith("/cmd"))
+            {
+                text = "/cmd " + text;
+                args = text.Split(' ');
             }
 
             if (text.StartsWith("/") && !text.Contains("cmd"))

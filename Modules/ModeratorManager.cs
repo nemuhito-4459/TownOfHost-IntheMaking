@@ -10,7 +10,7 @@ namespace TownOfHost
     /// <summary>
     /// モデレーター(ホストの代わりに一部のコマンドを使える人)<br/>
     /// ホスト: /mod add 名前 ・ /mod del 名前 ・ /mod (一覧)<br/>
-    /// モデレーター: /cmd /kick 名前 ・ /cmd /start ・ /cmd /stop<br/>
+    /// モデレーター: /kick 名前 ・ /start ・ /stop(/cmd を付けても動く)<br/>
     /// フレンドコードで覚えるので、名前を変えてもモデレーターのまま
     /// </summary>
     public static class ModeratorManager
@@ -83,7 +83,7 @@ namespace TownOfHost
                         Mods.Add((client.FriendCode, pc.Data.GetLogPlayerName().RemoveHtmlTags()));
                         Save();
                         ToHost($"{name} をモデレーターにしました");
-                        SendMessage("あなたはモデレーターになりました\n/cmd /kick 名前 … キック\n/cmd /start … ゲーム開始\n/cmd /stop … 開始を取り消す", pc.PlayerId);
+                        SendMessage("あなたはモデレーターになりました\n/kick 名前 … キック\n/start … ゲーム開始\n/stop … 開始を取り消す", pc.PlayerId);
                         return;
                     }
                 case "del":
@@ -104,7 +104,7 @@ namespace TownOfHost
             }
         }
 
-        /// <summary>モデレーターのコマンド(/cmd /kick など)。モデレーターでなければ断る</summary>
+        /// <summary>モデレーターのコマンド(/kick など)。モデレーターでなければ断る</summary>
         public static void ModeratorCommand(PlayerControl player, string[] args)
         {
             if (!AmongUsClient.Instance.AmHost || player == null) return;
