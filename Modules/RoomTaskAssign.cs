@@ -85,6 +85,7 @@ public class RoomTaskAssign
                     completeroom++;
                     timer = 0;
                     RPC.PlaySoundRPC(playerid, Sounds.TaskComplete);
+                    TitleManager.OnWalkTask(playerid);//肩書用に数える
 
                     (player?.GetRoleClass() as IRoomTasker)?.OnComplete(completeroom);
 
@@ -112,6 +113,7 @@ public class RoomTaskAssign
         timer = 0;
         stay = 0;
         RPC.PlaySoundRPC(playerid, Sounds.TaskComplete);
+        TitleManager.OnWalkTask(playerid);//肩書用に数える
 
         var taskstate = player.GetPlayerTaskState();
         taskstate.Update(player);

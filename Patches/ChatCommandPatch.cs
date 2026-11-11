@@ -154,6 +154,11 @@ namespace TownOfHost
                         canceled = true;
                         SendMessage(RatingManager.ShowAllText(), PlayerControl.LocalPlayer.PlayerId);
                         break;
+                    //肩書
+                    case "/title":
+                        canceled = true;
+                        TitleManager.Command(PlayerControl.LocalPlayer, args);
+                        break;
                     //死亡後の勝者予想(ホストは投票できないのでコマンド)
                     case "/yosou":
                         canceled = true;
@@ -1471,6 +1476,10 @@ namespace TownOfHost
                 //自分のレート
                 case "/rate":
                     SendMessage(RatingManager.ShowText(player), player.PlayerId);
+                    break;
+                //肩書
+                case "/title":
+                    TitleManager.Command(player, args);
                     break;
                 //モデレーターのコマンド
                 case "/kick":

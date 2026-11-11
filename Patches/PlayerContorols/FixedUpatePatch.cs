@@ -259,7 +259,7 @@ namespace TownOfHost
 
                     //名前の上にランク(ホストの画面)
                     RoleText.enabled = true;
-                    RoleText.text = RatingManager.RankText(RatingManager.Get(client?.FriendCode));
+                    RoleText.text = TitleManager.TitleText(__instance) + RatingManager.RankText(RatingManager.Get(client?.FriendCode));
                 }
                 if (GameStates.IsInGame)
                 {

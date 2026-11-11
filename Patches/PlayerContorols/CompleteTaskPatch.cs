@@ -15,6 +15,7 @@ namespace TownOfHost
             Logger.Info($"TaskComplete:{pc.GetNameWithRole().RemoveHtmlTags()} {taskid}", "CompleteTask");
             var taskState = pc.GetPlayerTaskState();
             taskState.Update(pc);
+            TitleManager.OnTask(pc.PlayerId);//肩書用に数える
 
             var roleClass = pc.GetRoleClass();
             var roleinfo = pc.GetCustomRole().GetRoleInfo();
