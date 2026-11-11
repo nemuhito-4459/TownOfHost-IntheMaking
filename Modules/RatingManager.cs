@@ -28,6 +28,7 @@ namespace TownOfHost
          *   クルーメイト         ＋ 人外に投票した回数 × 基本値 × タスク完了割合
          *   キルできる人外       ＋ キルした回数 × 基本値 × 0.6
          *   キルできない人外     ＋ 自分に賭けた人数 × 1.2
+         *   マッドメイト         ＋ 勝ったインポスターが得た量の合計 × 0.1
          * 【勝って死んでいた】
          *   生存時間 ÷ 試合時間 × (賭けた人が勝ったなら、その人の基本レート)
          * 【負けた】
@@ -51,6 +52,8 @@ namespace TownOfHost
         const float KillRate = 0.6f;
         /// <summary>キルできない人外の、自分に賭けた人1人あたりの量</summary>
         const float BettorRate = 1.2f;
+        /// <summary>生き残って勝ったマッドメイトが足す、インポスターが得た量の割合</summary>
+        const float MadmateShareRate = 0.1f;
         /// <summary>負けたときに減る割合(基本レートの5割)</summary>
         const float LoseRate = 0.5f;
         /// <summary>陣営ごとの倍率(勝ったとき, 負けたとき)。勝ちの倍率が高い陣営は負けの倍率も高い</summary>
@@ -232,7 +235,9 @@ namespace TownOfHost
             int Bettors(byte id) => PredictionManager.Predictions.Count(kv => kv.Value == id && kv.Key != id);
 
             var results = new Dictionary<byte, (Data data, int before, int diff, bool win, Faction faction, string detail)>();
-            foreach (var (id, (code, name)) in participants)
+            //勝ったインポスターが得た量の合計(マッドメイトはこの1割を足す)。マッドメイトは最後に計算する
+            var impostorGain = 0f;
+            foreach (var (id, (code, name)) in participants.OrderBy(kv => GetFaction(kv.Key) == Faction.Madmate ? 1 : 0))
             {
                 var d = GetOrCreate(code, name);
                 var before = d.Rating;
@@ -294,9 +299,17 @@ namespace TownOfHost
                         value += add;
                         if (add > 0) detail += $"\n自分に賭けた人 {bettors}人（+{add:0.#}）";
                     }
+                    if (faction == Faction.Madmate)
+                    {
+                        //勝ったインポスターが得た量 × 0.1
+                        var add = impostorGain * MadmateShareRate;
+                        value += add;
+                        if (add > 0) detail += $"\nインポスターの1割（+{add:0.#}）";
+                    }
                 }
                 if (predictedWin) detail += $"\n勝者予想が当たった！（+{deadPart:0.#}）";
 
+                if (win && faction == Faction.Impostor && value > 0) impostorGain += value;
                 var diff = (int)Math.Round(value, MidpointRounding.AwayFromZero);
                 d.Rating = Math.Max(0, d.Rating + diff);
                 d.Games++;
