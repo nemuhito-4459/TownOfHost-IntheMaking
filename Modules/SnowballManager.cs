@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using UnityEngine;
 
 namespace TownOfHost.Modules;
@@ -17,7 +16,7 @@ public static class SnowballManager
     /// <summary>同時に出す雪玉の数(初期値)</summary>
     const int DefaultCount = 3;
     /// <summary>大きさの段階ごとの、絵の大きさ(%)</summary>
-    static readonly int[] SpriteScale = [60, 80, 100, 125];
+    static readonly int[] SpriteScale = [300, 400, 500, 650];
     /// <summary>大きさの段階ごとの、当たり判定の半径</summary>
     static readonly float[] Radius = [0.25f, 0.33f, 0.42f, 0.52f];
     /// <summary>大きさの段階ごとの、押したときの速さ(大きいほど遅い)</summary>
@@ -52,24 +51,11 @@ public static class SnowballManager
     /// <summary>次に雪玉を足すまでの秒数</summary>
     static float spawnTimer;
 
-    /// <summary>雪玉の絵(丸を色付きの四角で描く)</summary>
-    static string Sprite(int level)
-    {
-        const int n = 8;
-        var sb = new StringBuilder($"<size={SpriteScale[level]}%><line-height=97%><cspace=0.16em>");
-        for (var y = 0; y < n; y++)
-        {
-            if (y > 0) sb.Append('\n');
-            for (var x = 0; x < n; x++)
-            {
-                var dx = x - 3.5f;
-                var dy = y - 3.5f;
-                if (dx * dx + dy * dy > 16f) sb.Append("<#0000>W</color>");
-                else sb.Append(dx + dy > 2.5f ? "<mark=#c9dcef>W</mark>" : "<mark=#f4f9ff>W</mark>");//右下を少し影に
-            }
-        }
-        return sb.Append("</size>").ToString();
-    }
+    /// <summary>
+    /// 雪玉の絵(大きな「●」1文字)<br/>
+    /// 文字を多く使うと送るデータが大きくなり、公式サーバーに不正と判断されて追い出されるので、短くしておく
+    /// </summary>
+    static string Sprite(int level) => $"<size={SpriteScale[level]}%><#f4f9ff>●</color></size>";
 
     /// <summary>ホストのコマンド「/snow」(オン・オフ)、「/snow 数」(数を変えてオン)</summary>
     public static void Command(string[] args)

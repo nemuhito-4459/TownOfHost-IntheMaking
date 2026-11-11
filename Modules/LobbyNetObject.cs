@@ -204,7 +204,9 @@ public class LobbyNetObject
             w.EndMessage();
 
             w.EndMessage();
-            AmongUsClient.Instance.SendOrDisconnect(w);
+            //大きすぎるデータは分割されて公式サーバーに不正と判断される(追い出される)ので送らない
+            if (w.Length > 900) Logger.Warn($"絵のデータが大きすぎるので送りません({w.Length})", "LobbyNetObject");
+            else AmongUsClient.Instance.SendOrDisconnect(w);
             w.Recycle();
         }
         catch (System.Exception ex)
