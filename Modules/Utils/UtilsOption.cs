@@ -872,6 +872,7 @@ namespace TownOfHost
             { CustomRoles.Senrigan, "虚無玉" },
             { CustomRoles.Welder, "虚無玉" },
             { CustomRoles.MadBreaker, "まいん" },
+            { CustomRoles.Shinigami, "まいん" },
         };
         public static string GetFrom(From from, CustomRoles role = CustomRoles.NotAssigned, bool isblock = true)
         {
