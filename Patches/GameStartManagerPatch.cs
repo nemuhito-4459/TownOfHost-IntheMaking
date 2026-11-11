@@ -90,6 +90,9 @@ namespace TownOfHost
 
                 if (!AmongUsClient.Instance.AmHost) return;
 
+                //ローカルの部屋: 部屋番号の位置でダミーの数を選ぶ
+                DummySpawner.SetupLobbyUI(__instance);
+
                 // Make Public Button
                 /*if (!Main.IsPublicRoomAllowed())
                 {
@@ -137,6 +140,7 @@ namespace TownOfHost
             {
                 if (!AmongUsClient.Instance) return;
                 if (__instance == null) return;
+                DummySpawner.UpdateLobbyUI(__instance);//ローカルの部屋ではダミーの数を出す
                 //プライベートフォークの規約により、公開/非公開の切り替えボタンは表示しない
                 if (__instance.HostPublicButton != null) __instance.HostPublicButton.gameObject.SetActive(false);
                 if (__instance.HostPrivateButton != null) __instance.HostPrivateButton.gameObject.SetActive(false);

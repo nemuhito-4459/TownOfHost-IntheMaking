@@ -62,8 +62,8 @@ namespace TownOfHost
         public const string PluginGuid = "com.walf4459.townofhost-inthemaking";
         // バージョンは「1.xx」表記。更新ごとに xx を1増やす(xx は16進数: 1.00 → 1.09 → 1.0a → … → 1.ff)
         // PluginVersion は BepInEx/Version.Parse 用に数字だけで「1.(xxを10進にした値).0」と書く。例: 1.0a → "1.10.0"
-        public const string PluginVersion = "1.46.0";
-        public const string PluginShowVersion = "1.2e";
+        public const string PluginVersion = "1.47.0";
+        public const string PluginShowVersion = "1.2f";
 
         /// 配布するデバッグ版なのであればtrue。リリース時にはfalseにすること。
         public static bool DebugVersion = false;
@@ -83,6 +83,8 @@ namespace TownOfHost
         public static HideNSeekGameOptionsV12 HideNSeekSOptions => GameOptionsManager.Instance.currentHideNSeekGameOptions;
         //Client Options
         public static ConfigEntry<string> HideName { get; private set; }
+        /// <summary>ローカルの部屋に自動で入れるダミーの数(0～14)</summary>
+        public static ConfigEntry<int> LocalDummyCount { get; private set; }
         public static ConfigEntry<string> HideColor { get; private set; }
         public static ConfigEntry<bool> ForceJapanese { get; private set; }
         public static ConfigEntry<bool> JapaneseRoleName { get; private set; }
@@ -182,6 +184,7 @@ namespace TownOfHost
 
             //Client Options
             HideName = Config.Bind("Client Options", "Hide Game Code Name", "TownOfHost-IntheMaking");
+            LocalDummyCount = Config.Bind("Client Options", "Local Dummy Count", 0);
             HideColor = Config.Bind("Client Options", "Hide Game Code Color", $"{ModColor}");
             ForceJapanese = Config.Bind("Client Options", "Force Japanese", false);
             JapaneseRoleName = Config.Bind("Client Options", "Japanese Role Name", true);

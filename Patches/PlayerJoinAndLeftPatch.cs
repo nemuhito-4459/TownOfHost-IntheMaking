@@ -157,6 +157,14 @@ namespace TownOfHost
         public static void checkjoin(ClientData client)
         {
             if (AmongUsClient.Instance.AmHost is false) return;
+            //ローカルの部屋は自分(とダミー)だけ。ほかの人が入ってきたらキックする(相手には「キックされました」と出る)
+            if (GameStates.IsLocalGame && client.Id != AmongUsClient.Instance.ClientId)
+            {
+                AmongUsClient.Instance.KickPlayer(client.Id, false);
+                Logger.seeingame($"{client?.PlayerName} がローカルの部屋に入ってきたので、キックしました");
+                Logger.Info($"ローカルの部屋に入ってきた{client?.PlayerName}をキックしました", "Kick");
+                return;
+            }
             if (4 < kickpuidlist.Count(id => id == client.ProductUserId))
             {
                 Logger.seeingame(string.Format(GetString("Message.KickedByKickPlayer"), client.PlayerName));
