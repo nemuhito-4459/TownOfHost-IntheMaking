@@ -309,7 +309,7 @@ namespace TownOfHost
                     else if (CanKill(id))
                     {
                         //キルした回数 × 基本値 × 0.6
-                        var kills = PlayerState.AllPlayerStates.Values.Count(ps => ps.GetRealKiller() == id && ps.PlayerId != id);
+                        var kills = PlayerState.AllPlayerStates.Count(kv => kv.Value.GetRealKiller() == id && kv.Key != id);
                         var add = kills * BaseValue * KillRate;
                         value += add;
                         if (add > 0) detail += $"\nキル {kills}回（+{add:0.#}）";
