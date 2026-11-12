@@ -27,7 +27,7 @@ namespace TownOfHost
 
         /// <summary>
         /// 左に並べるMODのタブの順番(バニラ設定の次から、左→右・上→下)<br/>
-        /// バニラ設定 / TOH-IMの設定、インポスター / マッドメイト、クルーメイト / アサシンとマーリン、ジャッカル / ニュートラル
+        /// バニラ設定 / TOH-IMの設定、インポスター / マッドメイト、クルーメイト / コンビネーション、ジャッカル / ニュートラル
         /// </summary>
         static readonly TabGroup[] LeftOrder =
         {
