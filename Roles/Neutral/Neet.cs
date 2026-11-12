@@ -103,11 +103,13 @@ public sealed class Neet : RoleBase, IAdditionalWinner, ISystemTypeUpdateHook
     /// <summary>就職していなければ生きていれば、就職したら生死を問わず追加勝利</summary>
     public bool CheckWin(ref CustomRoles winnerRole) => Hired || Player.IsAlive();
 
-    //リクルーター以外は、ニートだと分かる
+    //リクルーター以外は、ニートだと分かる(就職したら、どちらの企業かも)
     public override void OverrideDisplayRoleNameAsSeen(PlayerControl seer, ref bool enabled, ref Color roleColor, ref string roleText, ref bool addon)
     {
         if (seer == null || seer.Is(CustomRoles.Recruiter)) return;
         enabled = true;
+        //本人は役職名の横(進み具合)に出ているので付けない
+        if (Hired && seer.PlayerId != Player.PlayerId) roleText += IsBlack ? "(ブラック企業)" : "(ホワイト企業)";
     }
 
     //就職するまで(設定でオフなら)サボタージュを直せない
