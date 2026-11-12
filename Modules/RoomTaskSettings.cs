@@ -157,6 +157,25 @@ namespace TownOfHost
             Logger.Info($"{player.name}にウォークタスクを{queue.Count}個割り当て({type})", "RoomTaskSettings");
         }
 
+        /// <summary>
+        /// 試合の途中でウォークタスクを割り当てる(ニートが就職したときなど)。待ち時間はクルーの設定を使う
+        /// </summary>
+        public static void AssignMidGame(PlayerControl player, RoomTaskKind kind, int count)
+        {
+            if (player == null || count <= 0) return;
+            var queue = Enumerable.Repeat(kind, count).ToList();
+            RoomTaskAssign.AllRoomTasker[player.PlayerId] = new RoomTaskAssign(player.PlayerId)
+            {
+                Generic = true,
+                TargetType = TargetType.Crewmate,
+                Queue = queue,
+            };
+            CustomRoleManager.LowerOthers.Add(GetLowerTextOthers);
+            //タスクの数を数え直す(ウォークタスクの数になる)
+            player.GetPlayerTaskState()?.Init(player);
+            Logger.Info($"{player.name}に途中からウォークタスクを{count}個割り当て({kind})", "RoomTaskSettings");
+        }
+
         /// <summary>自分の画面の下に「〇〇へ行け(ショート 5秒)」を出す</summary>
         public static string GetLowerTextOthers(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
         {

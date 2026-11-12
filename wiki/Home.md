@@ -12,12 +12,12 @@ TownOfHost-K（TOHK）をもとにした、Among Us のホストMODです。
 
 | 陣営 | 役職数 |
 |---|---|
-| [インポスター](Impostor) | 31 |
-| [マッドメイト](Madmate) | 15 |
-| [クルーメイト](Crewmate) | 34 |
+| [インポスター](Impostor) | 33 |
+| [マッドメイト](Madmate) | 16 |
+| [クルーメイト](Crewmate) | 36 |
 | [ジャッカル](Jackal) | 18 |
 | [ニュートラル](Neutral) | 11 |
-| [アサシンとマーリン](AssassinAndMerlin) | 2 |
+| [コンビネーション](Combination) | 4 |
 
 ## 設定画面
 

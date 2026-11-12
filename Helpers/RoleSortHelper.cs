@@ -24,6 +24,8 @@ namespace TownOfHost
             { CustomRoles.FireWorks, "はなびしょくにん" },
             { CustomRoles.Tairou, "たいろう" },
             { CustomRoles.Shinigami, "しにがみ" },
+            { CustomRoles.Recruiter, "りくるーたー" },
+            { CustomRoles.Neet, "にーと" },
             //クルー
             { CustomRoles.Bakery, "ぱんや" },
             { CustomRoles.Balancer, "てんびん" },

@@ -158,7 +158,8 @@ namespace TownOfHost
         CustomRoles.Assassin or CustomRoles.Merlin or
         CustomRoles.Driver or CustomRoles.Braid or
         CustomRoles.Vega or CustomRoles.Altair or
-        CustomRoles.Fool or CustomRoles.Nue;
+        CustomRoles.Fool or CustomRoles.Nue or
+        CustomRoles.Recruiter or CustomRoles.Neet;
         public static CustomRoles GetCombination(this CustomRoles role)
         {
             if (role.IsCombinationRole() is false) return CustomRoles.NotAssigned;
@@ -173,6 +174,8 @@ namespace TownOfHost
                 case CustomRoles.Altair: return CustomRoles.Vega;
                 case CustomRoles.Fool: return CustomRoles.Nue;
                 case CustomRoles.Nue: return CustomRoles.Fool;
+                case CustomRoles.Recruiter: return CustomRoles.Neet;
+                case CustomRoles.Neet: return CustomRoles.Recruiter;
             }
             return CustomRoles.NotAssigned;
         }

@@ -137,6 +137,7 @@ class ShowFilter
                         rolelist.Add(CustomRoles.Crewmate);
                         rolelist.Add(CustomRoles.Impostor);
                         rolelist.Add(CustomRoles.Merlin);
+                        rolelist.Add(CustomRoles.Neet);
                         rolelist.Add(CustomRoles.Braid);
                         rolelist.Add(CustomRoles.Fool);
                     }
@@ -148,6 +149,7 @@ class ShowFilter
                         if (IsFilterOption is false && !role.addon)
                         {
                             if ((customrole is CustomRoles.Merlin && CustomRoles.Assassin.IsEnable()) ||
+                                (customrole is CustomRoles.Neet && CustomRoles.Recruiter.IsEnable()) ||
                                 (customrole is CustomRoles.Braid && CustomRoles.Driver.IsEnable()) ||
                                 (customrole is CustomRoles.Fool && CustomRoles.Nue.IsEnable())
                                 )

@@ -129,6 +129,8 @@ public class RoomTaskAssign
         taskstate.Update(player);
         if (taskstate.IsTaskFinished)
             UtilsGameLog.AddGameLog("Task", string.Format(Translator.GetString("Taskfin"), UtilsName.GetPlayerColor(player, true)));
+        //ニートはウォークタスクを終えたときの処理がある
+        (player.GetRoleClass() as Roles.Neutral.Neet)?.OnWalkTaskComplete();
 
         if (IsAssign()) ChengeRoom();
         else

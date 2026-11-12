@@ -813,6 +813,8 @@ public enum CustomRoles
     Strawdoll,
     Fool,
     JackalWolf,
+    Recruiter,
+    Neet,
     //ジャッカル〇〇(インポスター役職の能力を持つジャッカル)
     JackalAntiReporter,
     JackalArcher,

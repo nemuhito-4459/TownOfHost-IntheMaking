@@ -62,8 +62,8 @@ namespace TownOfHost
         public const string PluginGuid = "com.walf4459.townofhost-inthemaking";
         // バージョンは「1.xx」表記。更新ごとに xx を1増やす(xx は16進数: 1.00 → 1.09 → 1.0a → … → 1.ff)
         // PluginVersion は BepInEx/Version.Parse 用に数字だけで「1.(xxを10進にした値).0」と書く。例: 1.0a → "1.10.0"
-        public const string PluginVersion = "1.107.0";
-        public const string PluginShowVersion = "1.6b";
+        public const string PluginVersion = "1.108.0";
+        public const string PluginShowVersion = "1.6c";
 
         /// 配布するデバッグ版なのであればtrue。リリース時にはfalseにすること。
         public static bool DebugVersion = false;
@@ -427,6 +427,7 @@ namespace TownOfHost
         GrimReaper = CustomRoles.GrimReaper,
         CountKiller = CustomRoles.CountKiller,
         Workaholic = CustomRoles.Workaholic,
+        Neet = CustomRoles.Neet,
         MassMedia = CustomRoles.MassMedia,
         SantaClaus = CustomRoles.SantaClaus,
         DoppelGanger = CustomRoles.DoppelGanger,
@@ -477,6 +478,7 @@ namespace TownOfHost
     public enum CombinationRoles
     {
         None,
-        AssassinandMerlin
+        AssassinandMerlin,
+        RecruiterandNeet
     }
 }

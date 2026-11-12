@@ -1188,6 +1188,8 @@ namespace TownOfHost
                 {
                     //ジャッカルウルフは設定画面に出さない(設定が無いので試合にも出ない)
                     if (info.RoleName is CustomRoles.AlienHijack or CustomRoles.Jackaldoll or CustomRoles.JackalWolf) continue;
+                    //ニートの設定はリクルーターの設定の中で作る(五十音順でニートが先に来るので、ここでは飛ばす)
+                    if (info.RoleName is CustomRoles.Neet) continue;
                     SetupRoleOptions(info);
                     info.OptionCreator?.Invoke();
                     //インポスターは役職ごとのキルクール(0=規定値)を用意する

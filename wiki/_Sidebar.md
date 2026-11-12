@@ -152,10 +152,12 @@
 </details>
 
 <details>
-<summary><b>アサシンとマーリン</b>（2）</summary>
+<summary><b>コンビネーション</b>（4）</summary>
 
-- [アサシンとマーリンの一覧](AssassinAndMerlin)
+- [コンビネーションの一覧](Combination)
   - [アサシン](アサシン)
   - [マーリン](マーリン)
+  - [リクルーター](リクルーター)
+  - [ニート](ニート)
 
 </details>

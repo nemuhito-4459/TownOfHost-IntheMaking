@@ -72,6 +72,13 @@ namespace TownOfHost
             if (RoleNullable == null) return;
             CustomRoles role = RoleNullable.Value;
 
+            //ニートはタスクがない(就職したらウォークタスクを割り当てる)
+            if (role is CustomRoles.Neet)
+            {
+                taskTypeIds = new Il2CppStructArray<byte>(0);
+                return;
+            }
+
             //ウォークタスクを持つ役職(インポスター扱いで動くクルー・ニュートラル)には、普通のタスクを配らない
             //(配ると、ホストや乗り移ったダミーの画面では本物のタスクとして見えて、終わらせるとウォークタスクと二重に数えられてしまう)
             if (RoomTaskSettings.GetTargetType(role) is not RoomTaskSettings.TargetType.None)
