@@ -152,7 +152,9 @@ namespace TownOfHost
                     //レート(部屋にいる全員)
                     case "/rate":
                         canceled = true;
-                        SendMessage(RatingManager.ShowAllText(), PlayerControl.LocalPlayer.PlayerId);
+                        //「/rate m」は自分のレートの詳しい情報と前回の試合
+                        if (args.Length > 1 && args[1] is "m" or "me") SendMessage(RatingManager.ShowMyText(PlayerControl.LocalPlayer), PlayerControl.LocalPlayer.PlayerId);
+                        else SendMessage(RatingManager.ShowAllText(), PlayerControl.LocalPlayer.PlayerId);
                         break;
                     //会議中の能力を番号で使う
                     case "/ab":
@@ -1475,7 +1477,9 @@ namespace TownOfHost
                     break;
                 //自分のレート
                 case "/rate":
-                    SendMessage(RatingManager.ShowText(player), player.PlayerId);
+                    //「/rate m」は自分のレートの詳しい情報と前回の試合
+                    if (args.Length > 1 && args[1] is "m" or "me") SendMessage(RatingManager.ShowMyText(player), player.PlayerId);
+                    else SendMessage(RatingManager.ShowText(player), player.PlayerId);
                     break;
                 //会議中の能力を番号で使う
                 case "/ab":

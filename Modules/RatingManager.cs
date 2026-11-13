@@ -83,6 +83,8 @@ namespace TownOfHost
         static readonly string FilePath = Main.BaseDirectory + "/Rating2.txt";
         /// <summary>最初のレートが0だったころのファイル。読むときに最初のレートの分を足す</summary>
         static readonly string OldFilePath = Main.BaseDirectory + "/Rating.txt";
+        /// <summary>前回の試合の結果</summary>
+        static readonly string LastFilePath = Main.BaseDirectory + "/RatingLast.txt";
 
         public enum Faction { Crewmate, Impostor, Madmate, Jackal, Neutral }
         static readonly string[] FactionNames = ["クルーメイト", "インポスター", "マッドメイト", "ジャッカル", "ニュートラル"];
@@ -104,6 +106,8 @@ namespace TownOfHost
             public int Games;
             public int Wins;
             public string Name = "";
+            /// <summary>前回の試合の結果(「陣営で勝利」「レート 1000 → 1050（+50）」と内訳)。まだなければ空</summary>
+            public string Last = "";
         }
         static Dictionary<string, Data> all;
         static Dictionary<string, Data> All
@@ -134,6 +138,18 @@ namespace TownOfHost
                         }
                 }
                 catch (Exception ex) { Logger.Error(ex.ToString(), "Rating"); }
+                //前回の試合の結果(別のファイル。フレンドコード<TAB>結果、結果の改行は \n で保存)
+                try
+                {
+                    if (File.Exists(LastFilePath))
+                        foreach (var line in File.ReadAllLines(LastFilePath))
+                        {
+                            var p = line.Split('\t', 2);
+                            if (p.Length < 2 || !all.TryGetValue(p[0].Trim(), out var d)) continue;
+                            d.Last = p[1].Replace("\\n", "\n");
+                        }
+                }
+                catch (Exception ex) { Logger.Error(ex.ToString(), "Rating"); }
                 return all;
             }
         }
@@ -144,6 +160,8 @@ namespace TownOfHost
                 Directory.CreateDirectory(Main.BaseDirectory);
                 File.WriteAllLines(FilePath, All.Values.OrderByDescending(d => d.Rating)
                     .Select(d => $"{d.FriendCode},{d.Rating},{d.Games},{d.Wins},{d.Name.Replace("\n", " ").Replace("\r", "")}"));
+                File.WriteAllLines(LastFilePath, All.Values.Where(d => d.Last != "")
+                    .Select(d => $"{d.FriendCode}\t{d.Last.Replace("\r", "").Replace("\t", " ").Replace("\n", "\\n")}"));
             }
             catch (Exception ex) { Logger.Error(ex.ToString(), "Rating"); }
         }
@@ -340,6 +358,10 @@ namespace TownOfHost
                 results[id] = (d, before, d.Rating - before, win, faction, detail);
                 Logger.Info($"{name}: {before} → {d.Rating} ({faction} 勝ち:{win} 生存:{alive} 値:{value:0.00})", "Rating");
             }
+            //前回の試合の結果として残す(/rate m で見られる)
+            foreach (var (id, r) in results)
+                r.data.Last = $"{FactionNames[(int)r.faction]}で{(r.win ? "勝利" : "敗北")}（{minutes:0}分）\n"
+                    + $"レート {r.before} → {r.data.Rating}（{(r.diff >= 0 ? "+" : "")}{r.diff}）\n{r.detail}";
             Save();
 
             //本人にだけ結果を送る(ロビーに戻ってから届く)
@@ -415,6 +437,24 @@ namespace TownOfHost
             var d = Get(pc?.GetClient()?.FriendCode);
             if (d == null || d.Games == 0) return $"{pc?.Data?.GetLogPlayerName()}：ランク {RankText(d)}（まだ試合をしていません）";
             return $"{pc.Data.GetLogPlayerName()}：ランク {RankText(d)}　レート {d.Rating}\n{d.Games}試合 {d.Wins}勝";
+        }
+        /// <summary>自分のレートの詳しい情報と、前回の試合で得たレート(/rate m)</summary>
+        public static string ShowMyText(PlayerControl pc)
+        {
+            var d = Get(pc?.GetClient()?.FriendCode);
+            var name = pc?.Data?.GetLogPlayerName() ?? "";
+            if (d == null || d.Games == 0) return $"{name}\nランク {RankText(d)}（まだ試合をしていません）\nレート {StartRating} から始まります";
+            var rate = d.Games > 0 ? d.Wins * 100 / d.Games : 0;
+            //次のランクまで
+            int? next = d.Rating switch { < 1400 => 1400, < 1700 => 1700, < 1900 => 1900, < 2000 => 2000, _ => null };
+            var sb = new StringBuilder();
+            sb.Append($"{name}\n");
+            sb.Append($"ランク {RankText(d)}　レート {d.Rating}\n");
+            if (next != null) sb.Append($"次のランクまで あと{next - d.Rating}\n");
+            sb.Append($"{d.Games}試合 {d.Wins}勝（勝率 {rate}%）\n");
+            sb.Append($"ランク補正 ×{RankRate(d.Rating)}\n");
+            if (d.Last != "") sb.Append($"\n<b>前回の試合</b>\n<size=80%>{d.Last}</size>");
+            return sb.ToString();
         }
         /// <summary>部屋にいる全員のレート</summary>
         public static string ShowAllText()
