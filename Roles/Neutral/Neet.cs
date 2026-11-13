@@ -211,11 +211,14 @@ public sealed class Neet : RoleBase, IAdditionalWinner, ISystemTypeUpdateHook
         if (Hired) roleText = roleText.Replace(GetString("Neet"), "サラリーマン");
     }
 
-    //リクルーター以外は、ニートだと分かる(就職した企業はほかの人には分からない)
+    //リクルーター以外は、ニートだと分かる(就職したことは、ほかの生きている人には分からない)
     public override void OverrideDisplayRoleNameAsSeen(PlayerControl seer, ref bool enabled, ref Color roleColor, ref string roleText, ref bool addon)
     {
         if (seer == null || seer.Is(CustomRoles.Recruiter)) return;
         enabled = true;
+        //ほかの人には、就職しても「ニート」のまま見せる(幽霊には本当の役職名)
+        if (Hired && seer.PlayerId != Player.PlayerId && seer.IsAlive())
+            roleText = roleText.Replace("サラリーマン", GetString("Neet"));
     }
 
     //就職するまで(設定でオフなら)サボタージュを直せない
