@@ -23,9 +23,26 @@ namespace TownOfHost
         public static uint reporternetid;
         public static byte targetid;
         //public static Dictionary<byte, Vector2> Pos = new();
+        /// <summary>イントロが終わった時刻(ホストの画面)</summary>
+        public static float IntroEndTime;
+        /// <summary>
+        /// イントロが終わってすぐは会議を始めない。<br/>
+        /// 読み込みの遅い人がまだイントロ中(エアシップならスポーン選択中)だと、その人だけ投票画面が出なくなるため
+        /// </summary>
+        static bool IsTooEarly()
+        {
+            if (!GameStates.introDestroyed) return true;
+            var wait = (MapNames)Main.NormalOptions.MapId == MapNames.Airship ? 12f : 5f;
+            return UtilsGameLog.day <= 1 && UnityEngine.Time.time - IntroEndTime < wait;
+        }
         public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] NetworkedPlayerInfo target)
         {
             if (GameStates.IsMeeting || GameStates.IsLobby || Wait) return false;
+            if (AmongUsClient.Instance.AmHost && IsTooEarly())
+            {
+                Logger.Info($"{__instance?.Data?.GetLogPlayerName()} の会議はイントロ直後なので止めた", "ReportDeadBody");
+                return false;
+            }
             if (CustomWinnerHolder.WinnerTeam is not CustomWinner.Default) return false;
             if (SuddenDeathMode.NowSuddenDeathMode)
             {

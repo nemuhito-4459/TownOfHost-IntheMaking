@@ -379,6 +379,7 @@ namespace TownOfHost
             if (!GameStates.IsInGame) return;
 
             GameStates.introDestroyed = true;
+            ReportDeadBodyPatch.IntroEndTime = UnityEngine.Time.time;
             var mapId = Main.NormalOptions.MapId;
             // エアシップではまだ湧かない
             if ((MapNames)mapId != MapNames.Airship)
