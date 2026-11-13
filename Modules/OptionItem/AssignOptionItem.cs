@@ -18,6 +18,8 @@ namespace TownOfHost
         public List<CustomRoles> GetNowRoleValue() => RoleValues[Getpresetid()];
         public static int Getpresetid() => PresetOptionItem.Preset.GetInt();
         public (bool impostor, bool madmate, bool crewmate, bool neutral, bool addon) roles;
+        /// <summary>選ぶ画面に、出現がオフの役職も全部出すか(オフなら、出現がオンの役職だけ)</summary>
+        public bool ShowAllRoles;
 
         // コンストラクタ
         public AssignOptionItem(int id, string name, int defaultValue, TabGroup tab, bool isSingleValue, bool imp = false, bool mad = false, bool crew = false, bool neu = false, bool addon = false, Func<CustomRoles[]> notassing = null)

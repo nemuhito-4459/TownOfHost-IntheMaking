@@ -146,7 +146,9 @@ class ShowFilter
                     {
                         if (customrole.IsMainRole() is false && !role.addon) continue;
                         if (customrole is CustomRoles.SKMadmate or CustomRoles.Emptiness or CustomRoles.HASFox or CustomRoles.HASTroll) continue;
-                        if (IsFilterOption is false && !role.addon)
+                        //出現がオフの役職も全部出す設定(怪しい占い師の変わる先など)なら、絞り込まない
+                        var showAll = NowOption is AssignOptionItem { ShowAllRoles: true };
+                        if (IsFilterOption is false && !role.addon && !showAll)
                         {
                             if ((customrole is CustomRoles.Merlin && CustomRoles.Assassin.IsEnable()) ||
                                 (customrole is CustomRoles.Neet && CustomRoles.Recruiter.IsEnable()) ||

@@ -44,6 +44,9 @@ public sealed class SuspiciousTeller : RoleBase, ISelfVoter
         CustomRoles.TaskPlayerB,
         CustomRoles.Walker,
         CustomRoles.Merlin,
+        //コンビネーション役職は相方がいないと成り立たないので変えない
+        CustomRoles.Recruiter,
+        CustomRoles.Neet,
     ];
 
     private static OptionItem optionChangeChance;
@@ -104,6 +107,8 @@ public sealed class SuspiciousTeller : RoleBase, ISelfVoter
         optionChangeChance = IntegerOptionItem.Create(RoleInfo, 10, OptionName.SuspiciousTellerChangeChance, new(0, 100, 1), 70, false)
             .SetValueFormat(OptionFormat.Percent);
         optionChangeRoleFilter = AssignOptionItem.Create(RoleInfo, 11, OptionName.SuspiciousTellerChangeRoleFilter, 0, false, optionChangeChance, imp: true, mad: true, crew: true, neu: true, notassing: ForbiddenChangeRoles);
+        //変わる先は出現がオフの役職でもいいので、選ぶ画面に全部の役職を出す
+        optionChangeRoleFilter.ShowAllRoles = true;
         optionNoChangeImpostor = BooleanOptionItem.Create(RoleInfo, 12, OptionName.SuspiciousTellerNoChangeImpostor, true, false);
         optionNoChangeMadmate = BooleanOptionItem.Create(RoleInfo, 13, OptionName.SuspiciousTellerNoChangeMadmate, true, false);
         optionNoChangeCrewmate = BooleanOptionItem.Create(RoleInfo, 14, OptionName.SuspiciousTellerNoChangeCrewmate, false, false);
