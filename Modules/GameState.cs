@@ -219,6 +219,11 @@ namespace TownOfHost
             {
                 AllTasksCount = roomTotal;
             }
+            else if (RoomTaskSettings.GetExtra(player.PlayerId) is int extra)
+            {
+                //普通のタスクに上乗せしたウォークタスク
+                AllTasksCount += extra;
+            }
             else if (player.GetRoleClass() is IRoomTasker roomTasker && (roomTasker?.GetMaxTaskCount() is not null))
             {
                 AllTasksCount += roomTasker.GetMaxTaskCount().Value;

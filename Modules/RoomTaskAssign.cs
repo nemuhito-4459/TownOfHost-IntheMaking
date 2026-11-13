@@ -22,6 +22,8 @@ public class RoomTaskAssign
     //── 汎用のウォークタスク(RoomTaskSettings。インポスター置き換えのクルー・ニュートラル用) ──
     /// <summary>役職クラスではなく RoomTaskSettings から割り当てたウォークタスクか</summary>
     public bool Generic;
+    /// <summary>普通のタスクに上乗せしたウォークタスクか(タスク数は 普通のタスク＋ウォークタスク)</summary>
+    public bool Extra;
     public RoomTaskSettings.TargetType TargetType;
     /// <summary>割り当てるウォークタスクの種類の並び(この数が総タスク数)</summary>
     public List<RoomTaskKind> Queue = new();
@@ -129,8 +131,9 @@ public class RoomTaskAssign
         taskstate.Update(player);
         if (taskstate.IsTaskFinished)
             UtilsGameLog.AddGameLog("Task", string.Format(Translator.GetString("Taskfin"), UtilsName.GetPlayerColor(player, true)));
-        //ニートはウォークタスクを終えたときの処理がある
+        //ニート・リクルーターはウォークタスクを終えたときの処理がある
         (player.GetRoleClass() as Roles.Neutral.Neet)?.OnWalkTaskComplete();
+        (player.GetRoleClass() as Roles.Neutral.Recruiter)?.OnWalkTaskComplete(!IsAssign());
 
         if (IsAssign()) ChengeRoom();
         else

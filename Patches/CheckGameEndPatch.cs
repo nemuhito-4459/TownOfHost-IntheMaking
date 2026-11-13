@@ -77,6 +77,15 @@ namespace TownOfHost
             //ゲーム終了判定
             predicate.CheckForEndGame(out reason);
 
+            //ブラック企業のニートの罰で、インポスターはキルのノルマを達成するまで勝てない
+            if (CustomWinnerHolder.WinnerTeam is CustomWinner.Impostor && Roles.Neutral.Neet.BlockImpostorWin)
+            {
+                CustomWinnerHolder.Reset();
+                return false;
+            }
+            //ホワイト企業のニートがタスクを終えて生きていたら、勝ちを乗っ取る
+            Roles.Neutral.Neet.CheckTakeover();
+
             //ゲーム終了時
             if (CustomWinnerHolder.WinnerTeam is not CustomWinner.Default)
             {

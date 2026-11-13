@@ -50,6 +50,8 @@ public sealed class Recruiter : RoleBase, IKiller, IAdditionalWinner
     {
         usedCount = 0;
         succeeded = false;
+        inherited = false;
+        coexist = false;
         notice = "";
         noticeTimer = 0;
     }
@@ -65,6 +67,8 @@ public sealed class Recruiter : RoleBase, IKiller, IAdditionalWinner
     public static OptionItem OptionNeetBlackTasks;
     public static OptionItem OptionNeetWhiteTasks;
     public static OptionItem OptionNeetCanFixSabotage;
+    public static OptionItem OptionNeetPunishTasks;
+    public static OptionItem OptionNeetPunishKillQuota;
     /// <summary>ニートの設定(リクルーターの設定の中で作っているもの)</summary>
     public static List<OptionItem> NeetOptions = new();
     enum OptionName
@@ -79,6 +83,8 @@ public sealed class Recruiter : RoleBase, IKiller, IAdditionalWinner
         NeetBlackTasks,
         NeetWhiteTasks,
         NeetCanFixSabotage,
+        NeetPunishTasks,
+        NeetPunishKillQuota,
     }
     static void SetupOptionItem()
     {
@@ -105,12 +111,20 @@ public sealed class Recruiter : RoleBase, IKiller, IAdditionalWinner
         OptionNeetWhiteTasks = IntegerOptionItem.Create(RoleInfo, 23, OptionName.NeetWhiteTasks, new(2, 10, 1), 2, false)
             .SetValueFormat(OptionFormat.Pieces);
         OptionNeetCanFixSabotage = BooleanOptionItem.Create(RoleInfo, 24, OptionName.NeetCanFixSabotage, false, false);
+        OptionNeetPunishTasks = IntegerOptionItem.Create(RoleInfo, 25, OptionName.NeetPunishTasks, new(1, 10, 1), 2, false)
+            .SetValueFormat(OptionFormat.Pieces);
+        OptionNeetPunishKillQuota = IntegerOptionItem.Create(RoleInfo, 26, OptionName.NeetPunishKillQuota, new(0, 5, 1), 1, false)
+            .SetValueFormat(OptionFormat.Players);
         NeetOptions = OptionItem.AllOptions.Skip(neetStart).ToList();
     }
 
     int usedCount;
     /// <summary>ニートの勧誘に成功したか</summary>
     bool succeeded;
+    /// <summary>死んだニートのタスクを引き継いだか</summary>
+    bool inherited;
+    /// <summary>引き継いだタスクを終えて、共存勝利が確定したか</summary>
+    bool coexist;
     /// <summary>画面の下に少しのあいだ出す知らせ</summary>
     string notice;
     float noticeTimer;
@@ -175,13 +189,23 @@ public sealed class Recruiter : RoleBase, IKiller, IAdditionalWinner
         noticeTimer = 0;
     }
 
-    /// <summary>勧誘に成功していて、ブラック企業 or ホワイト企業でニートがタスクを終えていれば追加勝利(生死は問わない)</summary>
-    public bool CheckWin(ref CustomRoles winnerRole)
+    /// <summary>勧誘に成功した時点で追加勝利が確定(生死は問わない)</summary>
+    public bool CheckWin(ref CustomRoles winnerRole) => succeeded;
+
+    /// <summary>死んだニートの残りのタスクを引き継いだ(ホスト)</summary>
+    public void Inherit(int count)
     {
-        if (!succeeded) return false;
-        var neet = Neet.GetHiredBy(Player.PlayerId);
-        if (neet == null) return false;
-        return neet.IsBlack || neet.IsTaskFinished;
+        inherited = true;
+        ShowNotice($"ニートが死んだ…残りのタスク{count}個を引き継いだ");
+    }
+    /// <summary>ウォークタスクを1つ終えたとき(ホスト)。引き継いだタスクを全部終えたら共存勝利が確定</summary>
+    public void OnWalkTaskComplete(bool allDone)
+    {
+        if (!AmongUsClient.Instance.AmHost || !inherited || coexist || !allDone) return;
+        coexist = true;
+        ShowNotice("引き継いだタスクを終えた！共存勝利が確定");
+        Logger.Info($"{Player.Data.GetLogPlayerName()} が引き継いだタスクを終えた(共存勝利が確定)", "Recruiter");
+        UtilsNotifyRoles.NotifyRoles(SpecifySeer: Player);
     }
 
     public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
@@ -191,6 +215,8 @@ public sealed class Recruiter : RoleBase, IKiller, IAdditionalWinner
     }
     public override string GetProgressText(bool comms = false, bool GameLog = false)
     {
+        if (coexist) return Utils.ColorString(RoleInfo.RoleColor, "(共存確定)");
+        if (inherited) return Utils.ColorString(RoleInfo.RoleColor, "(タスク引き継ぎ中)");
         if (succeeded) return Utils.ColorString(RoleInfo.RoleColor, "(勧誘済み)");
         if (!OptionHasLimit.GetBool()) return "";
         var left = OptionLimit.GetInt() - usedCount;

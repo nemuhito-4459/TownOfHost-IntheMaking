@@ -123,7 +123,47 @@ namespace TownOfHost
 
         /// <summary>対象プレイヤーならウォークタスクの総数、対象外なら null</summary>
         public static int? GetTotal(byte playerId)
-            => RoomTaskAssign.AllRoomTasker.TryGetValue(playerId, out var data) && data.Generic ? data.Queue.Count : null;
+            => RoomTaskAssign.AllRoomTasker.TryGetValue(playerId, out var data) && data.Generic && !data.Extra ? data.Queue.Count : null;
+        /// <summary>普通のタスクに上乗せしたウォークタスクの数(上乗せでなければ null)</summary>
+        public static int? GetExtra(byte playerId)
+            => RoomTaskAssign.AllRoomTasker.TryGetValue(playerId, out var data) && data.Generic && data.Extra ? data.Queue.Count : null;
+
+        /// <summary>
+        /// ウォークタスクを追加する(ブラック企業のニートが追放されたときの罰など)。<br/>
+        /// すでにウォークタスクを持っている人は後ろに足し、持っていない人は普通のタスクに上乗せする
+        /// </summary>
+        public static void AddTasks(PlayerControl player, RoomTaskKind kind, int count)
+        {
+            if (player == null || count <= 0) return;
+            var add = Enumerable.Repeat(kind, count);
+            if (RoomTaskAssign.AllRoomTasker.TryGetValue(player.PlayerId, out var data) && data.Generic)
+            {
+                data.Queue.AddRange(add);
+            }
+            else
+            {
+                RoomTaskAssign.AllRoomTasker[player.PlayerId] = new RoomTaskAssign(player.PlayerId)
+                {
+                    Generic = true,
+                    Extra = true,
+                    TargetType = TargetType.Crewmate,
+                    Queue = add.ToList(),
+                };
+                CustomRoleManager.LowerOthers.Add(GetLowerTextOthers);
+            }
+            //タスクの数を数え直す(終わった数はそのまま)
+            var taskState = player.GetPlayerTaskState();
+            if (taskState != null && taskState.hasTasks) taskState.Init(player);
+            Logger.Info($"{player.name}にウォークタスクを{count}個追加({kind})", "RoomTaskSettings");
+        }
+
+        /// <summary>汎用のウォークタスクを消す(死んだニートの残りをリクルーターに引き継いだときなど)</summary>
+        public static void RemoveGeneric(byte playerId)
+        {
+            if (!RoomTaskAssign.AllRoomTasker.TryGetValue(playerId, out var old) || !old.Generic) return;
+            if (old.RoomArrow != Vector2.zero) GetArrow.Remove(playerId, old.RoomArrow);
+            RoomTaskAssign.AllRoomTasker.Remove(playerId);
+        }
 
         /// <summary>役職を作ったときに呼ぶ(CustomRoleManager.CreateInstance)</summary>
         public static void AddTasker(PlayerControl player, CustomRoles role)
