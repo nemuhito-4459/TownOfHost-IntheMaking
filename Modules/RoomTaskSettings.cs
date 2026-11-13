@@ -172,7 +172,13 @@ namespace TownOfHost
             };
             CustomRoleManager.LowerOthers.Add(GetLowerTextOthers);
             //タスクの数を数え直す(ウォークタスクの数になる)
-            player.GetPlayerTaskState()?.Init(player);
+            var taskState = player.GetPlayerTaskState();
+            if (taskState != null)
+            {
+                //試合開始時にタスクが無かった人は「必要なタスク数」が0になっていて、(1/0)のように出てしまうので戻す
+                taskState.NeedTaskCount = -1;
+                taskState.Init(player);
+            }
             Logger.Info($"{player.name}に途中からウォークタスクを{count}個割り当て({kind})", "RoomTaskSettings");
         }
 
